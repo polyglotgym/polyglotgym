@@ -1,0 +1,15 @@
+{
+  "name": "The Polyglot Gym",
+  "short_name": "Polyglot Gym",
+  "start_url": "/polyglotgym/",
+  "display": "standalone",
+  "background_color": "#090d16",
+  "theme_color": "#06b6d4",
+  "icons": [
+    {
+      "src": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
