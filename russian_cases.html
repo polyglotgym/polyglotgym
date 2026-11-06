@@ -1,0 +1,2600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Russian Cases</title>
+    <style>
+        :root {
+            --bg-color: #0d0c10;
+            --card-bg: #14121a;
+            --text-main: #f8fafc;
+            --text-muted: #64748b;
+            --accent: #ff4757;
+            --success: #10b981;
+            --error: #f43f5e;
+            --warning: #f59e0b;
+            --border: #2c2536;
+            --shadow: rgba(0, 0, 0, 0.6);
+            --cyan: #06b6d4;
+        }
+        :root { font-size: 17px; }
+        html { scrollbar-gutter: stable; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 1rem;
+            background-color: var(--bg-color); color: var(--text-main);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; overflow-x: hidden;
+            overflow-anchor: none;
+        }
+        .container {
+            background-color: var(--card-bg); padding: 2rem; border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px var(--shadow); width: 100%; max-width: 550px;
+            border: 1px solid var(--border); position: relative;
+            min-width: 0;
+        }
+        #shutter-header-area { max-height: 3200px; opacity: 1; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.4s ease; }
+        #shutter-header-area.collapsed { max-height: 0px; opacity: 0; margin-bottom: 0px !important; pointer-events: none; }
+        h1 { font-size: 1.4rem; margin-top: 0; text-align: center; color: var(--accent); margin-bottom: 0.5rem; letter-spacing: 0.5px; text-transform: uppercase; }
+        .score-board { display: flex; justify-content: space-around; background-color: rgba(0,0,0,0.3); padding: 0.75rem; border-radius: 0.5rem 0.5rem 0 0; margin-top: 1rem; margin-bottom: 0; border: 1px solid var(--border); border-bottom: none; font-size: 0.85rem; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+        .score-board-progress-row { display: flex; justify-content: center; align-items: center; background-color: rgba(0,0,0,0.3); padding: 0.6rem 0.75rem; border-radius: 0 0 0.5rem 0.5rem; margin-top: 0; margin-bottom: 1rem; border: 1px solid var(--border); border-top: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; position: relative; }
+        .score-board-progress-row .score-item { margin: 0 auto; }
+        .score-board-gear-btn { font-size: 1rem; background: none; color: var(--text-main); padding: 0.2rem 0.5rem; cursor: pointer; border: none; position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); line-height: 1; }
+        .score-item span { font-weight: bold; color: var(--accent); }
+        .review-phase-text { color: var(--warning) !important; transition: color 0.3s ease; }
+        .nav-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+        .nav-btn { background: none; border: none; color: var(--text-muted); padding: 0.5rem 0.75rem; cursor: pointer; font-size: 0.9rem; border-radius: 0.25rem; transition: all 0.2s; }
+        .nav-btn.active { background-color: var(--border); color: var(--accent); font-weight: bold; }
+        .mode-selector { display: flex; flex-wrap: wrap; background-color: rgba(0, 0, 0, 0.3); padding: 0.4rem; border-radius: 0.5rem; margin-bottom: 1rem; border: 1px solid var(--border); gap: 0.4rem; }
+        .mode-btn { flex: 1 1 calc(50% - 0.4rem); background: none; border: none; color: var(--text-muted); padding: 0.6rem 0.5rem; font-size: 0.85rem; border-radius: 0.35rem; cursor: pointer; text-align: center; }
+        .mode-btn.active { background-color: var(--accent); color: #0d0c10; font-weight: bold; }
+        .drawer-toggle { background: none; border: none; color: var(--accent); font-size: 0.85rem; cursor: pointer; display: block; margin: -0.75rem auto 1rem auto; padding: 0.25rem 0.5rem; text-decoration: none; }
+        .settings-drawer { background-color: rgba(0, 0, 0, 0.2); border: 1px dashed var(--border); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.5rem; display: none; }
+        .grid-header-label { font-size: 0.8rem; color: var(--text-muted); font-weight: bold; margin-top: 0.5rem; }
+        .row-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.4rem; margin-top: 0.3rem; margin-bottom: 0.8rem; }
+        .row-label { display: flex; align-items: center; justify-content: center; background-color: rgba(255,255,255,0.01); border: 1px solid var(--border); border-radius: 0.35rem; padding: 0.45rem; font-size: 0.8rem; cursor: pointer; text-align: center; user-select: none; }
+        .row-label input { display: none; }
+        .row-label.selected { background-color: rgba(255, 71, 87, 0.15); border-color: var(--accent); color: var(--text-main); font-weight: bold; }
+        .question-box { background-color: rgba(0,0,0,0.4); padding: 2rem 1.5rem; border-radius: 0.5rem; text-align: center; margin-bottom: 1.5rem; border: 1px solid var(--border); min-height: 13rem; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 0.25rem; position: relative; }
+        .prompt-main { font-size: 2.6rem; font-weight: bold; color: var(--text-main); line-height: 1.1; font-family: Georgia, serif; }
+        .prompt-sub { font-size: 1.05rem; color: var(--accent); font-weight: 500; margin-top: 0.25rem; min-height: 1.5rem; overflow-wrap: break-word; }
+        .sub-badge { font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 0.5rem; }
+        .input-group { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+        input.text-input { flex: 1; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid var(--border); background-color: rgba(0,0,0,0.3); color: var(--text-main); font-size: 1.05rem; outline: none; text-align: center; }
+        input.text-input:focus { border-color: var(--accent); }
+        .feedback { padding: 1rem; border-radius: 0.5rem; margin-top: 1rem; font-size: 0.95rem; line-height: 1.5; }
+        .correct-box { background-color: rgba(16, 185, 129, 0.15); border: 1px solid var(--success); color: #34d399; }
+        .incorrect-box { background-color: rgba(244, 63, 94, 0.15); border: 1px solid var(--error); color: #fb7185; }
+        .honour-group { display: flex; gap: 0.75rem; width: 100%; }
+        .honour-btn { flex: 1; font-size: 0.95rem; padding: 0.75rem; border: none; border-radius: 0.5rem; color: #fff; cursor: pointer; }
+        .next-btn { width: 100%; margin-top: 1rem; background-color: var(--border); color: var(--text-main); border: none; border-radius: 0.5rem; padding: 0.75rem; font-weight: bold; cursor: pointer; }
+        .ref-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; font-size: 0.85rem; }
+        .ref-table th, .ref-table td { border: 1px solid var(--border); padding: 0.4rem; text-align: center; }
+        .ref-table th { background-color: rgba(0,0,0,0.4); color: var(--accent); }
+        .portal-shortcut-bar {
+            width: 100%; max-width: 550px; margin: 1.5rem auto 0 auto;
+            padding: 0.75rem 1rem; background-color: rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--border); border-radius: 0.5rem;
+            display: flex; align-items: center; box-sizing: border-box;
+            box-shadow: 0 4px 15px var(--shadow);
+        }
+        .portal-shortcut-bar a { color: var(--accent); text-decoration: none; font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; gap: 0.4rem; transition: opacity 0.2s; }
+        .portal-shortcut-bar a:hover { opacity: 0.8; }
+        .portal-shortcut-bar .terminal-label { margin-left: auto; font-size: 0.75rem; color: var(--text-muted); font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase; }
+        #view-guide .tr-txt { display: none; }
+        #view-guide.show-translit .cyr-txt { display: none; }
+        #view-guide.show-translit .tr-txt { display: inline; }
+        .warning-badge { background-color: rgba(245, 158, 11, 0.15); border: 1px dashed var(--warning); color: #fbbf24; font-size: 0.75rem; padding: 0.25rem 0.6rem; border-radius: 0.25rem; font-weight: bold; margin-top: 0.4rem; text-transform: uppercase; letter-spacing: 0.5px; max-width: 95%; line-height: 1.35; }
+        .drill-pill { font-size: 0.75rem; background-color: rgba(245, 158, 11, 0.18); border: 1px solid var(--warning); color: var(--warning); padding: 0.25rem 0.6rem; border-radius: 1rem; font-weight: bold; }
+        .drill-pill a { color: var(--warning); text-decoration: underline; margin-left: 0.35rem; }
+        .play-pill { background-color: rgba(168, 85, 247, 0.18) !important; border-color: #a855f7 !important; color: #d8b4fe !important; }
+        .drill-all-btn { width: 100%; margin-bottom: 1rem; padding: 0.6rem; background-color: var(--accent); color: #0d0c10; border: none; border-radius: 0.5rem; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
+        .drill-all-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .review-tabs { display: flex; justify-content: center; gap: 0.4rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; flex-wrap: wrap; }
+        .review-tab { background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 0.5rem 0.75rem; border-radius: 0.35rem; cursor: pointer; font-size: 0.8rem; transition: all 0.15s; }
+        .review-tab.active { background-color: var(--border); color: var(--text-main); font-weight: bold; }
+        .review-tab[data-bucket="known"].active { color: #86efac; }
+        .review-tab[data-bucket="active"].active { color: #cbd5e1; }
+        .review-tab[data-bucket="pending"].active { color: #fbbf24; }
+        .review-tab[data-bucket="pinned"].active { color: #ef4444; }
+        .review-header { color: var(--text-muted); font-size: 0.8rem; line-height: 1.5; padding: 0.5rem 0; margin-bottom: 0.5rem; text-align: left; }
+        .review-table th .pin-all-btn { margin: 0; padding: 0.15rem 0.4rem; font-size: 0.7rem; background-color: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.5); border-radius: 0.25rem; cursor: pointer; font-weight: bold; white-space: nowrap; transition: all 0.15s; }
+        .review-table th .pin-all-btn:hover { background-color: rgba(239, 68, 68, 0.35); color: #fca5a5; border-color: #ef4444; }
+        .review-empty { color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 2rem 0; }
+        .review-table .prompt-cell { font-weight: bold; color: var(--warning); text-align: left; }
+        .review-table .correct-cell { color: var(--success); font-weight: bold; }
+        .review-table .wrong-cell { color: var(--error); font-style: italic; }
+        .review-table .fail-cell { color: var(--text-muted); font-size: 0.75rem; text-align: center; }
+        .review-table .actions-cell { white-space: nowrap; }
+        .review-table .actions-cell button { background: none; border: 1px solid var(--border); color: var(--text-muted); font-size: 0.85rem; padding: 0.2rem 0.4rem; border-radius: 0.25rem; cursor: pointer; margin: 0 0.1rem; }
+        .review-table .actions-cell button:hover { color: var(--text-main); border-color: var(--text-muted); }
+        .review-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
+        .review-actions button { flex: 1; padding: 0.6rem; border: none; border-radius: 0.5rem; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
+        #drill-bucket-btn { background-color: var(--accent); color: #0d0c10; }
+        #clear-bucket-btn { background-color: var(--border); color: var(--text-main); }
+        .review-actions button:disabled { opacity: 0.4; cursor: not-allowed; }
+        .completion-actions { display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
+        .completion-btn { flex: 1; min-width: 120px; padding: 0.65rem; border: none; border-radius: 0.5rem; font-weight: bold; cursor: pointer; font-size: 0.85rem; background-color: var(--border); color: var(--text-main); }
+        .completion-btn.primary { background-color: var(--accent); color: #0d0c10; }
+        .completion-stats { display: flex; justify-content: center; gap: 1.5rem; margin: 1rem 0 0.5rem 0; flex-wrap: wrap; }
+        .completion-stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; }
+        .completion-stat-value { font-size: 1.6rem; font-weight: bold; color: var(--text-main); }
+        .mode-hint { font-size: 0.7rem; color: var(--text-muted); margin: 0.25rem 0 0.5rem 0; line-height: 1.4; }
+        .progress-bar-container { width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; margin: 1rem 0 0.5rem 0; }
+        .progress-bar-fill { height: 100%; background: var(--success); transition: width 0.3s ease; }
+        .big-stat { font-size: 2.4rem; font-weight: bold; color: var(--text-main); margin: 0.5rem 0; text-align: center; }
+        .guide-subtabs { display: flex; gap: 0.4rem; margin-bottom: 1rem; padding: 0.4rem; background-color: rgba(0, 0, 0, 0.4); border: 1px solid var(--border); border-radius: 0.5rem; }
+        .guide-subtab-btn { flex: 1; background: none; border: none; color: var(--text-muted); padding: 0.55rem 0.75rem; font-size: 0.85rem; border-radius: 0.35rem; cursor: pointer; transition: all 0.15s; }
+        .guide-subtab-btn:hover { color: var(--text-main); }
+        .guide-subtab-btn.active { background-color: var(--accent); color: #0d0c10; font-weight: bold; }
+        .guide-scroll { max-height: 55vh; overflow-y: auto; padding-right: 0.5rem; }
+        .guide-body { font-size: 0.9rem; line-height: 1.6; color: var(--text-main); }
+        .guide-body p { margin: 0 0 0.75rem 0; }
+        .guide-body strong { color: var(--text-main); }
+        .guide-body em { color: var(--text-muted); }
+        .guide-section-header { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.2px; font-weight: bold; margin: 1.75rem 0 0.75rem 0; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border); }
+        .guide-section-header:first-child { margin-top: 0; }
+        .guide-subsection { font-size: 0.95rem; color: var(--accent); font-weight: bold; margin: 1.25rem 0 0.5rem 0; }
+        .guide-tagline { color: var(--accent); font-style: italic; text-align: center; font-size: 0.95rem; margin: 1rem 0; font-weight: 500; }
+        .guide-pile { margin: 0 0 0.75rem 0; padding: 0.6rem 0.75rem; background: rgba(255,255,255,0.02); border-left: 3px solid var(--border); border-radius: 0.25rem; }
+        .guide-pile-label { font-weight: bold; color: var(--text-main); margin-right: 0.35rem; }
+        .guide-pile-desc { color: var(--text-main); font-size: 0.88rem; }
+        .guide-translit-bar { display: flex; gap: 0.4rem; margin-bottom: 1rem; padding: 0.3rem; background-color: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 0.4rem; }
+        .guide-translit-bar .mode-btn { font-size: 0.8rem; padding: 0.4rem 0.6rem; }
+        .guide-verb-table { font-size: 0.72rem; }
+
+        /* === MOBILE FIXES === */
+        @media (max-width: 550px) {
+            .container { padding: 1rem; }
+            .score-board {
+                flex-wrap: wrap !important;
+                justify-content: center !important;
+                font-size: 0.9rem !important;
+                padding: 0.5rem 0.75rem !important;
+                gap: 0.4rem 0.75rem !important;
+                line-height: 1.4 !important;
+            }
+            .score-item {
+                font-size: 0 !important;
+                white-space: nowrap !important;
+            }
+            .score-item span, .score-item a {
+                font-size: 0.9rem !important;
+            }
+            .score-board-progress-row {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                background-color: rgba(0,0,0,0.3);
+                padding: 0.6rem 0.75rem;
+                border-radius: 0 0 0.5rem 0.5rem;
+                margin-top: 0;
+                margin-bottom: 1rem;
+                border: 1px solid var(--border);
+                border-top: 1px solid rgba(255,255,255,0.05);
+                font-size: 0.85rem;
+                position: relative;
+            }
+            .score-board-progress-row .score-item {
+                font-size: 0.9rem !important;
+                text-align: center;
+            }
+            .score-board-gear-btn {
+                font-size: 1rem;
+                background: none;
+                color: var(--text-main);
+                padding: 0.2rem 0.5rem;
+                cursor: pointer;
+                border: none;
+                position: absolute;
+                right: 0.75rem;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+            #review-status-label {
+                display: block !important;
+                width: 100% !important;
+                text-align: center !important;
+                font-size: 0.75rem !important;
+                color: var(--warning) !important;
+                margin-top: 0.25rem !important;
+                font-style: italic !important;
+            }
+            .question-box {
+                padding: 1.25rem 1rem !important;
+                min-height: auto !important;
+                justify-content: flex-start !important;
+                padding-top: 1.5rem !important;
+            }
+            .prompt-main { font-size: 1.8rem !important; }
+        }
+
+        .hidden-during-feedback { display: none !important; }
+    </style>
+    <meta name="copyright" content="© 2026 Simon Reynolds · The Polyglot Gym · All rights reserved.">
+</head>
+<body>
+<div class="container">
+    <div id="shutter-header-area">
+        <h1>Russian Cases</h1>
+        <div class="nav-tabs">
+            <button class="nav-btn active" id="tab-quiz" onclick="switchView('quiz')">🎯 Drills</button>
+            <button class="nav-btn" id="tab-guide" onclick="switchView('guide')">📚 Guide</button>
+            <button class="nav-btn" id="tab-review" onclick="switchView('review')">📝 Reviews (<span id="review-count">0</span>)</button>
+        </div>
+        <div class="mode-selector">
+            <button class="mode-btn active" id="dir-r" onclick="setDirection('read')">Production</button>
+            <button class="mode-btn" id="dir-w" onclick="setDirection('write')">Listening</button>
+        </div>
+    </div>
+
+    <div id="view-quiz">
+        <div class="score-board">
+            <div class="score-item">Correct: <span id="score-correct">0</span></div>
+            <div class="score-item">Checked: <span id="score-total">0</span></div>
+            <div class="score-item">Streak: <span id="score-streak">0</span> <span id="streak-emoji">🐣</span></div>
+            <div class="score-item">Known: <span id="score-known">0</span> / <span id="score-known-total">0</span></div>
+            <div class="score-item">Deck: <span id="score-filtered">0</span></div>
+            <div class="drill-pill play-pill" id="play-mode-pill" style="display: none;">🎮 Play Mode</div>
+            <div class="drill-pill" id="drill-pill" style="display: none;">🎯 Drilling <span id="drill-count">0</span> · <a href="#" onclick="exitDrillToReview(); return false;">Exit</a></div>
+        </div>
+        <div class="score-board-progress-row">
+            <div class="score-item" id="progress-box">Progress: <span id="deck-progress">0</span> / <span id="deck-total">--</span><span id="review-status-label"></span></div>
+            <button onclick="openOptionsPanel();" class="score-board-gear-btn">⚙️</button>
+        </div>
+        
+        <div class="question-box">
+            <div class="prompt-main" id="case-prompt-display">стол</div>
+            <div class="prompt-sub" id="case-sub-display">➔ [Genitive Singular]</div>
+            <div id="english-meaning-hint-box" style="font-size: 0.85rem; color: var(--text-muted); background-color: rgba(0,0,0,0.25); padding: 0.25rem 0.75rem; border-radius: 0.25rem; border: 1px dashed var(--border); display: none; margin-top: 0.25rem; font-style: italic;"></div>
+            <div id="verb-stem-warning-badge" class="warning-badge" style="display: none;"></div>
+            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem; margin-bottom: 0.25rem;">
+                <button id="speak-btn" style="background-color: var(--border); color: var(--text-main); font-size: 0.8rem; padding: 0.35rem 0.75rem; border-radius: 0.25rem; border: none; cursor: pointer;" onclick="speakRussianPrompt();">Listen 🔊</button>
+                <button id="meaning-hint-btn" style="background-color: rgba(255,255,255,0.02); border: 1px solid var(--border); color: var(--warning); font-size: 0.8rem; padding: 0.35rem 0.75rem; border-radius: 0.25rem; cursor: pointer;" onclick="revealEnglishMeaningHint();">Meaning 👁️</button>
+            </div>
+            <div class="sub-badge" id="case-track-badge">Type Cyrillic or Transliteration</div>
+        </div>
+
+        <div id="panel-read-mode">
+            <div class="input-group">
+                <input type="text" class="text-input" id="user-input" placeholder="Type Cyrillic form or transliteration..." autocomplete="off" onkeydown="if(event.key === 'Enter') { event.preventDefault(); event.stopPropagation(); checkAnswer(); }">
+                <button id="submit-btn" style="background-color: var(--accent); color: #0d0c10; font-weight: bold; border: none; border-radius: 0.5rem; padding: 0 1.5rem; cursor: pointer;" onclick="checkAnswer();">Check</button>
+            </div>
+        </div>
+
+        <div id="panel-write-mode" style="display: none;">
+            <div class="input-group" id="btn-reveal-container" style="display: block; width: 100%;">
+                <button id="reveal-btn" style="width: 100%; height: 2.8rem; background-color: var(--accent); color: #0d0c10; font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer;" onclick="revealVerbAnswer()">Reveal Answer</button>
+            </div>
+            <div class="honour-group" id="honour-system-controls" style="display: none; justify-content: center; gap: 0.75rem; width: 100%; margin-bottom: 1rem;">
+                <button class="honour-btn" style="background-color: var(--error); flex: 1;" onclick="assessHonour(false)">Wrong ✖</button>
+                <button class="honour-btn" style="background-color: var(--success); color: #0d0c10; font-weight: bold; flex: 1;" onclick="assessHonour(true)">Correct ✔</button>
+            </div>
+        </div>
+
+        <div id="start-btn-container" style="display: none;">
+            <div class="input-group">
+                <button id="start-btn" style="width: 100%; height: 2.8rem; background-color: var(--accent); color: #0d0c10; font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 1rem;" onclick="startSession();">▶ Start Session</button>
+            </div>
+        </div>
+
+        <div id="feedback-container" style="display: none;">
+            <div id="feedback-message" class="feedback"></div>
+            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                <button class="next-btn" id="next-btn" onclick="handleNextWorkflow()" style="flex: 2;">Next Word →</button>
+                <button class="next-btn" id="undo-btn" onclick="executeUndoAction()" style="flex: 1; background-color: var(--warning); color: #0d0c10;">↩ Undo</button>
+            </div>
+        </div>
+    </div>
+
+    <button class="drawer-toggle" id="drawer-toggle-btn" onclick="toggleSettingsDrawer();" style="width: 100%; padding: 0.75rem; margin-top: 1rem; font-size: 0.95rem; background: none; border: 1px solid var(--border); border-radius: 0.5rem; color: var(--text-muted); cursor: pointer; text-align: center;">⚙️ Options & Filters ▾</button>
+    <div id="filter-status-line" style="text-align:center; font-size:0.72rem; color:var(--text-muted); margin:-0.5rem 0 1rem 0; letter-spacing:0.3px;"></div>
+    <div class="settings-drawer" id="settings-drawer">
+        <div class="grid-header-label">Production Input Method:</div>
+        <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <label class="row-label selected" id="lbl-method-type"><input type="radio" name="rad-method" id="chk-method-type" checked onchange="updateProductionMethod('type')">Type answer</label>
+            <label class="row-label" id="lbl-method-honour"><input type="radio" name="rad-method" id="chk-method-honour" onchange="updateProductionMethod('honour')">Self-assess (honour)</label>
+        </div>
+
+        <div class="grid-header-label">Known Cards Mode:</div>
+        <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <label class="row-label selected" id="lbl-known-adaptive"><input type="radio" name="rad-known-mode" id="chk-known-adaptive" checked onchange="updateKnownMode('adaptive')">Adaptive</label>
+            <label class="row-label" id="lbl-known-sweep"><input type="radio" name="rad-known-mode" id="chk-known-sweep" onchange="updateKnownMode('sweep')">Full Sweep</label>
+        </div>
+        <p class="mode-hint">
+            <strong>Adaptive:</strong> active + pending + pinned (skips known).<br>
+            <strong>Sweep:</strong> every card, including known.
+        </p>
+
+        <div class="grid-header-label">Session Deck Size:</div>
+        <select id="deck-size-selector" onchange="initSessionDeck()" style="width: 100%; padding: 0.45rem; background-color: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border); border-radius: 0.35rem; font-size: 0.85rem; outline: none; margin-top: 0.25rem; margin-bottom: 0.8rem;">
+            <option value="15" selected>15 cards (short drill)</option>
+            <option value="30">30 cards</option>
+            <option value="50">50 cards</option>
+            <option value="100">100 cards</option>
+            <option value="9999">Full set (no cap)</option>
+        </select>
+
+        <div class="grid-header-label">Card Behaviour:</div>
+        <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <label class="row-label" id="lbl-opt-play-mode"><input type="checkbox" id="chk-opt-play-mode" onchange="updatePlayMode()">🎮 Play mode</label>
+            <label class="row-label selected" id="lbl-opt-auto-speak-base"><input type="checkbox" id="chk-opt-auto-speak-base" checked onchange="updateAutoSpeakBase()">Auto-speak base word</label>
+        </div>
+
+        <div class="grid-header-label">Hint Detail Level:</div>
+        <div class="row-grid" style="grid-template-columns: repeat(3, 1fr);">
+            <label class="row-label" id="lbl-hint-none"><input type="radio" name="rad-hint" id="chk-hint-none" onchange="updateHintLevel('none')">No hints</label>
+            <label class="row-label selected" id="lbl-hint-basic"><input type="radio" name="rad-hint" id="chk-hint-basic" checked onchange="updateHintLevel('basic')">Basic</label>
+            <label class="row-label" id="lbl-hint-detailed"><input type="radio" name="rad-hint" id="chk-hint-detailed" onchange="updateHintLevel('detailed')">Detailed</label>
+        </div>
+        <p class="mode-hint">No hints: nothing shown. Basic: pattern only. Detailed: pattern + this word's transformation.</p>
+
+        <div class="grid-header-label">Script Display (Prompts):</div>
+        <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <label class="row-label selected" id="lbl-opt-cyrillic"><input type="checkbox" id="chk-opt-cyrillic" checked onchange="updateShowCyrillicInPrompt()">Cyrillic</label>
+            <label class="row-label selected" id="lbl-opt-translit"><input type="checkbox" id="chk-opt-translit" checked onchange="updateShowTranslitInPrompt()">Translit</label>
+        </div>
+        <p class="mode-hint">
+            <strong>Cyrillic</strong> off → translit only.<br>
+            <strong>Translit</strong> off → Cyrillic only.<br>
+            (Nom Sg cards always show the English meaning, not the word.)
+        </p>
+
+        <div class="row-grid" style="grid-template-columns: repeat(1, 1fr);">
+            <div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.2rem;">Auto-pin after fails:</div>
+                <select id="auto-pin-selector" onchange="setAutoPinThreshold(this.value)" style="width: 100%; padding: 0.45rem; background-color: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border); border-radius: 0.35rem; font-size: 0.85rem; outline: none;">
+                    <option value="0">Off</option>
+                    <option value="2">2 fails</option>
+                    <option value="3" selected>3 fails</option>
+                    <option value="5">5 fails</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid-header-label">Active Cases:</div>
+        <div class="row-grid">
+            <label class="row-label selected" id="lbl-opt-nom"><input type="checkbox" id="chk-opt-nom" checked onchange="updateFilterSelection('nom')">Nominative</label>
+            <label class="row-label selected" id="lbl-opt-acc"><input type="checkbox" id="chk-opt-acc" checked onchange="updateFilterSelection('acc')">Accusative</label>
+            <label class="row-label selected" id="lbl-opt-gen"><input type="checkbox" id="chk-opt-gen" checked onchange="updateFilterSelection('gen')">Genitive</label>
+            <label class="row-label selected" id="lbl-opt-dat"><input type="checkbox" id="chk-opt-dat" checked onchange="updateFilterSelection('dat')">Dative</label>
+            <label class="row-label selected" id="lbl-opt-ins"><input type="checkbox" id="chk-opt-ins" checked onchange="updateFilterSelection('ins')">Instrumental</label>
+            <label class="row-label selected" id="lbl-opt-prep"><input type="checkbox" id="chk-opt-prep" checked onchange="updateFilterSelection('prep')">Prepositional</label>
+        </div>
+
+        <div class="grid-header-label">Active Numbers:</div>
+        <div class="row-grid">
+            <label class="row-label selected" id="lbl-opt-sg"><input type="checkbox" id="chk-opt-sg" checked onchange="updateFilterSelection('sg')">Singular</label>
+            <label class="row-label selected" id="lbl-opt-pl"><input type="checkbox" id="chk-opt-pl" checked onchange="updateFilterSelection('pl')">Plural</label>
+        </div>
+
+        <div class="grid-header-label">Active Noun Types:</div>
+        <div class="row-grid">
+            <label class="row-label selected" id="lbl-opt-masc-inan"><input type="checkbox" id="chk-opt-masc-inan" checked onchange="updateFilterSelection('masc-inan')">Masc Inanimate</label>
+            <label class="row-label selected" id="lbl-opt-masc-anim"><input type="checkbox" id="chk-opt-masc-anim" checked onchange="updateFilterSelection('masc-anim')">Masc Animate</label>
+            <label class="row-label selected" id="lbl-opt-fem"><input type="checkbox" id="chk-opt-fem" checked onchange="updateFilterSelection('fem')">Feminine</label>
+            <label class="row-label selected" id="lbl-opt-neut"><input type="checkbox" id="chk-opt-neut" checked onchange="updateFilterSelection('neut')">Neuter</label>
+        </div>
+
+        <div class="grid-header-label">Isolate Specific Word Drill:</div>
+        <select id="word-isolate-selector" onchange="initSessionDeck()" style="width: 100%; padding: 0.45rem; background-color: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border); border-radius: 0.35rem; font-size: 0.85rem; outline: none; margin-top: 0.25rem; margin-bottom: 0.8rem;">
+            <option value="all">-- Drill All Words (Active Filter Set) --</option>
+        </select>
+
+        <div class="grid-header-label">Progress:</div>
+        <button onclick="resetAllProgress();" style="width: 100%; padding: 0.45rem; background-color: rgba(239, 68, 68, 0.15); color: var(--error); border: 1px solid var(--error); border-radius: 0.35rem; font-size: 0.8rem; cursor: pointer; font-weight: bold; margin-top: 0.25rem;">Reset all progress</button>
+    </div>
+
+    <div id="view-guide" style="display: none;">
+        <div class="guide-subtabs">
+            <button class="guide-subtab-btn active" id="guide-subtab-user" onclick="setGuideTab('user')">📖 User Guide</button>
+            <button class="guide-subtab-btn" id="guide-subtab-conj" onclick="setGuideTab('conj')">📚 Case Tables</button>
+        </div>
+        <div class="guide-scroll">
+            <div id="guide-user-content" class="guide-body">
+                <h3 style="color: var(--accent); margin: 0 0 1rem 0; text-align: center; font-size: 1.15rem;">How to Use This App</h3>
+
+                <div class="guide-subsection" style="margin-top: 0;">What this is</div>
+                <p>A <strong>high-intensity drill tool</strong> for one thing: Russian noun case forms. Six cases × two numbers × several noun types = a lot of endings, and getting them wrong is one of the loudest mistakes a learner can make.</p>
+                <p>This app drills the <strong>inflected forms</strong> — you see a base noun and a target case, you produce the form. It does <em>not</em> drill which case to use when; that's a separate skill (see the final note).</p>
+                <p class="guide-tagline">Think of this app as like a metronome for case endings.</p>
+
+                <div class="guide-subsection">The four piles</div>
+                <div class="guide-pile"><span class="guide-pile-label">⚪ Active</span><span class="guide-pile-desc">Cards you're still working through. Appear in every drill. A card is Active if it's new <em>or</em> if you've failed it once and corrected it.</span></div>
+                <div class="guide-pile"><span class="guide-pile-label">🟡 Pending</span><span class="guide-pile-desc">Cards you've recently missed. Mixed into the general rotation but called out separately so you can drill them deliberately. Pin with 📍 or <strong>📌 All</strong>.</span></div>
+                <div class="guide-pile"><span class="guide-pile-label">🔴 Pinned</span><span class="guide-pile-desc">Your watchlist. Stays in rotation indefinitely. Auto-pin after 3 fails (adjustable). To retire one, correct it, then unpin.</span></div>
+                <div class="guide-pile"><span class="guide-pile-label">💚 Known</span><span class="guide-pile-desc">Mastered. Skipped in Adaptive mode. To review, switch to Full Sweep or Forget All.</span></div>
+
+                <div class="guide-subsection">How cards move between piles</div>
+                <p>Cards change state based on your <strong>first answer in each session</strong>:</p>
+                <table class="ref-table" style="font-size: 0.8rem;">
+                    <tr><th>From</th><th>Correct (first attempt)</th><th>Wrong</th></tr>
+                    <tr><td><strong>Active</strong></td><td>→ Known</td><td>→ Pending</td></tr>
+                    <tr><td><strong>Pending</strong></td><td>→ Active</td><td>→ Pending</td></tr>
+                    <tr><td><strong>Pinned</strong></td><td>→ Pinned (stays)</td><td>→ Pinned (stays)</td></tr>
+                    <tr><td><strong>Known</strong></td><td>→ Known (stays)</td><td>→ Pending (Sweep only)</td></tr>
+                </table>
+                <p style="margin-top: 0.75rem;">If you fail a card and then get it right later in the same session, that later correct doesn't count for state changes — it's just practice.</p>
+
+                <div class="guide-section-header">Russian-Specific Behaviour</div>
+
+                <div class="guide-subsection" style="margin-top: 0;">The Nom Sg quirk</div>
+                <p>Nominative Singular cards are special: they show the <em>English meaning</em> and ask you for the dictionary form. Showing the base word would give away the answer, since Nom Sg <em>is</em> the dictionary form. Every other card shows the base word and asks for the target case.</p>
+                <p>This means Nom Sg cards test recall + form; other cases test form only. That's deliberate — you shouldn't have to recall "table → стол" every time you want to drill "стол → стола".</p>
+
+                <div class="guide-subsection">Animate vs inanimate</div>
+                <p>The distinction only matters for <strong>masculine accusative</strong> (and by extension, all animate plurals). Inanimate masc Acc = Nom (стол → стол), but animate masc Acc = Gen (друг → друга). The app shows a warning banner on these cards.</p>
+
+                <div class="guide-subsection">Homograph warnings</div>
+                <p>Many case endings collide — стол is both Nom Sg and Acc Sg, for instance. When you get a form right, the app tells you which other cases share it. This is your cheat sheet for "why does my answer look like the same word?"</p>
+
+                <div class="guide-subsection">Cyrillic vs transliteration</div>
+                <p>Input accepts either. Typing <span class="cyr-txt">стола</span> or <span class="tr-txt">stola</span> are both correct. <span class="cyr-txt">ё</span> is normalised to <span class="cyr-txt">е</span> automatically. The <strong>Script Display</strong> settings control how the base word appears in prompts — the answer feedback always shows both scripts.</p>
+
+                <div class="guide-section-header">The Settings</div>
+
+                <div class="guide-subsection" style="margin-top: 0;">Adaptive vs Full Sweep</div>
+                <p><strong>Adaptive</strong> (default) draws from Active + Pending + Pinned, skipping Known. <strong>Full Sweep</strong> draws from everything, useful for a check-up. Failing a Known card in Sweep demotes it back to Pending.</p>
+
+                <div class="guide-subsection">Production vs acoustic</div>
+                <ul style="margin: 0.5rem 0 0.75rem 0; padding-left: 1.2rem;">
+                    <li><strong>Production Lane</strong> — you see the base word and target case, you type the inflected form.</li>
+                    <li><strong>Acoustic Lane</strong> — you hear the inflected form, you identify which case and number it is.</li>
+                </ul>
+                <p>Acoustic mode is particularly valuable for Russian: many forms are ambiguous to <em>see</em> but the same form can be distinguished by context when <em>heard</em>. Play Mode lets you test without recording anything.</p>
+
+                <div class="guide-section-header">Drilling</div>
+
+                <div class="guide-subsection" style="margin-top: 0;">Reading the scoreboard</div>
+                <ul style="margin: 0.5rem 0 0.75rem 0; padding-left: 1.2rem;">
+                    <li><strong>Correct / Checked</strong> — lifetime totals.</li>
+                    <li><strong>Streak</strong> — current streak; 👑 = 15+ in a row.</li>
+                    <li><strong>Known: X / Y</strong> — under current filters.</li>
+                    <li><strong>Progress: X / Y</strong> — current session only.</li>
+                </ul>
+
+                <div class="guide-subsection">Hotkeys</div>
+                <p><strong>Space</strong> or <strong>Enter</strong> for move on / correct, <strong>X</strong> (or <strong>1</strong>) for incorrect, <strong>2</strong> for correct (honour mode), <strong>Ctrl+Z</strong> to undo the last answer.</p>
+
+                <div class="guide-section-header">Suggested Workflow</div>
+
+                <p><strong>Beginners.</strong> Start with <em>Nominative and Accusative only</em>, singular only, and only Masculine Inanimate + Feminine. This is the smallest productive slice — subject + direct object sentences.</p>
+                <p><strong>Add Genitive next.</strong> Genitive is the second most useful case (possession, negation, quantity). Concentrate on the -а/-я masc and -ы/-и fem patterns.</p>
+                <p><strong>Add Dative, Instrumental, Prepositional.</strong> These round out the basic cases. Instrumental and Prepositional have some softer patterns; they'll take more practice.</p>
+                <p><strong>Introduce Plural.</strong> Add plural one case at a time, starting with Nom Pl and Gen Pl. Gen Pl is the hardest — often the form is a "bare stem" with no ending at all.</p>
+                <p><strong>Add harder noun types.</strong> Soft stems (-ь), sibilants (-ч/-ш/-ж/-щ), animate masculine (the Acc = Gen pattern), third-declension feminine.</p>
+                <p><strong>Every third or fourth session.</strong> Hit <strong>Drill Pending</strong> in the Reviews tab. This is where you patch the holes.</p>
+                <p><strong>When you're tired.</strong> Turn on 🎮 Play Mode. Nothing gets recorded.</p>
+
+                <div class="guide-section-header">Final Note</div>
+                <p>This app drills <strong>form production</strong>. It does not drill which case <em>to use</em> in a given sentence — that's a separate skill. You can conjugate perfectly and still pick the wrong case for a preposition, or miss that a verb governs an unexpected case. If you're at the stage where you know the endings but aren't sure when to use them, that gap deserves its own app (sentence-context drills with case selection from a prompt). This is a known limitation, not a bug.</p>
+                <p>Also not covered: adjective agreement (adjectives agree with nouns in case, number, gender — a whole other drill), participles, or irregular plurals beyond what's in the deck.</p>
+            </div>
+
+            <div id="guide-conj-content" style="display: none;">
+                <div class="guide-translit-bar">
+                    <button class="mode-btn active" id="guide-cyr" onclick="setGuideMode('cyr')">Cyrillic</button>
+                    <button class="mode-btn" id="guide-tr" onclick="setGuideMode('tr')">Transliteration</button>
+                </div>
+                <div id="case-tables-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-review" style="display: none;">
+        <button id="drill-all-btn" class="drill-all-btn" onclick="drillFromLog('all')">🎯 Drill All Reviews (Pending &amp; Pinned) (0)</button>
+
+        <div class="review-tabs">
+            <button class="review-tab" data-bucket="known" id="tab-known" onclick="setReviewTab('known')">💚 Known (<span id="count-known">0</span>)</button>
+            <button class="review-tab" data-bucket="active" id="tab-active" onclick="setReviewTab('active')">⚪ Active (<span id="count-active">0</span>)</button>
+            <button class="review-tab active" data-bucket="pending" id="tab-pending" onclick="setReviewTab('pending')">🟡 Pending (<span id="count-pending">0</span>)</button>
+            <button class="review-tab" data-bucket="pinned" id="tab-pinned" onclick="setReviewTab('pinned')">🔴 Pinned (<span id="count-pinned">0</span>)</button>
+        </div>
+
+        <div id="review-header" class="review-header"></div>
+        <div id="review-list-container" style="max-height: 40vh; overflow-y: auto;"></div>
+
+        <div class="review-actions">
+            <button id="drill-bucket-btn" onclick="drillActiveBucket()">🎯 Drill</button>
+            <button id="clear-bucket-btn" onclick="clearActiveBucket()">🗑️ Clear</button>
+        </div>
+    </div>
+</div>
+
+<div class="portal-shortcut-bar">
+    <a href="index.html">Return to Hub</a>
+    <div class="terminal-label">R-App 02</div>
+</div>
+
+<script>
+    var sessionStarted = false;
+    var autoSpeakBaseSetting = true;
+    var hintLevel = "basic";
+    var showCyrillicInPrompt = true;
+    var showTranslitInPrompt = true;
+    var productionMethod = "type";
+    var guideMode = "cyr";
+    var guideTab = "user";
+    var knownMode = "adaptive";
+    var playMode = false;
+    var autoPinThreshold = 3;
+    var currentClockObj = null;
+    var currentQuizDirection = "read";
+    var totalCorrect = 0;
+    var totalQuestions = 0;
+    var currentStreak = 0;
+    var mistakeLog = [];
+    var knownCards = {};
+    var currentSessionDeck = [];
+    var activeCardIndex = 0;
+    var coreDeckOriginalCount = 0;
+    var userActionHistory = [];
+    var pendingSpeakTimer = null;
+    var emptyReason = null;
+    var totalFilteredCount = 0;
+
+    var reviewTab = "pending";
+
+    var sessionMode = "normal";
+    var sessionFirstAttempts = {};
+    var sessionCorrect = 0;
+    var sessionTotal = 0;
+    var sessionCurrentStreak = 0;
+    var sessionBestStreak = 0;
+    var sessionRecoveredCount = 0;
+    var sessionKnownCount = 0;
+    var sessionComplete = false;
+
+    var selectedIntervals = {
+        sg: true, pl: true,
+        nom: true, acc: true, gen: true, dat: true, ins: true, prep: true,
+        "masc-inan": true, "masc-anim": true, fem: true, neut: true
+    };
+
+    function cancelPendingSpeak() {
+        if (pendingSpeakTimer) {
+            clearTimeout(pendingSpeakTimer);
+            pendingSpeakTimer = null;
+        }
+    }
+
+    var masterCaseDictionary = {
+        "стол": { translit: "stol", gender: "masc", anim: "inan", meaning: "table", declensions: {
+            sg: { nom: { cyr: "стол", tr: "stol" }, gen: { cyr: "стола", tr: "stola" }, dat: { cyr: "столу", tr: "stolu" }, acc: { cyr: "стол", tr: "stol" }, ins: { cyr: "столом", tr: "stolom" }, prep: { cyr: "столе", tr: "stole" } },
+            pl: { nom: { cyr: "столы", tr: "stoly" }, gen: { cyr: "столов", tr: "stolov" }, dat: { cyr: "столам", tr: "stolam" }, acc: { cyr: "столы", tr: "stoly" }, ins: { cyr: "столами", tr: "stolami" }, prep: { cyr: "столах", tr: "stolah" } }
+        }},
+        "день": { translit: "den'", gender: "masc", anim: "inan", meaning: "day", declensions: {
+            sg: { nom: { cyr: "день", tr: "den'" }, gen: { cyr: "дня", tr: "dnya" }, dat: { cyr: "дню", tr: "dnyu" }, acc: { cyr: "день", tr: "den'" }, ins: { cyr: "днем", tr: "dnem" }, prep: { cyr: "дне", tr: "dne" } },
+            pl: { nom: { cyr: "дни", tr: "dni" }, gen: { cyr: "дней", tr: "dney" }, dat: { cyr: "дням", tr: "dnyam" }, acc: { cyr: "дни", tr: "dni" }, ins: { cyr: "днями", tr: "dnyami" }, prep: { cyr: "днях", tr: "dnyah" } }
+        }},
+        "музей": { translit: "muzey", gender: "masc", anim: "inan", meaning: "museum", declensions: {
+            sg: { nom: { cyr: "музей", tr: "muzey" }, gen: { cyr: "музея", tr: "muzeya" }, dat: { cyr: "музею", tr: "muzeyu" }, acc: { cyr: "музей", tr: "muzey" }, ins: { cyr: "музеем", tr: "muzeyem" }, prep: { cyr: "музее", tr: "muzee" } },
+            pl: { nom: { cyr: "музеи", tr: "muzei" }, gen: { cyr: "музеев", tr: "muzeev" }, dat: { cyr: "музеям", tr: "muzeyam" }, acc: { cyr: "музеи", tr: "muzei" }, ins: { cyr: "музеями", tr: "muzeyami" }, prep: { cyr: "музеях", tr: "muzeyah" } }
+        }},
+        "мяч": { translit: "myach", gender: "masc", anim: "inan", meaning: "ball", declensions: {
+            sg: { nom: { cyr: "мяч", tr: "myach" }, gen: { cyr: "мяча", tr: "myacha" }, dat: { cyr: "мячу", tr: "myachu" }, acc: { cyr: "мяч", tr: "myach" }, ins: { cyr: "мячом", tr: "myachom" }, prep: { cyr: "мяче", tr: "myache" } },
+            pl: { nom: { cyr: "мячи", tr: "myachi" }, gen: { cyr: "мячей", tr: "myachey" }, dat: { cyr: "мячам", tr: "myacham" }, acc: { cyr: "мячи", tr: "myachi" }, ins: { cyr: "мячами", tr: "myachami" }, prep: { cyr: "мячах", tr: "myachah" } }
+        }},
+        "друг": { translit: "drug", gender: "masc", anim: "anim", meaning: "friend", declensions: {
+            sg: { nom: { cyr: "друг", tr: "drug" }, gen: { cyr: "друга", tr: "druga" }, dat: { cyr: "другу", tr: "drugu" }, acc: { cyr: "друга", tr: "druga" }, ins: { cyr: "другом", tr: "drugom" }, prep: { cyr: "друге", tr: "druge" } },
+            pl: { nom: { cyr: "друзья", tr: "druz'ya" }, gen: { cyr: "друзей", tr: "druzey" }, dat: { cyr: "друзьям", tr: "druz'yam" }, acc: { cyr: "друзей", tr: "druzey" }, ins: { cyr: "друзьями", tr: "druz'yami" }, prep: { cyr: "друзьях", tr: "druz'yah" } }
+        }},
+        "конь": { translit: "kon'", gender: "masc", anim: "anim", meaning: "horse", declensions: {
+            sg: { nom: { cyr: "конь", tr: "kon'" }, gen: { cyr: "коня", tr: "konya" }, dat: { cyr: "коню", tr: "konyu" }, acc: { cyr: "коня", tr: "konya" }, ins: { cyr: "конем", tr: "konyom" }, prep: { cyr: "коне", tr: "kone" } },
+            pl: { nom: { cyr: "кони", tr: "koni" }, gen: { cyr: "коней", tr: "koney" }, dat: { cyr: "коням", tr: "konyam" }, acc: { cyr: "коней", tr: "koney" }, ins: { cyr: "конями", tr: "konyami" }, prep: { cyr: "конях", tr: "konyah" } }
+        }},
+        "герой": { translit: "geroy", gender: "masc", anim: "anim", meaning: "hero", declensions: {
+            sg: { nom: { cyr: "герой", tr: "geroy" }, gen: { cyr: "героя", tr: "geroya" }, dat: { cyr: "герою", tr: "geroyu" }, acc: { cyr: "героя", tr: "geroya" }, ins: { cyr: "героем", tr: "geroem" }, prep: { cyr: "герое", tr: "geroe" } },
+            pl: { nom: { cyr: "герои", tr: "geroi" }, gen: { cyr: "героев", tr: "geroev" }, dat: { cyr: "героям", tr: "geroyam" }, acc: { cyr: "героев", tr: "geroev" }, ins: { cyr: "героями", tr: "geroyami" }, prep: { cyr: "героях", tr: "geroyah" } }
+        }},
+        "врач": { translit: "vrach", gender: "masc", anim: "anim", meaning: "doctor", declensions: {
+            sg: { nom: { cyr: "врач", tr: "vrach" }, gen: { cyr: "врача", tr: "vracha" }, dat: { cyr: "врачу", tr: "vrachu" }, acc: { cyr: "врача", tr: "vracha" }, ins: { cyr: "врачом", tr: "vrachom" }, prep: { cyr: "враче", tr: "vrache" } },
+            pl: { nom: { cyr: "врачи", tr: "vrachi" }, gen: { cyr: "врачей", tr: "vrachey" }, dat: { cyr: "врачам", tr: "vracham" }, acc: { cyr: "врачей", tr: "vrachey" }, ins: { cyr: "врачами", tr: "vrachami" }, prep: { cyr: "врачах", tr: "vrachah" } }
+        }},
+        "книга": { translit: "kniga", gender: "fem", anim: "inan", meaning: "book", declensions: {
+            sg: { nom: { cyr: "книга", tr: "kniga" }, gen: { cyr: "книги", tr: "knigi" }, dat: { cyr: "книге", tr: "knige" }, acc: { cyr: "книгу", tr: "knigu" }, ins: { cyr: "книгой", tr: "knigoy" }, prep: { cyr: "книге", tr: "knige" } },
+            pl: { nom: { cyr: "книги", tr: "knigi" }, gen: { cyr: "книг", tr: "knig" }, dat: { cyr: "книгам", tr: "knigam" }, acc: { cyr: "книги", tr: "knigi" }, ins: { cyr: "книгами", tr: "knigami" }, prep: { cyr: "книгах", tr: "knigah" } }
+        }},
+        "неделя": { translit: "nedelya", gender: "fem", anim: "inan", meaning: "week", declensions: {
+            sg: { nom: { cyr: "неделя", tr: "nedelya" }, gen: { cyr: "недели", tr: "nedeli" }, dat: { cyr: "неделе", tr: "nedele" }, acc: { cyr: "неделю", tr: "nedelyu" }, ins: { cyr: "неделей", tr: "nedelyey" }, prep: { cyr: "неделе", tr: "nedele" } },
+            pl: { nom: { cyr: "недели", tr: "nedeli" }, gen: { cyr: "недель", tr: "nedel'" }, dat: { cyr: "неделям", tr: "nedelyam" }, acc: { cyr: "недели", tr: "nedeli" }, ins: { cyr: "неделями", tr: "nedelyami" }, prep: { cyr: "неделях", tr: "nedelyah" } }
+        }},
+        "линия": { translit: "liniya", gender: "fem", anim: "inan", meaning: "line", declensions: {
+            sg: { nom: { cyr: "линия", tr: "liniya" }, gen: { cyr: "линии", tr: "linii" }, dat: { cyr: "линии", tr: "linii" }, acc: { cyr: "линию", tr: "liniyu" }, ins: { cyr: "линией", tr: "liniey" }, prep: { cyr: "линии", tr: "linii" } },
+            pl: { nom: { cyr: "линии", tr: "linii" }, gen: { cyr: "линий", tr: "liniy" }, dat: { cyr: "линиям", tr: "liniyam" }, acc: { cyr: "линии", tr: "linii" }, ins: { cyr: "линиями", tr: "liniyami" }, prep: { cyr: "линиях", tr: "liniyah" } }
+        }},
+        "дверь": { translit: "dver'", gender: "fem", anim: "inan", meaning: "door", declensions: {
+            sg: { nom: { cyr: "дверь", tr: "dver'" }, gen: { cyr: "двери", tr: "dveri" }, dat: { cyr: "двери", tr: "dveri" }, acc: { cyr: "дверь", tr: "dver'" }, ins: { cyr: "дверью", tr: "dver'yu" }, prep: { cyr: "двери", tr: "dveri" } },
+            pl: { nom: { cyr: "двери", tr: "dveri" }, gen: { cyr: "дверей", tr: "dverey" }, dat: { cyr: "дверям", tr: "dveryam" }, acc: { cyr: "двери", tr: "dveri" }, ins: { cyr: "дверями", tr: "dveryami" }, prep: { cyr: "дверях", tr: "dveryah" } }
+        }},
+        "рука": { translit: "ruka", gender: "fem", anim: "inan", meaning: "hand / arm", declensions: {
+            sg: { nom: { cyr: "рука", tr: "ruka" }, gen: { cyr: "руки", tr: "ruki" }, dat: { cyr: "руке", tr: "ruke" }, acc: { cyr: "руку", tr: "ruku" }, ins: { cyr: "рукой", tr: "rukoy" }, prep: { cyr: "руке", tr: "ruke" } },
+            pl: { nom: { cyr: "руки", tr: "ruki" }, gen: { cyr: "рук", tr: "ruk" }, dat: { cyr: "рукам", tr: "rukam" }, acc: { cyr: "руки", tr: "ruki" }, ins: { cyr: "руками", tr: "rukami" }, prep: { cyr: "руках", tr: "rukah" } }
+        }},
+        "окно": { translit: "okno", gender: "neut", anim: "inan", meaning: "window", declensions: {
+            sg: { nom: { cyr: "окно", tr: "okno" }, gen: { cyr: "окна", tr: "okna" }, dat: { cyr: "окну", tr: "oknu" }, acc: { cyr: "окно", tr: "okno" }, ins: { cyr: "окном", tr: "oknom" }, prep: { cyr: "окне", tr: "okne" } },
+            pl: { nom: { cyr: "окна", tr: "okna" }, gen: { cyr: "окон", tr: "okon" }, dat: { cyr: "окнам", tr: "oknam" }, acc: { cyr: "окна", tr: "okna" }, ins: { cyr: "окнами", tr: "oknami" }, prep: { cyr: "окнах", tr: "oknah" } }
+        }},
+        "море": { translit: "more", gender: "neut", anim: "inan", meaning: "sea", declensions: {
+            sg: { nom: { cyr: "море", tr: "more" }, gen: { cyr: "моря", tr: "morya" }, dat: { cyr: "морю", tr: "moryu" }, acc: { cyr: "море", tr: "more" }, ins: { cyr: "морем", tr: "morem" }, prep: { cyr: "море", tr: "more" } },
+            pl: { nom: { cyr: "моря", tr: "morya" }, gen: { cyr: "морей", tr: "morey" }, dat: { cyr: "морям", tr: "moryam" }, acc: { cyr: "моря", tr: "morya" }, ins: { cyr: "морями", tr: "moryami" }, prep: { cyr: "морях", tr: "moryah" } }
+        }},
+        "здание": { translit: "zdanie", gender: "neut", anim: "inan", meaning: "building", declensions: {
+            sg: { nom: { cyr: "здание", tr: "zdanie" }, gen: { cyr: "здания", tr: "zdaniya" }, dat: { cyr: "зданию", tr: "zdaniyu" }, acc: { cyr: "здание", tr: "zdanie" }, ins: { cyr: "зданием", tr: "zdaniem" }, prep: { cyr: "здании", tr: "zdanii" } },
+            pl: { nom: { cyr: "здания", tr: "zdaniya" }, gen: { cyr: "зданий", tr: "zdaniy" }, dat: { cyr: "зданиям", tr: "zdaniyam" }, acc: { cyr: "здания", tr: "zdaniya" }, ins: { cyr: "зданиями", tr: "zdaniyami" }, prep: { cyr: "зданиях", tr: "zdaniyah" } }
+        }},
+        "солнце": { translit: "solntse", gender: "neut", anim: "inan", meaning: "sun", declensions: {
+            sg: { nom: { cyr: "солнце", tr: "solntse" }, gen: { cyr: "солнца", tr: "solntsa" }, dat: { cyr: "солнцу", tr: "solntsu" }, acc: { cyr: "солнце", tr: "solntse" }, ins: { cyr: "солнцем", tr: "solntsem" }, prep: { cyr: "солнце", tr: "solntse" } },
+            pl: { nom: { cyr: "солнца", tr: "solntsa" }, gen: { cyr: "солнц", tr: "solnts" }, dat: { cyr: "солнцам", tr: "solntsam" }, acc: { cyr: "солнца", tr: "solntsa" }, ins: { cyr: "солнцами", tr: "solntsami" }, prep: { cyr: "солнцах", tr: "solntsah" } }
+        }}
+    };
+
+    var caseNamesFullMap = { nom: "Nominative", acc: "Accusative", gen: "Genitive", dat: "Dative", ins: "Instrumental", prep: "Prepositional" };
+    var numberNamesFullMap = { sg: "Singular", pl: "Plural" };
+
+    // ============================================================
+    // HELPERS
+    // ============================================================
+    function cardKey(card) {
+        return (card.base + "|" + card.caseKey + "|" + card.number).toLowerCase();
+    }
+    function entryKey(entry) {
+        if (entry.key) return entry.key;
+        return (entry.base + "|" + entry.caseKey + "|" + entry.number).toLowerCase();
+    }
+    function findLogEntry(key) {
+        for (var i = 0; i < mistakeLog.length; i++) {
+            if (entryKey(mistakeLog[i]) === key) return mistakeLog[i];
+        }
+        return null;
+    }
+    function removeLogEntry(key) {
+        for (var i = 0; i < mistakeLog.length; i++) {
+            if (entryKey(mistakeLog[i]) === key) {
+                mistakeLog.splice(i, 1);
+                return;
+            }
+        }
+    }
+    function graduateToKnown(key) {
+        if (!knownCards[key]) {
+            knownCards[key] = { firstKnownAt: Date.now() };
+        }
+    }
+    function wordMatchesFilter(item) {
+        var matchKey = item.gender;
+        if (item.gender === 'masc') {
+            matchKey = item.anim === 'anim' ? 'masc-anim' : 'masc-inan';
+        }
+        return !!selectedIntervals[matchKey];
+    }
+
+    function normaliseAnswer(str) {
+        return str.toLowerCase()
+            .replace(/ё/g, "е")
+            .replace(/['’`]/g, "")
+            .replace(/\s+/g, " ")
+            .trim();
+    }
+
+    function promptBaseDisplay(card) {
+        var cyr = card.base;
+        var tr = card.translit;
+        var showCyr = showCyrillicInPrompt;
+        var showTr = showTranslitInPrompt;
+        if (!showCyr && !showTr) showTr = true;
+        if (showCyr && showTr) return cyr + " (" + tr + ")";
+        if (showCyr) return cyr;
+        return tr;
+    }
+
+    function buildCaseHint(card) {
+        if (card.caseKey === 'nom' && card.number === 'sg') return "";
+        var type = classifyNoun(card.base);
+        var isSoft = type.indexOf('Soft') !== -1;
+        var isHard = type.indexOf('Hard') !== -1;
+
+        if (card.caseKey === 'acc' && card.gender === 'masc' && card.anim === 'anim') {
+            return "Animate masc — Acc uses Gen form";
+        }
+        if (card.caseKey === 'ins' && card.number === 'sg') {
+            if (card.gender === 'fem') return isSoft ? "Ins Sg fem soft — -ей" : "Ins Sg fem hard — -ой";
+            return isSoft ? "Ins Sg masc/neut soft — -ем" : "Ins Sg masc/neut hard — -ом";
+        }
+        if (card.caseKey === 'gen' && card.number === 'pl') {
+            if (card.gender === 'fem') {
+                if (type.indexOf('3rd') !== -1) return "Gen Pl fem 3rd decl — -ей";
+                if (isHard) return "Gen Pl fem hard — bare stem (no ending)";
+                return "Gen Pl fem soft — -ь";
+            }
+            if (card.gender === 'neut') return "Gen Pl neut — vowel change or -ей/-й";
+            return "Gen Pl masc — -ов/-ев or -ей";
+        }
+        if (card.number === 'pl' && (card.caseKey === 'dat' || card.caseKey === 'ins' || card.caseKey === 'prep')) {
+            return "Plural oblique — -ам/-ями/-ах patterns";
+        }
+        return "";
+    }
+
+    function buildCaseHintDetailed(card) {
+        var basic = buildCaseHint(card);
+        if (!basic) return "";
+        var item = masterCaseDictionary[card.base];
+        if (!item) return basic;
+        var nomSg = item.declensions.sg.nom.cyr;
+        var target = item.declensions[card.number] && item.declensions[card.number][card.caseKey];
+        if (!target) return basic;
+        return basic + " (" + nomSg + " → " + target.cyr + ")";
+    }
+
+    function findHomographs(word, caseKey, number) {
+        var entry = masterCaseDictionary[word];
+        if (!entry) return [];
+        var cyrForm = entry.declensions[number][caseKey].cyr;
+        var nums = ['sg', 'pl'];
+        var cases = ['nom', 'acc', 'gen', 'dat', 'ins', 'prep'];
+        var matches = [];
+        for (var n = 0; n < nums.length; n++) {
+            for (var c = 0; c < cases.length; c++) {
+                var ck = cases[c];
+                if (nums[n] === number && ck === caseKey) continue;
+                if (entry.declensions[nums[n]][ck].cyr === cyrForm) {
+                    matches.push(caseNamesFullMap[ck] + ' ' + numberNamesFullMap[nums[n]]);
+                }
+            }
+        }
+        return matches;
+    }
+
+    function makeLogEntry(card, yours) {
+        return {
+            key: cardKey(card),
+            base: card.base,
+            translit: card.translit,
+            meaning: card.meaning,
+            gender: card.gender,
+            anim: card.anim,
+            caseKey: card.caseKey,
+            number: card.number,
+            prompt: card.base + " (" + caseNamesFullMap[card.caseKey] + " " + numberNamesFullMap[card.number] + ")",
+            correct: card.cyrAnswer + " (" + card.trAnswer + ")",
+            yours: yours,
+            status: "pending",
+            failCount: 1,
+            firstSeen: Date.now(),
+            lastSeen: Date.now()
+        };
+    }
+
+    // ============================================================
+    // LOG UPDATE
+    // ============================================================
+    function handleLogUpdate(card, isCorrect, userInput) {
+        if (playMode) return { mode: 'play' };
+
+        var key = cardKey(card);
+        var entry = findLogEntry(key);
+        var isKnown = !!knownCards[key];
+        var isFirstAttempt = !(key in sessionFirstAttempts);
+
+        if (!isFirstAttempt) return { mode: 'not-first-attempt' };
+        sessionFirstAttempts[key] = isCorrect;
+
+        var result = { mode: 'no-change' };
+
+        if (isCorrect) {
+            if (isKnown) {
+                result.mode = 'still-known';
+            } else if (entry) {
+                if (entry.status === "pinned") {
+                    entry.lastSeen = Date.now();
+                    result.mode = 'still-pinned';
+                } else if (entry.status === "pending") {
+                    entry.status = "active";
+                    entry.lastSeen = Date.now();
+                    sessionRecoveredCount++;
+                    result.mode = 'pending-to-active';
+                } else if (entry.status === "active") {
+                    graduateToKnown(key);
+                    sessionKnownCount++;
+                    removeLogEntry(key);
+                    result.mode = 'active-to-known';
+                }
+            } else {
+                graduateToKnown(key);
+                sessionKnownCount++;
+                result.mode = 'fresh-to-known';
+            }
+        } else {
+            if (isKnown) {
+                delete knownCards[key];
+                mistakeLog.push(makeLogEntry(card, userInput));
+                result.mode = 'known-to-pending';
+            } else if (entry) {
+                entry.failCount = (entry.failCount || 1) + 1;
+                entry.yours = userInput;
+                entry.lastSeen = Date.now();
+                if (entry.status === "pinned") {
+                    result.mode = 'still-pinned-wrong';
+                    result.failCount = entry.failCount;
+                } else {
+                    entry.status = "pending";
+                    if (autoPinThreshold > 0 && entry.failCount >= autoPinThreshold) {
+                        entry.status = "pinned";
+                        result.mode = 'auto-pinned';
+                        result.failCount = entry.failCount;
+                    } else {
+                        result.mode = 'pending-wrong';
+                        result.failCount = entry.failCount;
+                    }
+                }
+            } else {
+                mistakeLog.push(makeLogEntry(card, userInput));
+                result.mode = 'fresh-to-pending';
+            }
+        }
+        updateLogBadges();
+        updateScoreboard();
+        return result;
+    }
+
+    function logUpdateMessage(result) {
+        if (!result) return '';
+        switch (result.mode) {
+            case 'pending-to-active': return '<br><small style="color:#fbbf24;">↩️ Moved back to Active deck</small>';
+            case 'active-to-known': return '<br><small style="color:#4ade80;">✨ Graduated to Known</small>';
+            case 'fresh-to-known': return '<br><small style="color:#4ade80;">✨ Added to Known deck</small>';
+            case 'known-to-pending': return '<br><small style="color:#fbbf24;">↪️ Demoted to Pending (was Known)</small>';
+            case 'auto-pinned': return '<br><small style="color:#ef4444;">🔴 Auto-pinned (fail #' + result.failCount + ')</small>';
+            case 'fresh-to-pending': return '<br><small style="color:#fbbf24;">🟡 Added to Pending</small>';
+            case 'still-pinned-wrong': return '<br><small style="color:#ef4444;">📌 Still pinned (fail #' + result.failCount + ')</small>';
+            case 'play': return '<br><small style="color:#d8b4fe;">🎮 Play mode — progress not recorded</small>';
+            default: return '';
+        }
+    }
+
+    function computeCounts() {
+        var counts = { known: 0, active: 0, pending: 0, pinned: 0, total: 0 };
+        var words = Object.keys(masterCaseDictionary);
+        var isolateSel = document.getElementById('word-isolate-selector');
+        var isolatedWord = isolateSel ? isolateSel.value : "all";
+        var numKeys = ['sg', 'pl'];
+        var caseKeys = ['nom', 'acc', 'gen', 'dat', 'ins', 'prep'];
+
+        for (var i = 0; i < words.length; i++) {
+            var w = words[i];
+            var item = masterCaseDictionary[w];
+            if (isolatedWord !== "all" && isolatedWord !== w) continue;
+            if (!wordMatchesFilter(item)) continue;
+
+            for (var n = 0; n < numKeys.length; n++) {
+                var num = numKeys[n];
+                if (!selectedIntervals[num]) continue;
+                for (var c = 0; c < caseKeys.length; c++) {
+                    var caseKey = caseKeys[c];
+                    if (!selectedIntervals[caseKey]) continue;
+                    counts.total++;
+                    var k = (w + "|" + caseKey + "|" + num).toLowerCase();
+                    if (knownCards[k]) { counts.known++; continue; }
+                    var e = findLogEntry(k);
+                    if (e) {
+                        if (e.status === "pinned") counts.pinned++;
+                        else if (e.status === "pending") counts.pending++;
+                        else counts.active++;
+                    } else {
+                        counts.active++;
+                    }
+                }
+            }
+        }
+        return counts;
+    }
+
+    function getFilteredKnownKeys() {
+        var keys = [];
+        var words = Object.keys(masterCaseDictionary);
+        var isolateSel = document.getElementById('word-isolate-selector');
+        var isolatedWord = isolateSel ? isolateSel.value : "all";
+        var numKeys = ['sg', 'pl'];
+        var caseKeys = ['nom', 'acc', 'gen', 'dat', 'ins', 'prep'];
+
+        for (var i = 0; i < words.length; i++) {
+            var w = words[i];
+            var item = masterCaseDictionary[w];
+            if (isolatedWord !== "all" && isolatedWord !== w) continue;
+            if (!wordMatchesFilter(item)) continue;
+
+            for (var n = 0; n < numKeys.length; n++) {
+                var num = numKeys[n];
+                if (!selectedIntervals[num]) continue;
+                for (var c = 0; c < caseKeys.length; c++) {
+                    var caseKey = caseKeys[c];
+                    if (!selectedIntervals[caseKey]) continue;
+                    var k = (w + "|" + caseKey + "|" + num).toLowerCase();
+                    if (knownCards[k]) keys.push(k);
+                }
+            }
+        }
+        return keys;
+    }
+
+    function updateLogBadges() {
+        var counts = computeCounts();
+        document.getElementById('review-count').innerText = counts.pending;
+        document.getElementById('count-known').innerText = counts.known;
+        document.getElementById('count-active').innerText = counts.active;
+        document.getElementById('count-pending').innerText = counts.pending;
+        document.getElementById('count-pinned').innerText = counts.pinned;
+
+        var dall = document.getElementById('drill-all-btn');
+        if (dall) {
+            var drillable = counts.pending + counts.pinned;
+            dall.innerText = "🎯 Drill All Reviews (Pending & Pinned) (" + drillable + ")";
+            dall.disabled = drillable === 0;
+        }
+    }
+
+    function updatePlayModePill() {
+        var pill = document.getElementById('play-mode-pill');
+        if (pill) pill.style.display = playMode ? "inline-block" : "none";
+    }
+
+    // ============================================================
+    // STATE SAVE / LOAD
+    // ============================================================
+    function saveState() {
+        try {
+            var sizeSel = document.getElementById('deck-size-selector');
+            var isolateSel = document.getElementById('word-isolate-selector');
+            var state = {
+                dataVersion: 3,
+                filters: selectedIntervals,
+                direction: currentQuizDirection,
+                deckSize: sizeSel ? sizeSel.value : "15",
+                autoSpeakBase: autoSpeakBaseSetting,
+                hintLevel: hintLevel,
+                showCyrillicInPrompt: showCyrillicInPrompt,
+                showTranslitInPrompt: showTranslitInPrompt,
+                productionMethod: productionMethod,
+                guideMode: guideMode,
+                guideTab: guideTab,
+                knownMode: knownMode,
+                playMode: playMode,
+                autoPinThreshold: autoPinThreshold,
+                wordIsolate: isolateSel ? isolateSel.value : "all",
+                reviewTab: reviewTab,
+                stats: { correct: totalCorrect, total: totalQuestions, streak: currentStreak },
+                knownCards: knownCards,
+                cardUniverseTotal: computeCounts().total,
+                mistakes: mistakeLog
+            };
+            localStorage.setItem('rus_cases_state', JSON.stringify(state));
+        } catch (e) {}
+    }
+
+    function loadState() {
+        try {
+            var raw = localStorage.getItem('rus_cases_state');
+            if (!raw) return;
+            var state = JSON.parse(raw);
+
+            if (state.filters) {
+                for (var k in state.filters) {
+                    if (state.filters.hasOwnProperty(k) && typeof selectedIntervals[k] !== 'undefined') {
+                        selectedIntervals[k] = state.filters[k];
+                    }
+                }
+                applyFilterCheckboxes();
+            }
+
+            if (state.direction) {
+                currentQuizDirection = state.direction;
+                document.getElementById('dir-r').classList.remove('active');
+                document.getElementById('dir-w').classList.remove('active');
+                document.getElementById('dir-' + (state.direction === 'read' ? 'r' : 'w')).classList.add('active');
+            }
+
+            if (state.deckSize) {
+                var sizeSel = document.getElementById('deck-size-selector');
+                if (sizeSel) sizeSel.value = state.deckSize;
+            }
+
+            if (typeof state.autoSpeakBase !== 'undefined') {
+                autoSpeakBaseSetting = state.autoSpeakBase;
+                var chkAuto = document.getElementById('chk-opt-auto-speak-base');
+                var lblAuto = document.getElementById('lbl-opt-auto-speak-base');
+                if (chkAuto) chkAuto.checked = autoSpeakBaseSetting;
+                if (lblAuto) lblAuto.classList.toggle('selected', autoSpeakBaseSetting);
+            }
+
+            if (typeof state.hintLevel === 'string' && ['none','basic','detailed'].indexOf(state.hintLevel) !== -1) {
+                hintLevel = state.hintLevel;
+            }
+            var chkN = document.getElementById('chk-hint-none');
+            var chkB = document.getElementById('chk-hint-basic');
+            var chkD = document.getElementById('chk-hint-detailed');
+            if (chkN) chkN.checked = (hintLevel === 'none');
+            if (chkB) chkB.checked = (hintLevel === 'basic');
+            if (chkD) chkD.checked = (hintLevel === 'detailed');
+            var lblN = document.getElementById('lbl-hint-none');
+            var lblB = document.getElementById('lbl-hint-basic');
+            var lblD = document.getElementById('lbl-hint-detailed');
+            if (lblN) lblN.classList.toggle('selected', hintLevel === 'none');
+            if (lblB) lblB.classList.toggle('selected', hintLevel === 'basic');
+            if (lblD) lblD.classList.toggle('selected', hintLevel === 'detailed');
+
+            var chkC = document.getElementById('chk-opt-cyrillic');
+            var lblC = document.getElementById('lbl-opt-cyrillic');
+            if (chkC) chkC.checked = showCyrillicInPrompt;
+            if (lblC) lblC.classList.toggle('selected', showCyrillicInPrompt);
+
+            if (typeof state.showTranslitInPrompt !== 'undefined') {
+                showTranslitInPrompt = state.showTranslitInPrompt;
+            }
+            var chkT = document.getElementById('chk-opt-translit');
+            var lblT = document.getElementById('lbl-opt-translit');
+            if (chkT) chkT.checked = showTranslitInPrompt;
+            if (lblT) lblT.classList.toggle('selected', showTranslitInPrompt);
+
+            if (!showCyrillicInPrompt && !showTranslitInPrompt) {
+                showTranslitInPrompt = true;
+                if (chkT) chkT.checked = true;
+                if (lblT) lblT.classList.add('selected');
+            }
+
+            if (state.productionMethod) {
+                productionMethod = state.productionMethod;
+                var lblType = document.getElementById('lbl-method-type');
+                var lblHonour = document.getElementById('lbl-method-honour');
+                var chkType = document.getElementById('chk-method-type');
+                var chkHonour = document.getElementById('chk-method-honour');
+                if (productionMethod === 'honour') {
+                    if (lblType) lblType.classList.remove('selected');
+                    if (lblHonour) lblHonour.classList.add('selected');
+                    if (chkType) chkType.checked = false;
+                    if (chkHonour) chkHonour.checked = true;
+                } else {
+                    if (lblType) lblType.classList.add('selected');
+                    if (lblHonour) lblHonour.classList.remove('selected');
+                    if (chkType) chkType.checked = true;
+                    if (chkHonour) chkHonour.checked = false;
+                }
+            }
+
+            if (state.guideMode) {
+                guideMode = state.guideMode;
+                var guide = document.getElementById('view-guide');
+                if (guide) guide.classList.toggle('show-translit', guideMode === 'tr');
+                var btnCyr = document.getElementById('guide-cyr');
+                var btnTr = document.getElementById('guide-tr');
+                if (btnCyr) btnCyr.classList.toggle('active', guideMode === 'cyr');
+                if (btnTr) btnTr.classList.toggle('active', guideMode === 'tr');
+            }
+
+            if (state.guideTab === "user" || state.guideTab === "conj") {
+                setGuideTab(state.guideTab);
+            }
+
+            if (state.knownMode === "sweep" || state.knownMode === "adaptive") {
+                knownMode = state.knownMode;
+                document.getElementById('lbl-known-adaptive').classList.remove('selected');
+                document.getElementById('lbl-known-sweep').classList.remove('selected');
+                document.getElementById('chk-known-adaptive').checked = false;
+                document.getElementById('chk-known-sweep').checked = false;
+                document.getElementById('lbl-known-' + knownMode).classList.add('selected');
+                document.getElementById('chk-known-' + knownMode).checked = true;
+            }
+
+            if (typeof state.autoPinThreshold === "number") {
+                autoPinThreshold = state.autoPinThreshold;
+                var aps = document.getElementById('auto-pin-selector');
+                if (aps) aps.value = String(autoPinThreshold);
+            }
+
+            if (typeof state.playMode !== 'undefined') {
+                playMode = state.playMode;
+                var chkPlay = document.getElementById('chk-opt-play-mode');
+                var lblPlay = document.getElementById('lbl-opt-play-mode');
+                if (chkPlay) chkPlay.checked = playMode;
+                if (lblPlay) lblPlay.classList.toggle('selected', playMode);
+            }
+
+            if (state.wordIsolate) {
+                var isolateSel = document.getElementById('word-isolate-selector');
+                if (isolateSel) isolateSel.value = state.wordIsolate;
+            }
+
+            if (state.reviewTab && ["known", "active", "pending", "pinned"].indexOf(state.reviewTab) !== -1) {
+                reviewTab = state.reviewTab;
+                document.querySelectorAll('.review-tab').forEach(function(b) {
+                    b.classList.toggle('active', b.dataset.bucket === reviewTab);
+                });
+            }
+
+            if (state.stats) {
+                totalCorrect = state.stats.correct || 0;
+                totalQuestions = state.stats.total || 0;
+                currentStreak = state.stats.streak || 0;
+            }
+
+            if (state.dataVersion >= 3) {
+                if (Array.isArray(state.mistakes)) {
+                    mistakeLog = state.mistakes.filter(function(e) { return e && e.status !== "active"; });
+                }
+                if (state.knownCards && typeof state.knownCards === "object") {
+                    knownCards = state.knownCards;
+                }
+            } else {
+                mistakeLog = [];
+                knownCards = {};
+            }
+
+            updateScoreboard();
+            updateLogBadges();
+            updatePlayModePill();
+        } catch (e) {}
+    }
+
+    // ============================================================
+    // FILTERS / DRAWER
+    // ============================================================
+    function applyFilterCheckboxes() {
+        var keys = Object.keys(selectedIntervals);
+        for (var i = 0; i < keys.length; i++) {
+            var key = keys[i];
+            var chk = document.getElementById('chk-opt-' + key);
+            var lbl = document.getElementById('lbl-opt-' + key);
+            if (chk) chk.checked = selectedIntervals[key];
+            if (lbl) lbl.classList.toggle('selected', !!selectedIntervals[key]);
+        }
+    }
+
+    function updateKnownMode(mode) {
+        knownMode = mode;
+        document.getElementById('lbl-known-adaptive').classList.remove('selected');
+        document.getElementById('lbl-known-sweep').classList.remove('selected');
+        document.getElementById('lbl-known-' + mode).classList.add('selected');
+        saveState();
+        initSessionDeck();
+    }
+
+    function updatePlayMode() {
+        var chk = document.getElementById('chk-opt-play-mode');
+        var lbl = document.getElementById('lbl-opt-play-mode');
+        if (!chk) return;
+        playMode = chk.checked;
+        if (lbl) lbl.classList.toggle('selected', playMode);
+        updatePlayModePill();
+        saveState();
+    }
+
+    function setAutoPinThreshold(val) {
+        autoPinThreshold = parseInt(val, 10) || 0;
+        saveState();
+    }
+
+    function updateAutoSpeakBase() {
+        var chk = document.getElementById('chk-opt-auto-speak-base');
+        var lbl = document.getElementById('lbl-opt-auto-speak-base');
+        if (!chk) return;
+        autoSpeakBaseSetting = chk.checked;
+        if (lbl) lbl.classList.toggle('selected', autoSpeakBaseSetting);
+        saveState();
+    }
+
+
+    function updateHintLevel(level) {
+        hintLevel = level;
+        document.getElementById('lbl-hint-none').classList.toggle('selected', level === 'none');
+        document.getElementById('lbl-hint-basic').classList.toggle('selected', level === 'basic');
+        document.getElementById('lbl-hint-detailed').classList.toggle('selected', level === 'detailed');
+        saveState();
+        if (currentClockObj && sessionStarted) generateQuestion();
+    }
+
+    function updateShowCyrillicInPrompt() {
+        var chk = document.getElementById('chk-opt-cyrillic');
+        var lbl = document.getElementById('lbl-opt-cyrillic');
+        if (!chk) return;
+        showCyrillicInPrompt = chk.checked;
+        if (!showCyrillicInPrompt && !showTranslitInPrompt) {
+            showTranslitInPrompt = true;
+            var chkT = document.getElementById('chk-opt-translit');
+            var lblT = document.getElementById('lbl-opt-translit');
+            if (chkT) chkT.checked = true;
+            if (lblT) lblT.classList.add('selected');
+        }
+        if (lbl) lbl.classList.toggle('selected', showCyrillicInPrompt);
+        saveState();
+        if (currentClockObj && sessionStarted) generateQuestion();
+    }
+
+    function updateShowTranslitInPrompt() {
+        var chk = document.getElementById('chk-opt-translit');
+        var lbl = document.getElementById('lbl-opt-translit');
+        if (!chk) return;
+        showTranslitInPrompt = chk.checked;
+        if (!showCyrillicInPrompt && !showTranslitInPrompt) {
+            showCyrillicInPrompt = true;
+            var chkC = document.getElementById('chk-opt-cyrillic');
+            var lblC = document.getElementById('lbl-opt-cyrillic');
+            if (chkC) chkC.checked = true;
+            if (lblC) lblC.classList.add('selected');
+        }
+        if (lbl) lbl.classList.toggle('selected', showTranslitInPrompt);
+        saveState();
+        if (currentClockObj && sessionStarted) generateQuestion();
+    }
+
+    function resetAllProgress() {
+        if (!confirm("Clear all progress, scores, review log, and known cards?")) return;
+        try { localStorage.removeItem('rus_cases_state'); } catch (e) {}
+
+        totalCorrect = 0;
+        totalQuestions = 0;
+        currentStreak = 0;
+        mistakeLog = [];
+        knownCards = {};
+        reviewTab = "pending";
+        knownMode = "adaptive";
+        playMode = false;
+        autoPinThreshold = 3;
+        guideTab = "user";
+
+        var defaults = { sg: true, pl: true,
+                         nom: true, acc: true, gen: true, dat: true, ins: true, prep: true,
+                         "masc-inan": true, "masc-anim": true, fem: true, neut: true };
+        for (var k in defaults) {
+            if (defaults.hasOwnProperty(k)) selectedIntervals[k] = defaults[k];
+        }
+        applyFilterCheckboxes();
+
+        var isolateSel = document.getElementById('word-isolate-selector');
+        if (isolateSel) isolateSel.value = "all";
+
+        var sizeSel = document.getElementById('deck-size-selector');
+        if (sizeSel) sizeSel.value = "15";
+
+        autoSpeakBaseSetting = true;
+        document.getElementById('chk-opt-auto-speak-base').checked = true;
+        document.getElementById('lbl-opt-auto-speak-base').classList.add('selected');
+
+        hintLevel = "basic";
+        document.getElementById('chk-hint-none').checked = false;
+        document.getElementById('chk-hint-basic').checked = true;
+        document.getElementById('chk-hint-detailed').checked = false;
+        document.getElementById('lbl-hint-none').classList.remove('selected');
+        document.getElementById('lbl-hint-basic').classList.add('selected');
+        document.getElementById('lbl-hint-detailed').classList.remove('selected');
+
+        showCyrillicInPrompt = true;
+        document.getElementById('chk-opt-cyrillic').checked = true;
+        document.getElementById('lbl-opt-cyrillic').classList.add('selected');
+
+        showTranslitInPrompt = true;
+        document.getElementById('chk-opt-translit').checked = true;
+        document.getElementById('lbl-opt-translit').classList.add('selected');
+
+        productionMethod = "type";
+        document.getElementById('lbl-method-type').classList.add('selected');
+        document.getElementById('lbl-method-honour').classList.remove('selected');
+        document.getElementById('chk-method-type').checked = true;
+        document.getElementById('chk-method-honour').checked = false;
+
+        guideMode = "cyr";
+        var guide = document.getElementById('view-guide');
+        if (guide) guide.classList.remove('show-translit');
+        var btnCyr = document.getElementById('guide-cyr');
+        var btnTr = document.getElementById('guide-tr');
+        if (btnCyr) btnCyr.classList.add('active');
+        if (btnTr) btnTr.classList.remove('active');
+
+        document.getElementById('lbl-known-adaptive').classList.add('selected');
+        document.getElementById('lbl-known-sweep').classList.remove('selected');
+        document.getElementById('chk-known-adaptive').checked = true;
+        document.getElementById('chk-known-sweep').checked = false;
+
+        document.getElementById('chk-opt-play-mode').checked = false;
+        document.getElementById('lbl-opt-play-mode').classList.remove('selected');
+        document.getElementById('auto-pin-selector').value = "3";
+
+        document.querySelectorAll('.review-tab').forEach(function(b) {
+            b.classList.toggle('active', b.dataset.bucket === "pending");
+        });
+        setGuideTab("user");
+
+        var drawer = document.getElementById('settings-drawer');
+        var btn = document.getElementById('drawer-toggle-btn');
+        if (drawer) drawer.style.display = "none";
+        if (btn) btn.innerText = "Customise Drill Settings ▾";
+
+        updateScoreboard();
+        updateLogBadges();
+        updatePlayModePill();
+        initSessionDeck();
+    }
+
+    function switchView(target) {
+        document.getElementById('view-quiz').style.display = target === 'quiz' ? 'block' : 'none';
+        document.getElementById('view-guide').style.display = target === 'guide' ? 'block' : 'none';
+        document.getElementById('view-review').style.display = target === 'review' ? 'block' : 'none';
+
+        var btns = document.getElementsByClassName('nav-btn');
+        for (var i = 0; i < btns.length; i++) { btns[i].classList.remove('active'); }
+        document.getElementById('tab-' + target).classList.add('active');
+
+        var drawer = document.getElementById('settings-drawer');
+        var btn = document.getElementById('drawer-toggle-btn');
+        if (drawer) drawer.style.display = "none";
+        if (btn) btn.innerText = "Customise Drill Settings ▾";
+
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter) shutter.classList.remove('collapsed');
+
+        if (target === 'review') renderReviewList();
+    }
+
+    function setGuideTab(tab) {
+        guideTab = tab;
+        document.getElementById('guide-subtab-user').classList.toggle('active', tab === 'user');
+        document.getElementById('guide-subtab-conj').classList.toggle('active', tab === 'conj');
+        document.getElementById('guide-user-content').style.display = tab === 'user' ? 'block' : 'none';
+        document.getElementById('guide-conj-content').style.display = tab === 'conj' ? 'block' : 'none';
+        var scroll = document.querySelector('.guide-scroll');
+        if (scroll) scroll.scrollTop = 0;
+        saveState();
+    }
+
+    function setGuideMode(mode) {
+        guideMode = mode;
+        var guide = document.getElementById('view-guide');
+        if (guide) guide.classList.toggle('show-translit', mode === 'tr');
+        var btnCyr = document.getElementById('guide-cyr');
+        var btnTr = document.getElementById('guide-tr');
+        if (btnCyr) btnCyr.classList.toggle('active', mode === 'cyr');
+        if (btnTr) btnTr.classList.toggle('active', mode === 'tr');
+        saveState();
+    }
+
+    function applyPanelVisibility() {
+        var readPanel = document.getElementById('panel-read-mode');
+        var writePanel = document.getElementById('panel-write-mode');
+        var useHonourPanel = (currentQuizDirection === 'write') ||
+                             (currentQuizDirection === 'read' && productionMethod === 'honour');
+        if (useHonourPanel) {
+            if (readPanel) readPanel.style.display = 'none';
+            if (writePanel) writePanel.style.display = 'block';
+        } else {
+            if (readPanel) readPanel.style.display = 'block';
+            if (writePanel) writePanel.style.display = 'none';
+        }
+    }
+
+    function setDirection(dir) {
+        currentQuizDirection = dir;
+        document.getElementById('dir-r').classList.remove('active');
+        document.getElementById('dir-w').classList.remove('active');
+        document.getElementById('dir-' + (dir === 'read' ? 'r' : 'w')).classList.add('active');
+        applyPanelVisibility();
+        initSessionDeck();
+    }
+
+    function updateProductionMethod(method) {
+        productionMethod = method;
+        document.getElementById('lbl-method-type').classList.remove('selected');
+        document.getElementById('lbl-method-honour').classList.remove('selected');
+        document.getElementById('lbl-method-' + method).classList.add('selected');
+        saveState();
+        if (sessionStarted) {
+            applyPanelVisibility();
+            if (currentClockObj) generateQuestion();
+        }
+    }
+
+    function updateFilterSelection(optKey) {
+        var chk = document.getElementById('chk-opt-' + optKey);
+        var lbl = document.getElementById('lbl-opt-' + optKey);
+        if (chk) {
+            selectedIntervals[optKey] = chk.checked;
+            if (chk.checked) lbl.classList.add('selected');
+            else lbl.classList.remove('selected');
+        }
+        verifyAndReloadFilters();
+    }
+
+    function verifyAndReloadFilters() {
+        var caseKeys = ['nom', 'acc', 'gen', 'dat', 'ins', 'prep'];
+        var numKeys = ['sg', 'pl'];
+        var typeKeys = ['masc-inan', 'masc-anim', 'fem', 'neut'];
+
+        var caseChecked = caseKeys.some(function(k) { return selectedIntervals[k]; });
+        var numChecked = numKeys.some(function(k) { return selectedIntervals[k]; });
+        var typeChecked = typeKeys.some(function(k) { return selectedIntervals[k]; });
+
+        if (!caseChecked) {
+            selectedIntervals.nom = true;
+            document.getElementById('chk-opt-nom').checked = true;
+            document.getElementById('lbl-opt-nom').classList.add('selected');
+        }
+        if (!numChecked) {
+            selectedIntervals.sg = true;
+            document.getElementById('chk-opt-sg').checked = true;
+            document.getElementById('lbl-opt-sg').classList.add('selected');
+        }
+        if (!typeChecked) {
+            selectedIntervals['masc-inan'] = true;
+            document.getElementById('chk-opt-masc-inan').checked = true;
+            document.getElementById('lbl-opt-masc-inan').classList.add('selected');
+        }
+
+        initSessionDeck();
+    }
+
+    function populateWordSelector() {
+        var sel = document.getElementById('word-isolate-selector');
+        if (!sel) return;
+        var currentValue = sel.value;
+        while (sel.options.length > 1) { sel.remove(1); }
+        var words = Object.keys(masterCaseDictionary);
+        for (var i = 0; i < words.length; i++) {
+            var w = words[i];
+            var item = masterCaseDictionary[w];
+            if (!wordMatchesFilter(item)) continue;
+            var opt = document.createElement('option');
+            opt.value = w;
+            opt.textContent = w + " (" + item.translit + " - " + item.meaning + ")";
+            sel.appendChild(opt);
+        }
+        var stillValid = false;
+        for (var j = 0; j < sel.options.length; j++) {
+            if (sel.options[j].value === currentValue) { stillValid = true; break; }
+        }
+        sel.value = stillValid ? currentValue : "all";
+    }
+
+    // ============================================================
+    // SESSION LIFECYCLE
+    // ============================================================
+    function resetSessionCounters() {
+        sessionFirstAttempts = {};
+        sessionCorrect = 0;
+        sessionTotal = 0;
+        sessionCurrentStreak = 0;
+        sessionBestStreak = 0;
+        sessionRecoveredCount = 0;
+        sessionKnownCount = 0;
+        sessionComplete = false;
+    }
+
+    function updateDrillPill() {
+        var pill = document.getElementById('drill-pill');
+        if (!pill) return;
+        if (sessionMode === "drill" && sessionStarted) {
+            pill.style.display = "inline-block";
+            document.getElementById('drill-count').innerText = currentSessionDeck.length - activeCardIndex;
+        } else {
+            pill.style.display = "none";
+        }
+    }
+
+    function showStartScreen() {
+        sessionStarted = false;
+        sessionComplete = false;
+
+        var promptDisplay = document.getElementById('case-prompt-display');
+        var subDisplay = document.getElementById('case-sub-display');
+
+        document.getElementById('speak-btn').style.display = "none";
+        document.getElementById('meaning-hint-btn').style.display = "none";
+        document.getElementById('case-track-badge').innerText = "";
+        document.getElementById('verb-stem-warning-badge').style.display = "none";
+        var hintBox = document.getElementById('english-meaning-hint-box');
+        if (hintBox) { hintBox.style.display = "none"; hintBox.innerText = ""; }
+
+        document.getElementById('panel-read-mode').style.display = "none";
+        document.getElementById('panel-write-mode').style.display = "none";
+        document.getElementById('feedback-container').style.display = "none";
+        document.getElementById('deck-progress').innerText = "0";
+
+        // MOBILE SCROLL FIX: Restore input panels
+        var restoreIds = ['panel-read-mode', 'panel-write-mode', 'honour-system-controls', 'btn-reveal-container'];
+        restoreIds.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.remove('hidden-during-feedback');
+        });
+
+        if (currentSessionDeck.length === 0) {
+            document.getElementById('start-btn-container').style.display = "none";
+            promptDisplay.style.fontSize = "1.6rem";
+            promptDisplay.style.fontStyle = "normal";
+            promptDisplay.style.color = "var(--accent)";
+
+            if (emptyReason === "all-known") {
+                promptDisplay.innerHTML = "🌟 All Known!";
+                promptDisplay.style.color = "var(--success)";
+                subDisplay.innerHTML = "All " + totalFilteredCount + " cards under these filters are known.<br><small>Switch to <strong>Full Sweep</strong> mode in Options to review them, or expand your filters.</small>";
+            } else if (emptyReason === "no-match") {
+                promptDisplay.innerHTML = "No Cards";
+                promptDisplay.style.color = "var(--accent)";
+                subDisplay.innerHTML = "No cards match the current filter combination.<br><small>Try enabling another case, number, or noun type in Options.</small>";
+            } else {
+                promptDisplay.innerHTML = "No Cards";
+                promptDisplay.style.color = "var(--accent)";
+                subDisplay.innerText = "No cards available.";
+            }
+
+            updateDrillPill();
+            return;
+        }
+
+        promptDisplay.innerText = "Ready?";
+        promptDisplay.style.fontSize = "2rem";
+        promptDisplay.style.fontStyle = "normal";
+        promptDisplay.style.color = "var(--accent)";
+        subDisplay.innerText = "Click Start to begin";
+        document.getElementById('start-btn-container').style.display = "block";
+
+        var startBtn = document.getElementById('start-btn');
+        if (sessionMode === "drill") {
+            startBtn.innerText = "▶ Start Drill (" + currentSessionDeck.length + " cards)";
+        } else {
+            startBtn.innerText = "▶ Start Session";
+        }
+
+        updateDrillPill();
+    }
+
+    function startSession() {
+        if (sessionStarted) return;
+        if (currentSessionDeck.length === 0) return;
+        sessionStarted = true;
+        document.getElementById('start-btn-container').style.display = "none";
+        applyPanelVisibility();
+        updateDrillPill();
+        generateQuestion();
+    }
+
+    function openOptionsPanel() {
+        var inp = document.getElementById('user-input');
+        if (inp) inp.blur();
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter) shutter.classList.remove('collapsed');
+        var drawer = document.getElementById('settings-drawer');
+        var btn = document.getElementById('drawer-toggle-btn');
+        if (drawer) drawer.style.display = "block";
+        if (btn) btn.innerText = "Close Options ▴";
+
+        // Scroll to the drawer
+        setTimeout(function() {
+            var drawer = document.getElementById('settings-drawer');
+            if (drawer) {
+                drawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }, 100);
+    }
+
+    function toggleSettingsDrawer() {
+        var drawer = document.getElementById('settings-drawer');
+        var btn = document.getElementById('drawer-toggle-btn');
+        if (drawer.style.display === "block") {
+            drawer.style.display = "none";
+            btn.innerText = "Customise Drill Settings ▾";
+        } else {
+            drawer.style.display = "block";
+            btn.innerText = "Close Options ▴";
+        }
+    }
+
+    function initSessionDeck() {
+        currentSessionDeck = [];
+        activeCardIndex = 0;
+        userActionHistory = [];
+        sessionMode = "normal";
+        emptyReason = null;
+        totalFilteredCount = 0;
+        resetSessionCounters();
+
+        populateWordSelector();
+        var isolateSel = document.getElementById('word-isolate-selector');
+        var isolatedWord = isolateSel ? isolateSel.value : "all";
+
+        var words = Object.keys(masterCaseDictionary);
+        var numKeys = ['sg', 'pl'];
+        var caseKeys = ['nom', 'acc', 'gen', 'dat', 'ins', 'prep'];
+
+        for (var i = 0; i < words.length; i++) {
+            var w = words[i];
+            var item = masterCaseDictionary[w];
+            if (isolatedWord !== "all" && isolatedWord !== w) continue;
+            if (!wordMatchesFilter(item)) continue;
+
+            for (var n = 0; n < numKeys.length; n++) {
+                var num = numKeys[n];
+                if (!selectedIntervals[num]) continue;
+                for (var c = 0; c < caseKeys.length; c++) {
+                    var caseKey = caseKeys[c];
+                    if (!selectedIntervals[caseKey]) continue;
+                    var targets = item.declensions[num][caseKey];
+                    var card = {
+                        base: w,
+                        translit: item.translit,
+                        meaning: item.meaning,
+                        gender: item.gender,
+                        anim: item.anim,
+                        number: num,
+                        caseKey: caseKey,
+                        cyrAnswer: targets.cyr,
+                        trAnswer: targets.tr
+                    };
+
+                    totalFilteredCount++;
+                    var cKey = cardKey(card);
+                    var isKnown = !!knownCards[cKey];
+                    if (knownMode === "adaptive" && isKnown) continue;
+                    currentSessionDeck.push(card);
+                }
+            }
+        }
+
+        if (currentSessionDeck.length === 0) {
+            if (totalFilteredCount === 0) emptyReason = "no-match";
+            else if (knownMode === "adaptive") emptyReason = "all-known";
+            else emptyReason = "unknown";
+        }
+
+        for (var i = currentSessionDeck.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = currentSessionDeck[i];
+            currentSessionDeck[i] = currentSessionDeck[j];
+            currentSessionDeck[j] = temp;
+        }
+
+        var sizeSel = document.getElementById('deck-size-selector');
+        var maxDeckSize = sizeSel ? parseInt(sizeSel.value, 10) : 15;
+        if (currentSessionDeck.length > maxDeckSize) currentSessionDeck = currentSessionDeck.slice(0, maxDeckSize);
+        coreDeckOriginalCount = currentSessionDeck.length;
+        document.getElementById('deck-total').innerText = coreDeckOriginalCount;
+
+        var pBox = document.getElementById('progress-box');
+        if (pBox) pBox.className = "score-item";
+        document.getElementById('review-status-label').innerText = "";
+
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter) shutter.classList.remove('collapsed');
+
+        saveState();
+        showStartScreen();
+        updateDrillPill();
+        updateFilterStatusLine();
+    }
+
+    // ============================================================
+    // DRILL FROM LOG
+    // ============================================================
+    function buildCardFromEntry(entry) {
+        var item = masterCaseDictionary[entry.base];
+        if (!item) return null;
+        var target = item.declensions[entry.number] && item.declensions[entry.number][entry.caseKey];
+        if (!target) return null;
+        return {
+            base: entry.base,
+            translit: entry.translit || item.translit,
+            meaning: entry.meaning || item.meaning,
+            gender: entry.gender || item.gender,
+            anim: entry.anim || item.anim,
+            caseKey: entry.caseKey,
+            number: entry.number,
+            cyrAnswer: target.cyr,
+            trAnswer: target.tr
+        };
+    }
+
+    function speakLogEntry(entryIndex) {
+        var entry = mistakeLog[entryIndex];
+        if (!entry) return;
+        var cyr = (entry.correct || "").split(' (')[0];
+        if (!cyr) return;
+        var utterance = new SpeechSynthesisUtterance(cyr);
+        utterance.lang = "ru-RU";
+        utterance.rate = 0.8;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function drillFromLog(bucket) {
+        var pool;
+        if (bucket === "pinned") {
+            pool = mistakeLog.filter(function(e) { return e.status === "pinned"; });
+        } else if (bucket === "pending") {
+            pool = mistakeLog.filter(function(e) { return e.status === "pending"; });
+        } else if (bucket === "all") {
+            pool = mistakeLog.filter(function(e) { return e.status === "pending" || e.status === "pinned"; });
+        } else {
+            return;
+        }
+        if (pool.length === 0) return;
+
+        currentSessionDeck = [];
+        for (var i = 0; i < pool.length; i++) {
+            var card = buildCardFromEntry(pool[i]);
+            if (card) currentSessionDeck.push(card);
+        }
+        if (currentSessionDeck.length === 0) return;
+
+        for (var i = currentSessionDeck.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = currentSessionDeck[i];
+            currentSessionDeck[i] = currentSessionDeck[j];
+            currentSessionDeck[j] = temp;
+        }
+
+        activeCardIndex = 0;
+        userActionHistory = [];
+        sessionMode = "drill";
+        resetSessionCounters();
+        emptyReason = null;
+        coreDeckOriginalCount = currentSessionDeck.length;
+        document.getElementById('deck-total').innerText = coreDeckOriginalCount;
+
+        var pBox = document.getElementById('progress-box');
+        if (pBox) pBox.className = "score-item";
+        document.getElementById('review-status-label').innerText = "";
+
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter) shutter.classList.remove('collapsed');
+
+        saveState();
+        switchView('quiz');
+        showStartScreen();
+        updateDrillPill();
+    }
+
+    function drillActiveBucket() {
+        if (reviewTab === "pending" || reviewTab === "pinned") {
+            drillFromLog(reviewTab);
+        }
+    }
+
+    function exitDrillToReview() {
+        switchView('review');
+    }
+
+    // ============================================================
+    // QUESTION GENERATION
+    // ============================================================
+    function generateQuestion() {
+        document.getElementById('user-input').value = "";
+        document.getElementById('user-input').disabled = false;
+        document.getElementById('feedback-container').style.display = "none";
+        document.getElementById('submit-btn').disabled = false;
+        document.getElementById('btn-reveal-container').style.display = "block";
+        document.getElementById('honour-system-controls').style.display = "none";
+        document.getElementById('deck-progress').innerText = activeCardIndex;
+        updateDrillPill();
+
+        var hintBox = document.getElementById('english-meaning-hint-box');
+        if (hintBox) { hintBox.style.display = "none"; hintBox.innerText = ""; }
+
+        // MOBILE SCROLL FIX: Restore input panels for the next card
+        var restoreIds = ['panel-read-mode', 'panel-write-mode', 'honour-system-controls', 'btn-reveal-container'];
+        restoreIds.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.remove('hidden-during-feedback');
+        });
+
+        var pBox = document.getElementById('progress-box');
+        if (activeCardIndex >= coreDeckOriginalCount && activeCardIndex < currentSessionDeck.length) {
+            if (pBox) pBox.className = "score-item review-phase-text";
+            document.getElementById('review-status-label').innerText = " 🔄 Reviewing Misses";
+        } else if (activeCardIndex === 0) {
+            if (pBox) pBox.className = "score-item";
+            document.getElementById('review-status-label').innerText = "";
+        }
+
+        if (activeCardIndex >= currentSessionDeck.length) {
+            var shutter = document.getElementById('shutter-header-area');
+            if (shutter) shutter.classList.add('collapsed');
+            triggerCompletionState();
+            return;
+        }
+
+        currentClockObj = currentSessionDeck[activeCardIndex];
+
+        var promptDisplay = document.getElementById('case-prompt-display');
+        var subDisplay = document.getElementById('case-sub-display');
+        var trackBadge = document.getElementById('case-track-badge');
+        var speakBtn = document.getElementById('speak-btn');
+        var hintBtn = document.getElementById('meaning-hint-btn');
+        var warningBadge = document.getElementById('verb-stem-warning-badge');
+
+        var caseLabel = caseNamesFullMap[currentClockObj.caseKey];
+        var numLabel = numberNamesFullMap[currentClockObj.number];
+        var isNomSg = (currentClockObj.caseKey === 'nom' && currentClockObj.number === 'sg');
+
+        if (hintLevel === 'none' || currentQuizDirection !== 'read') {
+            warningBadge.style.display = "none";
+        } else {
+            var hint = buildCaseHint(currentClockObj);
+            if (hint && hintLevel === 'detailed') {
+                var detailedHint = buildCaseHintDetailed(currentClockObj);
+                if (detailedHint) hint = detailedHint;
+            }
+            if (hint) {
+                warningBadge.innerText = "⚠️ " + hint;
+                warningBadge.style.display = "block";
+            } else {
+                warningBadge.style.display = "none";
+            }
+        }
+
+        if (currentQuizDirection === 'read') {
+            if (isNomSg) {
+                promptDisplay.innerText = currentClockObj.meaning;
+                promptDisplay.style.fontSize = "2.4rem";
+                promptDisplay.style.fontStyle = "italic";
+                promptDisplay.style.color = "var(--text-main)";
+                subDisplay.innerText = "[" + caseLabel + " " + numLabel + "] — give the dictionary form";
+                subDisplay.style.color = "var(--accent)";
+                speakBtn.style.display = "none";
+                hintBtn.style.display = "none";
+                trackBadge.innerText = (productionMethod === 'honour')
+                    ? "Say the dictionary form, then tap Reveal"
+                    : "Type Cyrillic or Transliteration";
+            } else {
+                promptDisplay.innerText = promptBaseDisplay(currentClockObj);
+                promptDisplay.style.fontSize = "2.4rem";
+                promptDisplay.style.fontStyle = "normal";
+                promptDisplay.style.color = "var(--text-main)";
+                subDisplay.innerText = "➔ [" + caseLabel + " " + numLabel + "]";
+                subDisplay.style.color = "var(--accent)";
+                speakBtn.style.display = "block";
+                hintBtn.style.display = "block";
+                trackBadge.innerText = (productionMethod === 'honour')
+                    ? "Say the answer, then tap Reveal"
+                    : "Type Cyrillic or Transliteration";
+
+                cancelPendingSpeak();
+                if (autoSpeakBaseSetting) {
+                    pendingSpeakTimer = setTimeout(function() {
+                        pendingSpeakTimer = null;
+                        var utterance = new SpeechSynthesisUtterance(currentClockObj.base);
+                        utterance.lang = "ru-RU";
+                        utterance.rate = 0.85;
+                        window.speechSynthesis.speak(utterance);
+                    }, 300);
+                }
+            }
+        } else {
+            promptDisplay.innerText = "🔊 Listening...";
+            promptDisplay.style.fontSize = "2rem";
+            promptDisplay.style.fontStyle = "normal";
+            promptDisplay.style.color = "var(--accent)";
+            subDisplay.innerText = "Which case and number is this?";
+            subDisplay.style.color = "var(--accent)";
+            speakBtn.style.display = "block";
+            hintBtn.style.display = "none";
+            trackBadge.innerText = "Hear the inflected form → press Space to reveal";
+
+            setTimeout(speakRussianPrompt, 300);
+        }
+    }
+
+    function revealEnglishMeaningHint() {
+        if (!currentClockObj) return;
+        var hintBox = document.getElementById('english-meaning-hint-box');
+        if (hintBox) {
+            hintBox.innerText = "Meaning: '" + currentClockObj.meaning + "'";
+            hintBox.style.display = "block";
+        }
+        var hintBtn = document.getElementById('meaning-hint-btn');
+        if (hintBtn) hintBtn.style.display = "none";
+    }
+
+    function speakRussianPrompt() {
+        if (!currentClockObj) return;
+        var utterance = new SpeechSynthesisUtterance(currentClockObj.cyrAnswer);
+        utterance.lang = "ru-RU";
+        utterance.rate = 0.8;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    // ============================================================
+    // ANSWER CHECKING
+    // ============================================================
+    function checkAnswer() {
+        if (currentQuizDirection !== 'read') return;
+        cancelPendingSpeak();
+        var inputField = document.getElementById('user-input');
+        var userInput = inputField.value.trim();
+        if (userInput === "") return;
+
+        collapseHeaderShutter();
+        var feedbackContainer = document.getElementById('feedback-container');
+        var feedbackMessage = document.getElementById('feedback-message');
+
+        document.getElementById('submit-btn').disabled = true;
+        inputField.disabled = true;
+
+        totalQuestions++;
+        sessionTotal++;
+
+        var normInput = normaliseAnswer(userInput);
+        var normCyr = normaliseAnswer(currentClockObj.cyrAnswer);
+        var normTr = normaliseAnswer(currentClockObj.trAnswer);
+        var isCorrect = (normInput === normCyr || normInput === normTr);
+
+        userActionHistory.push({
+            streakBefore: currentStreak, correctBefore: totalCorrect, questionsBefore: totalQuestions - 1,
+            activeCardIndexBefore: activeCardIndex, wasMistakeLogged: !isCorrect,
+            wasCardPushed: !isCorrect, cardObjectSnapshot: Object.assign({}, currentClockObj)
+        });
+
+        if (isCorrect) {
+            totalCorrect++; currentStreak++;
+            sessionCorrect++;
+            sessionCurrentStreak++;
+            if (sessionCurrentStreak > sessionBestStreak) sessionBestStreak = sessionCurrentStreak;
+        } else {
+            currentStreak = 0;
+            sessionCurrentStreak = 0;
+        }
+
+        var logResult = handleLogUpdate(currentClockObj, isCorrect, userInput);
+
+        var displayTarget = currentClockObj.cyrAnswer + " (" + currentClockObj.trAnswer + ")";
+        var homographs = findHomographs(currentClockObj.base, currentClockObj.caseKey, currentClockObj.number);
+        var homographNote = "";
+        if (homographs.length > 0) {
+            homographNote = "<br><small style='color:var(--warning);'>⚠️ Same form also marks: " + homographs.join(', ') + "</small>";
+        }
+
+        var speakIcon = ' <span style="cursor:pointer; opacity:0.8;" onclick="speakRussianPrompt();" title="Hear the answer">🔊</span>';
+
+        if (isCorrect) {
+            feedbackMessage.className = "feedback correct-box";
+            feedbackMessage.innerHTML = "<strong>Correct!</strong> 🎉<br>Answer:" + speakIcon + " <strong>" + displayTarget + "</strong><br><small>" + currentClockObj.base + " • " + currentClockObj.meaning + "</small>" + homographNote + logUpdateMessage(logResult);
+            setTimeout(speakRussianPrompt, 200);
+        } else {
+            feedbackMessage.className = "feedback incorrect-box";
+            feedbackMessage.innerHTML = "<strong>Incorrect.</strong><br>Answer:" + speakIcon + " <strong>" + displayTarget + "</strong><br><small>" + currentClockObj.base + " • " + currentClockObj.meaning + "</small>" + homographNote + logUpdateMessage(logResult);
+            currentSessionDeck.push(Object.assign({}, currentClockObj));
+            document.getElementById('deck-total').innerText = currentSessionDeck.length;
+            setTimeout(speakRussianPrompt, 200);
+        }
+
+        document.getElementById('speak-btn').style.display = "block";
+        activeCardIndex++;
+        document.getElementById('deck-progress').innerText = activeCardIndex;
+        updateScoreboard();
+        feedbackContainer.style.display = "block";
+
+        // MOBILE SCROLL FIX: Hide input areas to save vertical space
+        var hideIds = ['panel-read-mode', 'panel-write-mode', 'honour-system-controls', 'btn-reveal-container'];
+        hideIds.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.add('hidden-during-feedback');
+        });
+
+        setTimeout(function() {
+            var nextBtn = document.getElementById('next-btn');
+            if (nextBtn) {
+                nextBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }, 100);
+
+        updateDrillPill();
+        saveState();
+    }
+
+    function collapseHeaderShutter() {
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter && !shutter.classList.contains('collapsed')) {
+            shutter.classList.add('collapsed');
+        }
+    }
+
+    function revealVerbAnswer() {
+        cancelPendingSpeak();
+        collapseHeaderShutter();
+        document.getElementById('btn-reveal-container').style.display = "none";
+        document.getElementById('honour-system-controls').style.display = "flex";
+
+        var promptDisplay = document.getElementById('case-prompt-display');
+        var subDisplay = document.getElementById('case-sub-display');
+
+        var caseLabel = caseNamesFullMap[currentClockObj.caseKey];
+        var numLabel = numberNamesFullMap[currentClockObj.number];
+        var primaryLabel = caseLabel + ' ' + numLabel;
+
+        var homographs = findHomographs(currentClockObj.base, currentClockObj.caseKey, currentClockObj.number);
+
+        promptDisplay.innerText = currentClockObj.cyrAnswer;
+        promptDisplay.style.fontSize = "2.4rem";
+        promptDisplay.style.fontStyle = "normal";
+        promptDisplay.style.color = "var(--text-main)";
+
+        var html = "Base: " + promptBaseDisplay(currentClockObj) + " — '" + currentClockObj.meaning + "'" +
+            "<br><span style='color:var(--success);'>Target: " + primaryLabel + "</span>";
+
+        if (homographs.length > 0) {
+            html += "<br><span style='color:var(--warning); font-size:0.9rem;'>⚠️ Same form also marks: " + homographs.join(', ') + "</span>";
+        }
+
+        subDisplay.innerHTML = html;
+        document.getElementById('case-track-badge').innerText = "Answer revealed — self-assess below";
+
+        setTimeout(speakRussianPrompt, 150);
+    }
+
+    function assessHonour(isCorrect) {
+        totalQuestions++;
+        sessionTotal++;
+
+        var feedbackContainer = document.getElementById('feedback-container');
+        var feedbackMessage = document.getElementById('feedback-message');
+        document.getElementById('honour-system-controls').style.display = "none";
+
+        userActionHistory.push({
+            streakBefore: currentStreak, correctBefore: totalCorrect, questionsBefore: totalQuestions - 1,
+            activeCardIndexBefore: activeCardIndex, wasMistakeLogged: !isCorrect, wasCardPushed: !isCorrect,
+            cardObjectSnapshot: Object.assign({}, currentClockObj)
+        });
+
+        if (isCorrect) {
+            totalCorrect++; currentStreak++;
+            sessionCorrect++;
+            sessionCurrentStreak++;
+            if (sessionCurrentStreak > sessionBestStreak) sessionBestStreak = sessionCurrentStreak;
+        } else {
+            currentStreak = 0;
+            sessionCurrentStreak = 0;
+        }
+
+        var yoursLabel = currentQuizDirection === 'read' ? "[Honour System Miss]" : "[Acoustic Self-Assessed Miss]";
+        var logResult = handleLogUpdate(currentClockObj, isCorrect, isCorrect ? "" : yoursLabel);
+
+        var displayTarget = currentClockObj.cyrAnswer + " (" + currentClockObj.trAnswer + ")";
+
+        if (isCorrect) {
+            feedbackMessage.className = "feedback correct-box";
+            feedbackMessage.innerHTML = "<strong>Marked Correct!</strong> 👍<br>Decoded form: <strong>" + displayTarget + "</strong>." + logUpdateMessage(logResult);
+        } else {
+            feedbackMessage.className = "feedback incorrect-box";
+            feedbackMessage.innerHTML = "<strong>Marked Incorrect.</strong> 📚<br>Target was <strong>" + displayTarget + "</strong>." + logUpdateMessage(logResult);
+            currentSessionDeck.push(Object.assign({}, currentClockObj));
+            document.getElementById('deck-total').innerText = currentSessionDeck.length;
+        }
+
+        activeCardIndex++;
+        document.getElementById('deck-progress').innerText = activeCardIndex;
+        updateScoreboard();
+        feedbackContainer.style.display = "block";
+
+        // MOBILE SCROLL FIX: Hide input areas to save vertical space
+        var hideIds = ['panel-read-mode', 'panel-write-mode', 'honour-system-controls', 'btn-reveal-container'];
+        hideIds.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.add('hidden-during-feedback');
+        });
+
+        setTimeout(function() {
+            var nextBtn = document.getElementById('next-btn');
+            if (nextBtn) {
+                nextBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }, 100);
+
+        updateDrillPill();
+        saveState();
+    }
+
+    function updateFilterStatusLine() {
+        var counts = computeCounts();
+        var el = document.getElementById('filter-status-line');
+        if (el) {
+            var remaining = counts.active + counts.pending + counts.pinned;
+            el.innerText = counts.total + " cards under current filters · " + counts.known + " mastered · " + remaining + " remaining";
+        }
+    }
+
+    function updateScoreboard() {
+        document.getElementById('score-correct').innerText = totalCorrect;
+        document.getElementById('score-total').innerText = totalQuestions;
+        document.getElementById('score-streak').innerText = currentStreak;
+        var counts = computeCounts();
+        document.getElementById('score-known').innerText = counts.known;
+        document.getElementById('score-known-total').innerText = counts.total;
+        document.getElementById('score-filtered').innerText = counts.total;
+        updateStreakEmoji();
+        updatePlayModePill();
+        updateFilterStatusLine();
+    }
+
+    function executeUndoAction() {
+        if (userActionHistory.length === 0) return;
+        var previousState = userActionHistory.pop();
+        currentStreak = previousState.streakBefore;
+        totalCorrect = previousState.correctBefore;
+        totalQuestions = previousState.questionsBefore;
+        activeCardIndex = previousState.activeCardIndexBefore;
+        if (previousState.wasCardPushed) {
+            currentSessionDeck.pop();
+            document.getElementById('deck-total').innerText = currentSessionDeck.length;
+        }
+        updateScoreboard(); generateQuestion();
+        saveState();
+    }
+
+    // ============================================================
+    // COMPLETION SCREEN
+    // ============================================================
+    function triggerCompletionState() {
+        sessionComplete = true;
+        sessionStarted = false;
+
+        var accuracy = sessionTotal > 0 ? Math.round(sessionCorrect / sessionTotal * 100) : 0;
+        var remainingPending = mistakeLog.filter(function(e) { return e.status === "pending"; }).length;
+
+        var promptDisplay = document.getElementById('case-prompt-display');
+        var subDisplay = document.getElementById('case-sub-display');
+        promptDisplay.innerHTML = "🎉 Отлично!";
+        promptDisplay.style.color = "var(--success)";
+        promptDisplay.style.fontSize = "2.2rem";
+        promptDisplay.style.fontStyle = "normal";
+        subDisplay.innerText = "";
+
+        document.getElementById('speak-btn').style.display = "none";
+        document.getElementById('meaning-hint-btn').style.display = "none";
+        document.getElementById('case-track-badge').innerText = "";
+        document.getElementById('verb-stem-warning-badge').style.display = "none";
+        document.getElementById('btn-reveal-container').style.display = "none";
+        document.getElementById('honour-system-controls').style.display = "none";
+        var hintBox = document.getElementById('english-meaning-hint-box');
+        if (hintBox) { hintBox.style.display = "none"; hintBox.innerText = ""; }
+
+        var feedbackContainer = document.getElementById('feedback-container');
+        var feedbackMessage = document.getElementById('feedback-message');
+        feedbackMessage.className = "feedback correct-box";
+
+        var counts = computeCounts();
+        var knownStat = sessionKnownCount > 0
+            ? '<div><span class="completion-stat-label">Newly Known</span><span class="completion-stat-value" style="color:#4ade80;">+' + sessionKnownCount + '</span></div>'
+            : '';
+        var recoveredStat = sessionRecoveredCount > 0
+            ? '<div><span class="completion-stat-label">Recovered</span><span class="completion-stat-value" style="color:#fbbf24;">' + sessionRecoveredCount + '</span></div>'
+            : '';
+
+        feedbackMessage.innerHTML =
+            '<div style="text-align:center;">' +
+                '<div class="completion-stats">' +
+                    '<div><span class="completion-stat-label">Accuracy</span><span class="completion-stat-value">' + accuracy + '%</span></div>' +
+                    '<div><span class="completion-stat-label">Best Streak</span><span class="completion-stat-value">🔥 ' + sessionBestStreak + '</span></div>' +
+                    recoveredStat +
+                    knownStat +
+                '</div>' +
+                '<div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.25rem;">' + sessionCorrect + ' / ' + sessionTotal + ' correct this run</div>' +
+                '<div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.5rem;">' + counts.known + ' / ' + counts.total + ' known under current filters</div>' +
+                (playMode ? '<div style="font-size:0.75rem; color:#d8b4fe; margin-bottom:0.5rem;">🎮 Play mode active — progress not recorded</div>' : '') +
+            '</div>';
+
+        var nextBtn = document.getElementById('next-btn');
+        if (nextBtn) nextBtn.style.display = "none";
+
+        var actionsHtml = '<div class="completion-actions">';
+        actionsHtml += '<button class="completion-btn primary" onclick="startNewSessionFromComplete()">🔄 New Session</button>';
+        actionsHtml += '<button class="completion-btn" onclick="exitDrillToReview()">📝 Reviews</button>';
+        if (sessionMode === "drill" && remainingPending > 0) {
+            actionsHtml += '<button class="completion-btn" style="background-color:var(--warning); color:#0d0c10;" onclick="drillFromLog(\'pending\')">🎯 Drill ' + remainingPending + ' Pending</button>';
+        }
+        actionsHtml += '</div>';
+
+        var existingBar = feedbackContainer.querySelector('.completion-actions');
+        if (existingBar) existingBar.remove();
+        feedbackContainer.insertAdjacentHTML('beforeend', actionsHtml);
+
+        feedbackContainer.style.display = "block";
+        updateDrillPill();
+
+        setTimeout(function() {
+            if (feedbackContainer) feedbackContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 450);
+    }
+
+    function startNewSessionFromComplete() {
+        var fb = document.getElementById('feedback-container');
+        var bar = fb.querySelector('.completion-actions');
+        if (bar) bar.remove();
+        var nb = document.getElementById('next-btn');
+        if (nb) nb.style.display = "";
+
+        sessionComplete = false;
+        initSessionDeck();
+    }
+
+    function handleNextWorkflow() {
+        generateQuestion();
+        setTimeout(function() {
+            if (sessionComplete) return;
+            var inputField = document.getElementById('user-input');
+            if (inputField && currentQuizDirection === 'read') {
+                inputField.focus();
+                inputField.select();
+            }
+        }, 30);
+    }
+
+    function updateStreakEmoji() {
+        var emojiSpan = document.getElementById('streak-emoji');
+        if (emojiSpan) {
+            if (currentStreak >= 15) emojiSpan.innerHTML = "👑";
+            else if (currentStreak >= 10) emojiSpan.innerHTML = "🥷";
+            else if (currentStreak >= 6) emojiSpan.innerHTML = "🔥";
+            else if (currentStreak >= 3) emojiSpan.innerHTML = "⚡";
+            else emojiSpan.innerHTML = "🐣";
+        }
+    }
+
+    // ============================================================
+    // REVIEW VIEW
+    // ============================================================
+    function setReviewTab(bucket) {
+        reviewTab = bucket;
+        document.querySelectorAll('.review-tab').forEach(function(b) {
+            b.classList.toggle('active', b.dataset.bucket === bucket);
+        });
+        saveState();
+        renderReviewList();
+    }
+
+    function renderReviewList() {
+        var container = document.getElementById('review-list-container');
+        var headerEl = document.getElementById('review-header');
+        updateLogBadges();
+
+        var counts = computeCounts();
+
+        if (reviewTab === "known") {
+            if (counts.known === 0) {
+                headerEl.className = "review-empty";
+                headerEl.innerHTML = "💚 <strong>No known cards yet.</strong><br>Answer cards correctly to graduate them here. They won't reappear in Adaptive sessions.";
+                container.innerHTML = "";
+                updateReviewActions(0);
+                return;
+            }
+            headerEl.className = "review-header";
+            headerEl.innerHTML = "💚 <strong>" + counts.known + " of " + counts.total + " cards mastered</strong> under current filters.<br>These are skipped in Adaptive mode. Use <em>Forget Filtered Known</em> below to reset them to active — they'll resurface in future sessions. To forget <em>every</em> known card regardless of filter, clear the filters first.";
+            container.innerHTML = "";
+            updateReviewActions(counts.known);
+            return;
+        }
+
+        if (reviewTab === "active") {
+            if (counts.active === 0) {
+                headerEl.className = "review-empty";
+                headerEl.innerHTML = "⚪ <strong>No active cards under current filters.</strong><br>Every card is either known, pending, or pinned.";
+                container.innerHTML = "";
+                updateReviewActions(0);
+                return;
+            }
+            var pct = counts.total > 0 ? Math.round((counts.known / counts.total) * 100) : 0;
+            headerEl.className = "review-header";
+            headerEl.innerHTML = "⚪ <strong>" + counts.active + " cards still learning</strong> under current filters.<br>These appear in your general rotation. Pass one on first attempt to graduate it to Known.";
+            container.innerHTML =
+                '<div class="big-stat">' + counts.active + '</div>' +
+                '<div style="text-align:center; color:var(--text-muted); font-size:0.75rem;">' + counts.known + ' / ' + counts.total + ' mastered (' + pct + '%)</div>' +
+                '<div class="progress-bar-container"><div class="progress-bar-fill" style="width:' + pct + '%;"></div></div>';
+            updateReviewActions(counts.active);
+            return;
+        }
+
+        if (reviewTab === "pending") {
+            var pendingEntries = mistakeLog.filter(function(e) { return e.status === "pending"; });
+            if (pendingEntries.length === 0) {
+                headerEl.className = "review-empty";
+                headerEl.innerHTML = "🟡 <strong>Nothing pending.</strong><br>Every mistake has been corrected.";
+                container.innerHTML = "";
+                updateReviewActions(0);
+                return;
+            }
+            headerEl.className = "review-header";
+            headerEl.innerHTML = "🟡 <strong>" + pendingEntries.length + " cards you've recently missed.</strong><br>Correct one on first attempt to return it to Active. Miss the same card " + (autoPinThreshold > 0 ? autoPinThreshold + " times" : "(never auto-pin)") + " and it auto-pins.<br><em>⚠️ Use <strong>Drill Pending</strong> below to focus on them.</em>";
+            renderLogTable(container, pendingEntries, 'pending');
+            updateReviewActions(pendingEntries.length);
+            return;
+        }
+
+        if (reviewTab === "pinned") {
+            var pinnedEntries = mistakeLog.filter(function(e) { return e.status === "pinned"; });
+            if (pinnedEntries.length === 0) {
+                headerEl.className = "review-empty";
+                headerEl.innerHTML = "🔴 <strong>Nothing pinned.</strong><br>Miss a card " + (autoPinThreshold > 0 ? autoPinThreshold + " times" : "(off)") + ", or click 📍 on any row, to add it to your watchlist.";
+                container.innerHTML = "";
+                updateReviewActions(0);
+                return;
+            }
+            headerEl.className = "review-header";
+            headerEl.innerHTML = "🔴 <strong>" + pinnedEntries.length + " cards in your watchlist.</strong><br>These stay in rotation indefinitely and require manual unpin to retire.";
+            renderLogTable(container, pinnedEntries, 'pinned');
+            updateReviewActions(pinnedEntries.length);
+            return;
+        }
+    }
+
+    function renderLogTable(container, entries, bucket) {
+        var actionHeader = "";
+        if (bucket === 'pending' && entries.length > 1) {
+            actionHeader = "<button class='pin-all-btn' title='Move all pending to Pinned' onclick='pinAllPending()'>📌 All</button>";
+        }
+        var html = "<table class='ref-table review-table'><tr><th>Prompt</th><th>Correct</th><th>Last wrong</th><th>Fails</th><th>" + actionHeader + "</th></tr>";
+        for (var i = 0; i < entries.length; i++) {
+            var item = entries[i];
+            var entryIndex = mistakeLog.indexOf(item);
+            var isPinned = item.status === "pinned";
+            var pinIcon = isPinned ? "📌" : "📍";
+            var pinTitle = isPinned ? "Unpin (→ Active)" : "Pin (permanent drill)";
+            html += "<tr>";
+            html += "<td class='prompt-cell'>" + item.prompt + "</td>";
+            html += "<td class='correct-cell'>" + item.correct + "</td>";
+            html += "<td class='wrong-cell'>" + item.yours + "</td>";
+            html += "<td class='fail-cell'>" + (item.failCount > 1 ? "×" + item.failCount : "") + "</td>";
+            html += "<td class='actions-cell'>";
+            html += "<button onclick='speakLogEntry(" + entryIndex + ")' title='Hear answer'>🔊</button>";
+            html += "<button onclick='togglePin(" + entryIndex + ")' title='" + pinTitle + "'>" + pinIcon + "</button>";
+            html += "<button onclick='deleteEntry(" + entryIndex + ")' title='Clear'>✖</button>";
+            html += "</td>";
+            html += "</tr>";
+        }
+        html += "</table>";
+        container.innerHTML = html;
+    }
+
+    function updateReviewActions(count) {
+        var drillBtn = document.getElementById('drill-bucket-btn');
+        var clearBtn = document.getElementById('clear-bucket-btn');
+
+        if (reviewTab === "active") {
+            if (drillBtn) { drillBtn.innerText = "🎯 Drill"; drillBtn.disabled = true; }
+            if (clearBtn) { clearBtn.innerText = "🗑️ Clear"; clearBtn.disabled = true; }
+            return;
+        }
+
+        if (reviewTab === "known") {
+            if (drillBtn) { drillBtn.innerText = "🎯 Drill"; drillBtn.disabled = true; }
+            if (clearBtn) { clearBtn.innerText = "🗑️ Forget Filtered Known (" + count + ")"; clearBtn.disabled = count === 0; }
+            return;
+        }
+
+        var bucketLabels = { pending: "Pending", pinned: "Pinned" };
+        if (drillBtn) {
+            drillBtn.innerText = "🎯 Drill " + bucketLabels[reviewTab] + " (" + count + ")";
+            drillBtn.disabled = count === 0;
+        }
+        if (clearBtn) {
+            clearBtn.innerText = "🗑️ Clear " + bucketLabels[reviewTab] + " (" + count + ")";
+            clearBtn.disabled = count === 0;
+        }
+    }
+
+    function pinAllPending() {
+        var pendingEntries = mistakeLog.filter(function(e) { return e.status === "pending"; });
+        if (pendingEntries.length === 0) return;
+        if (!confirm("Move all " + pendingEntries.length + " pending cards to Pinned? You can unpin them individually from the Pinned tab.")) return;
+        for (var i = 0; i < pendingEntries.length; i++) {
+            pendingEntries[i].status = "pinned";
+        }
+        saveState();
+        updateLogBadges();
+        updateScoreboard();
+        renderReviewList();
+    }
+
+    function togglePin(entryIndex) {
+        var e = mistakeLog[entryIndex];
+        if (!e) return;
+        if (e.status === "pinned") {
+            mistakeLog.splice(entryIndex, 1);
+        } else {
+            e.status = "pinned";
+        }
+        saveState();
+        updateLogBadges();
+        updateScoreboard();
+        renderReviewList();
+    }
+
+    function deleteEntry(entryIndex) {
+        if (entryIndex < 0 || entryIndex >= mistakeLog.length) return;
+        mistakeLog.splice(entryIndex, 1);
+        saveState();
+        updateLogBadges();
+        updateScoreboard();
+        renderReviewList();
+    }
+
+    function clearActiveBucket() {
+        if (reviewTab === "known") {
+            var filteredKeys = getFilteredKnownKeys();
+            if (filteredKeys.length === 0) return;
+            if (!confirm("Forget " + filteredKeys.length + " known cards under current filters? They'll return to Active and resurface in future sessions.")) return;
+            for (var i = 0; i < filteredKeys.length; i++) {
+                delete knownCards[filteredKeys[i]];
+            }
+            saveState();
+            updateScoreboard();
+            updateLogBadges();
+            renderReviewList();
+            return;
+        }
+        if (reviewTab === "active") return;
+        var filtered = mistakeLog.filter(function(e) { return e.status === reviewTab; });
+        if (filtered.length === 0) return;
+        var label = reviewTab.charAt(0).toUpperCase() + reviewTab.slice(1);
+        if (!confirm("Clear all " + filtered.length + " " + label + " entries? They'll return to Active and resurface in future sessions.")) return;
+        for (var i = 0; i < filtered.length; i++) {
+            var idx = mistakeLog.indexOf(filtered[i]);
+            if (idx >= 0) mistakeLog.splice(idx, 1);
+        }
+        saveState();
+        updateLogBadges();
+        updateScoreboard();
+        renderReviewList();
+    }
+
+    // ============================================================
+    // GUIDE CASE TABLES (dynamic)
+    // ============================================================
+    function classifyNoun(word) {
+        var item = masterCaseDictionary[word];
+        var last = word.slice(-1);
+        if (item.gender === 'masc') {
+            var anim = item.anim === 'anim' ? 'Anim' : 'Inan';
+            if (last === 'ь' || last === 'й') return 'M-' + anim + ' Soft';
+            if ('жшчщ'.indexOf(last) !== -1) return 'M-' + anim + ' Sibilant';
+            return 'M-' + anim + ' Hard';
+        }
+        if (item.gender === 'fem') {
+            if (last === 'а') return 'F-Hard';
+            if (last === 'я') return 'F-Soft';
+            if (last === 'ь') return 'F-3rd Soft';
+            return 'F-Other';
+        }
+        if (item.gender === 'neut') {
+            if (last === 'о') return 'N-Hard';
+            if (last === 'е') return 'N-Soft';
+            return 'N-Other';
+        }
+        return '?';
+    }
+
+    function buildCaseTables() {
+        var container = document.getElementById('case-tables-container');
+        if (!container) return;
+        var groups = {
+            mascInan: { title: 'Masculine Inanimate', rows: [] },
+            mascAnim: { title: 'Masculine Animate', rows: [] },
+            fem: { title: 'Feminine', rows: [] },
+            neut: { title: 'Neuter', rows: [] }
+        };
+        var words = Object.keys(masterCaseDictionary);
+        var caseKeys = ['nom', 'acc', 'gen', 'dat', 'ins', 'prep'];
+
+        words.forEach(function(w) {
+            var item = masterCaseDictionary[w];
+            var group;
+            if (item.gender === 'masc' && item.anim === 'inan') group = groups.mascInan;
+            else if (item.gender === 'masc' && item.anim === 'anim') group = groups.mascAnim;
+            else if (item.gender === 'fem') group = groups.fem;
+            else group = groups.neut;
+
+            ['sg', 'pl'].forEach(function(num) {
+                var row = {
+                    base: w,
+                    translit: item.translit,
+                    type: classifyNoun(w),
+                    number: num === 'sg' ? 'Sg' : 'Pl',
+                    cases: {}
+                };
+                caseKeys.forEach(function(ck) {
+                    var form = item.declensions[num][ck];
+                    row.cases[ck] = { cyr: form.cyr, tr: form.tr };
+                });
+                group.rows.push(row);
+            });
+        });
+
+        var html = '';
+        var groupOrder = ['mascInan', 'mascAnim', 'fem', 'neut'];
+        groupOrder.forEach(function(gk) {
+            var g = groups[gk];
+            if (g.rows.length === 0) return;
+            html += '<h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">' + g.title + '</h3>';
+            html += '<table class="ref-table guide-verb-table">';
+            html += '<tr><th>Base</th><th>Type</th><th>#</th><th>Nom</th><th>Acc</th><th>Gen</th><th>Dat</th><th>Ins</th><th>Prep</th></tr>';
+            g.rows.forEach(function(row) {
+                html += '<tr>';
+                html += '<td><span class="cyr-txt">' + row.base + '</span><span class="tr-txt">' + row.translit + '</span></td>';
+                html += '<td>' + row.type + '</td>';
+                html += '<td>' + row.number + '</td>';
+                caseKeys.forEach(function(ck) {
+                    html += '<td><span class="cyr-txt">' + row.cases[ck].cyr + '</span><span class="tr-txt">' + row.cases[ck].tr + '</span></td>';
+                });
+                html += '</tr>';
+            });
+            html += '</table>';
+        });
+
+        container.innerHTML = html;
+    }
+
+    // ============================================================
+    // KEYBOARD
+    // ============================================================
+    document.addEventListener('keydown', function(event) {
+        var isFeedbackOpen = document.getElementById('feedback-container').style.display === 'block';
+        var isHonourOpen = document.getElementById('honour-system-controls').style.display === 'flex';
+        var isTyping = (document.activeElement && document.activeElement.tagName === "INPUT");
+        var isQuizView = document.getElementById('view-quiz').style.display !== 'none';
+
+        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') {
+            event.preventDefault();
+            executeUndoAction();
+            return;
+        }
+
+        if (!isQuizView) return;
+
+        if (!sessionStarted && !sessionComplete) {
+            if (event.key === ' ' || event.code === 'Space' || event.key === 'Enter') {
+                event.preventDefault();
+                startSession();
+            }
+            return;
+        }
+
+        if (sessionComplete) {
+            if (event.key === ' ' || event.code === 'Space' || event.key === 'Enter') {
+                event.preventDefault();
+                startNewSessionFromComplete();
+            }
+            return;
+        }
+
+        if (event.key === ' ' || event.code === 'Space' || event.key === 'Enter') {
+            if (isTyping && !isFeedbackOpen && currentQuizDirection === 'read' && productionMethod === 'type') {
+                return;
+            }
+            event.preventDefault();
+            if (isFeedbackOpen) {
+                handleNextWorkflow();
+                return;
+            }
+            if (currentQuizDirection === 'read' && productionMethod === 'type') { checkAnswer(); return; }
+            if (!isHonourOpen) { revealVerbAnswer(); return; }
+            if (isHonourOpen) { assessHonour(true); return; }
+        }
+
+        if (isHonourOpen) {
+            if (event.key === '1' || event.key.toLowerCase() === 'x') { event.preventDefault(); assessHonour(false); }
+            if (event.key === '2') { event.preventDefault(); assessHonour(true); }
+        }
+    });
+
+    window.onload = function() {
+        populateWordSelector();
+        buildCaseTables();
+        loadState();
+        initSessionDeck();
+        updateLogBadges();
+        updateScoreboard();
+        updatePlayModePill();
+    };
+</script>
+<!-- polyglot-copyright -->
+<footer style="text-align:center; margin:1rem auto 0 auto; padding:1rem 20px 0 20px;
+               font-size:0.7rem; color:#64748b; letter-spacing:0.3px; line-height:1.5;">
+    Copyright The Polyglot Gym 2026 · Simon Reynolds · All rights reserved.
+</footer>
+<!-- /polyglot-copyright -->
+</body>
+</html>

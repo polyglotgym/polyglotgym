@@ -1,0 +1,2750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spanish Subjunctive</title>
+    <style>
+        :root {
+            --bg-color: #0c090a;
+            --card-bg: #1a1210;
+            --text-main: #f8fafc;
+            --text-muted: #84727a;
+            --accent: #ea580c;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --border: #3d2620;
+            --shadow: rgba(0, 0, 0, 0.6);
+        }
+        :root { font-size: 17px; }
+        html { scrollbar-gutter: stable; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 1rem;
+            background-color: var(--bg-color); color: var(--text-main);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; overflow-x: hidden;
+            overflow-anchor: none;
+        }
+        .container {
+            background-color: var(--card-bg); padding: 2rem; border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px var(--shadow); width: 100%; max-width: 550px;
+            border: 1px solid var(--border); position: relative;
+            min-width: 0;
+        }
+        #shutter-header-area { max-height: 2800px; opacity: 1; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.4s ease; }
+        #shutter-header-area.collapsed { max-height: 0px; opacity: 0; margin-bottom: 0px !important; pointer-events: none; }
+        h1 { font-size: 1.4rem; margin-top: 0; text-align: center; color: var(--accent); margin-bottom: 0.5rem; letter-spacing: 0.5px; text-transform: uppercase; }
+        .score-board { display: flex; justify-content: space-around; background-color: rgba(0,0,0,0.4); padding: 0.75rem; border-radius: 0.5rem 0.5rem 0 0; margin-top: 1rem; margin-bottom: 0; border: 1px solid var(--border); border-bottom: none; font-size: 0.85rem; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+        .score-board-progress-row { display: flex; justify-content: center; align-items: center; background-color: rgba(0,0,0,0.4); padding: 0.6rem 0.75rem; border-radius: 0 0 0.5rem 0.5rem; margin-top: 0; margin-bottom: 1rem; border: 1px solid var(--border); border-top: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; position: relative; }
+        .score-board-progress-row .score-item { margin: 0 auto; }
+        .score-board-gear-btn { font-size: 1rem; background: none; color: var(--text-main); padding: 0.2rem 0.5rem; cursor: pointer; border: none; position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); line-height: 1; }
+        .score-item span { font-weight: bold; color: var(--accent); }
+        .review-phase-text { color: var(--warning) !important; transition: color 0.3s ease; }
+        .nav-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+        .nav-btn { background: none; border: none; color: var(--text-muted); padding: 0.5rem 0.75rem; cursor: pointer; font-size: 0.9rem; border-radius: 0.25rem; transition: all 0.2s; }
+        .nav-btn.active { background-color: var(--border); color: var(--accent); font-weight: bold; }
+        .mode-selector { display: flex; flex-wrap: wrap; background-color: rgba(0, 0, 0, 0.4); padding: 0.4rem; border-radius: 0.5rem; margin-bottom: 1rem; border: 1px solid var(--border); gap: 0.4rem; }
+        .mode-btn { flex: 1 1 calc(50% - 0.4rem); background: none; border: none; color: var(--text-muted); padding: 0.6rem 0.5rem; font-size: 0.85rem; border-radius: 0.35rem; cursor: pointer; text-align: center; }
+        .mode-btn.active { background-color: var(--accent); color: #0d0c10; font-weight: bold; }
+        .drawer-toggle { background: none; border: none; color: var(--accent); font-size: 0.85rem; cursor: pointer; display: block; margin: -0.75rem auto 1rem auto; padding: 0.25rem 0.5rem; text-decoration: none; }
+        .settings-drawer { background-color: rgba(0, 0, 0, 0.3); border: 1px dashed var(--border); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.5rem; display: none; }
+        .grid-header-label { font-size: 0.8rem; color: var(--text-muted); font-weight: bold; margin-top: 0.5rem; }
+        .row-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.4rem; margin-top: 0.3rem; margin-bottom: 0.8rem; }
+        .row-label { display: flex; align-items: center; justify-content: center; background-color: rgba(255,255,255,0.01); border: 1px solid var(--border); border-radius: 0.35rem; padding: 0.45rem; font-size: 0.8rem; cursor: pointer; text-align: center; user-select: none; }
+        .row-label input { display: none; }
+        .row-label.selected { background-color: rgba(234, 88, 12, 0.15); border-color: var(--accent); color: var(--text-main); font-weight: bold; }
+        .question-box { background-color: rgba(0,0,0,0.5); padding: 2rem 1.5rem; border-radius: 0.5rem; text-align: center; margin-bottom: 1.5rem; border: 1px solid var(--border); min-height: 11rem; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 0.25rem; position: relative; }
+        .prompt-main { font-size: 2.2rem; font-weight: bold; color: var(--text-main); line-height: 1.15; font-family: Georgia, serif; }
+        .prompt-sub { font-size: 1.05rem; color: var(--accent); font-weight: 500; margin-top: 0.4rem; min-height: 1.5rem; overflow-wrap: break-word; }
+        .sub-badge { font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 0.5rem; }
+        .input-group { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+        input.text-input { flex: 1; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid var(--border); background-color: rgba(0,0,0,0.4); color: var(--text-main); font-size: 1.1rem; outline: none; text-align: center; }
+        input.text-input:focus { border-color: var(--accent); }
+        .feedback { padding: 1rem; border-radius: 0.5rem; margin-top: 1rem; font-size: 0.95rem; line-height: 1.5; }
+        .correct-box { background-color: rgba(16, 185, 129, 0.15); border: 1px solid var(--success); color: #34d399; }
+        .incorrect-box { background-color: rgba(239, 68, 68, 0.15); border: 1px solid var(--error); color: #fb7185; }
+        .honour-group { display: flex; gap: 0.75rem; width: 100%; }
+        .honour-btn { flex: 1; font-size: 0.95rem; padding: 0.75rem; border: none; border-radius: 0.5rem; color: #fff; cursor: pointer; }
+        .next-btn { width: 100%; margin-top: 1rem; background-color: var(--border); color: var(--text-main); border: none; border-radius: 0.5rem; padding: 0.75rem; font-weight: bold; cursor: pointer; }
+        .ref-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; font-size: 0.85rem; }
+        .ref-table th, .ref-table td { border: 1px solid var(--border); padding: 0.4rem; text-align: center; }
+        .ref-table th { background-color: rgba(0,0,0,0.5); color: var(--accent); }
+        .portal-shortcut-bar { width: 100%; max-width: 550px; margin: 1.5rem auto 0 auto; padding: 0.75rem 1rem; background-color: rgba(0, 0, 0, 0.25); border: 1px solid var(--border); border-radius: 0.5rem; display: flex; align-items: center; box-sizing: border-box; box-shadow: 0 4px 15px var(--shadow); }
+        .portal-shortcut-bar a { color: var(--accent); text-decoration: none; font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; gap: 0.4rem; transition: opacity 0.2s; }
+        .portal-shortcut-bar a:hover { opacity: 0.8; }
+        .portal-shortcut-bar .terminal-label { margin-left: auto; font-size: 0.75rem; color: var(--text-muted); font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase; }
+        .warning-badge { background-color: rgba(245, 158, 11, 0.15); border: 1px dashed var(--warning); color: #fbbf24; font-size: 0.75rem; padding: 0.25rem 0.6rem; border-radius: 0.25rem; font-weight: bold; margin-top: 0.4rem; text-transform: uppercase; letter-spacing: 0.5px; max-width: 95%; line-height: 1.35; }
+        .drill-pill { font-size: 0.75rem; background-color: rgba(245, 158, 11, 0.18); border: 1px solid var(--warning); color: var(--warning); padding: 0.25rem 0.6rem; border-radius: 1rem; font-weight: bold; }
+        .drill-pill a { color: var(--warning); text-decoration: underline; margin-left: 0.35rem; }
+        .play-pill { background-color: rgba(234, 88, 12, 0.18) !important; border-color: #ea580c !important; color: #fdba74 !important; }
+        .drill-all-btn { width: 100%; margin-bottom: 1rem; padding: 0.6rem; background-color: var(--accent); color: #0d0c10; border: none; border-radius: 0.5rem; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
+        .drill-all-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .review-tabs { display: flex; justify-content: center; gap: 0.4rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; flex-wrap: wrap; }
+        .review-tab { background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 0.5rem 0.75rem; border-radius: 0.35rem; cursor: pointer; font-size: 0.8rem; transition: all 0.15s; }
+        .review-tab.active { background-color: var(--border); color: var(--text-main); font-weight: bold; }
+        .review-tab[data-bucket="known"].active { color: #86efac; }
+        .review-tab[data-bucket="active"].active { color: #cbd5e1; }
+        .review-tab[data-bucket="pending"].active { color: #fbbf24; }
+        .review-tab[data-bucket="pinned"].active { color: #ef4444; }
+        .review-header { color: var(--text-muted); font-size: 0.8rem; line-height: 1.5; padding: 0.5rem 0; margin-bottom: 0.5rem; text-align: left; }
+        .review-table th .pin-all-btn { margin: 0; padding: 0.15rem 0.4rem; font-size: 0.7rem; background-color: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.5); border-radius: 0.25rem; cursor: pointer; font-weight: bold; white-space: nowrap; transition: all 0.15s; }
+        .review-table th .pin-all-btn:hover { background-color: rgba(239, 68, 68, 0.35); color: #fca5a5; border-color: #ef4444; }
+        .review-empty { color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 2rem 0; }
+        .review-table .prompt-cell { font-weight: bold; color: var(--warning); text-align: left; }
+        .review-table .correct-cell { color: var(--success); font-weight: bold; }
+        .review-table .wrong-cell { color: var(--error); font-style: italic; }
+        .review-table .fail-cell { color: var(--text-muted); font-size: 0.75rem; text-align: center; }
+        .review-table .actions-cell { white-space: nowrap; }
+        .review-table .actions-cell button { background: none; border: 1px solid var(--border); color: var(--text-muted); font-size: 0.85rem; padding: 0.2rem 0.4rem; border-radius: 0.25rem; cursor: pointer; margin: 0 0.1rem; }
+        .review-table .actions-cell button:hover { color: var(--text-main); border-color: var(--text-muted); }
+        .review-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
+        .review-actions button { flex: 1; padding: 0.6rem; border: none; border-radius: 0.5rem; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
+        #drill-bucket-btn { background-color: var(--accent); color: #0d0c10; }
+        #clear-bucket-btn { background-color: var(--border); color: var(--text-main); }
+        .review-actions button:disabled { opacity: 0.4; cursor: not-allowed; }
+        .completion-actions { display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
+        .completion-btn { flex: 1; min-width: 120px; padding: 0.65rem; border: none; border-radius: 0.5rem; font-weight: bold; cursor: pointer; font-size: 0.85rem; background-color: var(--border); color: var(--text-main); }
+        .completion-btn.primary { background-color: var(--accent); color: #0d0c10; }
+        .completion-stats { display: flex; justify-content: center; gap: 1.5rem; margin: 1rem 0 0.5rem 0; flex-wrap: wrap; }
+        .completion-stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; }
+        .completion-stat-value { font-size: 1.6rem; font-weight: bold; color: var(--text-main); }
+        .mode-hint { font-size: 0.7rem; color: var(--text-muted); margin: 0.25rem 0 0.5rem 0; line-height: 1.4; }
+        .progress-bar-container { width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; margin: 1rem 0 0.5rem 0; }
+        .progress-bar-fill { height: 100%; background: var(--success); transition: width 0.3s ease; }
+        .big-stat { font-size: 2.4rem; font-weight: bold; color: var(--text-main); margin: 0.5rem 0; text-align: center; }
+        .guide-subtabs { display: flex; gap: 0.4rem; margin-bottom: 1rem; padding: 0.4rem; background-color: rgba(0, 0, 0, 0.4); border: 1px solid var(--border); border-radius: 0.5rem; }
+        .guide-subtab-btn { flex: 1; background: none; border: none; color: var(--text-muted); padding: 0.55rem 0.75rem; font-size: 0.85rem; border-radius: 0.35rem; cursor: pointer; transition: all 0.15s; }
+        .guide-subtab-btn:hover { color: var(--text-main); }
+        .guide-subtab-btn.active { background-color: var(--accent); color: #0d0c10; font-weight: bold; }
+        .guide-scroll { max-height: 55vh; overflow-y: auto; padding-right: 0.5rem; }
+        .guide-body { font-size: 0.9rem; line-height: 1.6; color: var(--text-main); }
+        .guide-body p { margin: 0 0 0.75rem 0; }
+        .guide-body strong { color: var(--text-main); }
+        .guide-body em { color: var(--text-muted); }
+        .guide-section-header { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.2px; font-weight: bold; margin: 1.75rem 0 0.75rem 0; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border); }
+        .guide-section-header:first-child { margin-top: 0; }
+        .guide-subsection { font-size: 0.95rem; color: var(--accent); font-weight: bold; margin: 1.25rem 0 0.5rem 0; }
+        .guide-tagline { color: var(--accent); font-style: italic; text-align: center; font-size: 0.95rem; margin: 1rem 0; font-weight: 500; }
+        .guide-pile { margin: 0 0 0.75rem 0; padding: 0.6rem 0.75rem; background: rgba(255,255,255,0.02); border-left: 3px solid var(--border); border-radius: 0.25rem; }
+        .guide-pile-label { font-weight: bold; color: var(--text-main); margin-right: 0.35rem; }
+        .guide-pile-desc { color: var(--text-main); font-size: 0.88rem; }
+        .guide-scroll ul { margin: 0.5rem 0 0.75rem 0; padding-left: 1.2rem; }
+
+        /* === MOBILE FIXES === */
+        @media (max-width: 550px) {
+            .container { padding: 1rem; }
+            .score-board {
+                flex-wrap: wrap !important;
+                justify-content: center !important;
+                font-size: 0.9rem !important;
+                padding: 0.5rem 0.75rem !important;
+                gap: 0.4rem 0.75rem !important;
+                line-height: 1.4 !important;
+            }
+            .score-item {
+                font-size: 0 !important;
+                white-space: nowrap !important;
+            }
+            .score-item span, .score-item a {
+                font-size: 0.9rem !important;
+            }
+            .score-board-progress-row {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                background-color: rgba(0,0,0,0.4);
+                padding: 0.6rem 0.75rem;
+                border-radius: 0 0 0.5rem 0.5rem;
+                margin-top: 0;
+                margin-bottom: 1rem;
+                border: 1px solid var(--border);
+                border-top: 1px solid rgba(255,255,255,0.05);
+                font-size: 0.85rem;
+                position: relative;
+            }
+            .score-board-progress-row .score-item {
+                font-size: 0.9rem !important;
+                text-align: center;
+            }
+            .score-board-gear-btn {
+                font-size: 1rem;
+                background: none;
+                color: var(--text-main);
+                padding: 0.2rem 0.5rem;
+                cursor: pointer;
+                border: none;
+                position: absolute;
+                right: 0.75rem;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+            #review-status-label {
+                display: block !important;
+                width: 100% !important;
+                text-align: center !important;
+                font-size: 0.75rem !important;
+                color: var(--warning) !important;
+                margin-top: 0.25rem !important;
+                font-style: italic !important;
+            }
+            .question-box {
+                padding: 1.25rem 1rem !important;
+                min-height: auto !important;
+                justify-content: flex-start !important;
+                padding-top: 1.5rem !important;
+            }
+            .prompt-main { font-size: 1.8rem !important; }
+        }
+
+        .hidden-during-feedback { display: none !important; }
+    </style>
+    <meta name="copyright" content="© 2026 Simon Reynolds · The Polyglot Gym · All rights reserved.">
+</head>
+<body>
+<div class="container">
+    <div id="shutter-header-area">
+        <h1>Spanish Subjunctive</h1>
+        <div class="nav-tabs">
+            <button class="nav-btn active" id="tab-quiz" onclick="switchView('quiz')">🎯 Drills</button>
+            <button class="nav-btn" id="tab-guide" onclick="switchView('guide')">📚 Guide</button>
+            <button class="nav-btn" id="tab-review" onclick="switchView('review')">📝 Reviews (<span id="review-count">0</span>)</button>
+        </div>
+        <div class="mode-selector">
+            <button class="mode-btn active" id="dir-r" onclick="setDirection('read')">Production</button>
+            <button class="mode-btn" id="dir-w" onclick="setDirection('write')">Listening</button>
+        </div>
+    </div>
+
+    <div id="view-quiz">
+        <div class="score-board">
+            <div class="score-item">Correct: <span id="score-correct">0</span></div>
+            <div class="score-item">Checked: <span id="score-total">0</span></div>
+            <div class="score-item">Streak: <span id="score-streak">0</span> <span id="streak-emoji">🐣</span></div>
+            <div class="score-item">Known: <span id="score-known">0</span> / <span id="score-known-total">0</span></div>
+            <div class="score-item">Deck: <span id="score-filtered">0</span></div>
+            <div class="drill-pill play-pill" id="play-mode-pill" style="display: none;">🎮 Play Mode</div>
+            <div class="drill-pill" id="drill-pill" style="display: none;">🎯 Drilling <span id="drill-count">0</span> · <a href="#" onclick="exitDrillToReview(); return false;">Exit</a></div>
+        </div>
+        <div class="score-board-progress-row">
+            <div class="score-item" id="progress-box">Progress: <span id="deck-progress">0</span> / <span id="deck-total">--</span><span id="review-status-label"></span></div>
+            <button onclick="openOptionsPanel();" class="score-board-gear-btn">⚙️</button>
+        </div>
+
+        <div class="question-box">
+            <div id="verb-subject-display" style="font-size: 0.8rem; background-color: var(--border); color: var(--accent); padding: 0.25rem 0.75rem; border-radius: 1rem; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 0.5rem;">YO</div>
+            <div class="prompt-main" id="verb-prompt-display">that I speak</div>
+            <div class="prompt-sub" id="verb-sub-display">Hablar • Presente Subj. • to speak</div>
+            <div id="verb-stem-warning-badge" class="warning-badge" style="display: none;">⚠️</div>
+            <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem; margin-bottom: 0.25rem;">
+                <button id="speak-btn" style="background-color: var(--border); color: var(--text-main); font-size: 0.8rem; padding: 0.35rem 0.75rem; border-radius: 0.25rem; border: none; cursor: pointer;" onclick="speakSpanishPrompt();">Listen 🔊</button>
+                <button id="infinitive-btn" style="background-color: var(--border); color: var(--text-main); font-size: 0.8rem; padding: 0.35rem 0.75rem; border-radius: 0.25rem; border: none; cursor: pointer; display: none;" onclick="speakInfinitive();">Infinitive 🔊</button>
+            </div>
+            <div class="sub-badge" id="verb-track-badge">Type the full conjugated form</div>
+        </div>
+
+        <div id="panel-read-mode">
+            <div class="input-group">
+                <input type="text" class="text-input" id="user-input" placeholder="Type the full conjugated form..." autocomplete="off" onkeydown="if(event.key === 'Enter') { event.preventDefault(); event.stopPropagation(); checkAnswer(); }">
+                <button id="submit-btn" style="background-color: var(--accent); color: #0d0c10; font-weight: bold; border: none; border-radius: 0.5rem; padding: 0 1.5rem; cursor: pointer;" onclick="checkAnswer();">Check</button>
+            </div>
+        </div>
+
+        <div id="panel-write-mode" style="display: none;">
+            <div class="input-group" id="btn-reveal-container" style="display: block; width: 100%;">
+                <button id="reveal-btn" style="width: 100%; height: 2.8rem; background-color: var(--accent); color: #0d0c10; font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer;" onclick="revealVerbAnswer()">Reveal Answer</button>
+            </div>
+            <div class="honour-group" id="honour-system-controls" style="display: none; justify-content: center; gap: 0.75rem; width: 100%; margin-bottom: 1rem;">
+                <button class="honour-btn" style="background-color: var(--error); flex: 1;" onclick="assessHonour(false)">Wrong ✖</button>
+                <button class="honour-btn" style="background-color: var(--success); color: #0d0c10; font-weight: bold; flex: 1;" onclick="assessHonour(true)">Correct ✔</button>
+            </div>
+        </div>
+
+        <div id="start-btn-container" style="display: none;">
+            <div class="input-group">
+                <button id="start-btn" style="width: 100%; height: 2.8rem; background-color: var(--accent); color: #0d0c10; font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 1rem;" onclick="startSession();">▶ Start Session</button>
+            </div>
+        </div>
+
+        <div id="feedback-container" style="display: none;">
+            <div id="feedback-message" class="feedback"></div>
+            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                <button class="next-btn" id="next-btn" onclick="handleNextWorkflow()" style="flex: 2;">Next Verb →</button>
+                <button class="next-btn" id="undo-btn" onclick="executeUndoAction()" style="flex: 1; background-color: var(--warning); color: #0d0c10;">↩ Undo</button>
+            </div>
+        </div>
+    </div>
+
+    <button class="drawer-toggle" id="drawer-toggle-btn" onclick="toggleSettingsDrawer();" style="width: 100%; padding: 0.75rem; margin-top: 1rem; font-size: 0.95rem; background: none; border: 1px solid var(--border); border-radius: 0.5rem; color: var(--text-muted); cursor: pointer; text-align: center;">⚙️ Options & Filters ▾</button>
+    <div id="filter-status-line" style="text-align:center; font-size:0.72rem; color:var(--text-muted); margin:-0.5rem 0 1rem 0; letter-spacing:0.3px;"></div>
+    <div class="settings-drawer" id="settings-drawer">
+        <div class="grid-header-label">Production Input Method:</div>
+        <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <label class="row-label selected" id="lbl-method-type"><input type="radio" name="rad-method" id="chk-method-type" checked onchange="updateProductionMethod('type')">Type answer</label>
+            <label class="row-label" id="lbl-method-honour"><input type="radio" name="rad-method" id="chk-method-honour" onchange="updateProductionMethod('honour')">Self-assess (honour)</label>
+        </div>
+
+        <div class="grid-header-label">Known Cards Mode:</div>
+        <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <label class="row-label selected" id="lbl-known-adaptive"><input type="radio" name="rad-known-mode" id="chk-known-adaptive" checked onchange="updateKnownMode('adaptive')">Adaptive</label>
+            <label class="row-label" id="lbl-known-sweep"><input type="radio" name="rad-known-mode" id="chk-known-sweep" onchange="updateKnownMode('sweep')">Full Sweep</label>
+        </div>
+        <p class="mode-hint">
+            <strong>Adaptive:</strong> active + pending + pinned (skips known).<br>
+            <strong>Sweep:</strong> every card, including known.
+        </p>
+
+        <div class="grid-header-label">Accent Handling:</div>
+        <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <label class="row-label selected" id="lbl-accent-lenient"><input type="radio" name="rad-accent" id="chk-accent-lenient" checked onchange="updateAccentMode('lenient')">Lenient (forgiven)</label>
+            <label class="row-label" id="lbl-accent-strict"><input type="radio" name="rad-accent" id="chk-accent-strict" onchange="updateAccentMode('strict')">Strict (required)</label>
+        </div>
+        <p class="mode-hint">
+            <strong>Lenient:</strong> habléis passes as hableis.<br>
+            <strong>Strict:</strong> accent marks must match exactly.
+        </p>
+
+        <div class="grid-header-label">Session Deck Size:</div>
+        <select id="deck-size-selector" onchange="initSessionDeck()" style="width: 100%; padding: 0.45rem; background-color: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border); border-radius: 0.35rem; font-size: 0.85rem; outline: none; margin-top: 0.25rem; margin-bottom: 0.8rem;">
+            <option value="15" selected>15 cards (short drill)</option>
+            <option value="30">30 cards</option>
+            <option value="50">50 cards</option>
+            <option value="100">100 cards</option>
+            <option value="9999">Full set (no cap)</option>
+        </select>
+
+        <div class="grid-header-label">Card Behaviour:</div>
+        <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <label class="row-label" id="lbl-opt-play-mode"><input type="checkbox" id="chk-opt-play-mode" onchange="updatePlayMode()">🎮 Play mode</label>
+            <label class="row-label selected" id="lbl-opt-auto-speak-inf"><input type="checkbox" id="chk-opt-auto-speak-inf" checked onchange="updateAutoSpeakInfinitive()">Auto-speak infinitive</label>
+        </div>
+        <div class="grid-header-label">Hint Detail Level:</div>
+        <div class="row-grid" style="grid-template-columns: repeat(3, 1fr);">
+            <label class="row-label" id="lbl-hint-none"><input type="radio" name="rad-hint" id="chk-hint-none" onchange="updateHintLevel('none')">No hints</label>
+            <label class="row-label selected" id="lbl-hint-basic"><input type="radio" name="rad-hint" id="chk-hint-basic" checked onchange="updateHintLevel('basic')">Basic</label>
+            <label class="row-label" id="lbl-hint-detailed"><input type="radio" name="rad-hint" id="chk-hint-detailed" onchange="updateHintLevel('detailed')">Detailed</label>
+        </div>
+        <p class="mode-hint">No hints: nothing shown. Basic: pattern-level only. Detailed: pattern + specific forms (spoiler).</p>
+        <div class="row-grid" style="grid-template-columns: repeat(1, 1fr);">
+            <div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.2rem;">Auto-pin after fails:</div>
+                <select id="auto-pin-selector" onchange="setAutoPinThreshold(this.value)" style="width: 100%; padding: 0.45rem; background-color: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border); border-radius: 0.35rem; font-size: 0.85rem; outline: none;">
+                    <option value="0">Off</option>
+                    <option value="2">2 fails</option>
+                    <option value="3" selected>3 fails</option>
+                    <option value="5">5 fails</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid-header-label">Active Verb Classes:</div>
+        <div class="row-grid" style="grid-template-columns: repeat(3, 1fr);">
+            <label class="row-label selected" id="lbl-opt-ar"><input type="checkbox" id="chk-opt-ar" checked onchange="updateFilterSelection('ar')">-AR</label>
+            <label class="row-label selected" id="lbl-opt-er"><input type="checkbox" id="chk-opt-er" checked onchange="updateFilterSelection('er')">-ER</label>
+            <label class="row-label selected" id="lbl-opt-ir"><input type="checkbox" id="chk-opt-ir" checked onchange="updateFilterSelection('ir')">-IR</label>
+            <label class="row-label selected" id="lbl-opt-spl"><input type="checkbox" id="chk-opt-spl" checked onchange="updateFilterSelection('spl')">Spelling</label>
+            <label class="row-label selected" id="lbl-opt-stem"><input type="checkbox" id="chk-opt-stem" checked onchange="updateFilterSelection('stem')">Stem-change</label>
+            <label class="row-label selected" id="lbl-opt-go"><input type="checkbox" id="chk-opt-go" checked onchange="updateFilterSelection('go')">"Go" verbs</label>
+            <label class="row-label selected" id="lbl-opt-irreg"><input type="checkbox" id="chk-opt-irreg" checked onchange="updateFilterSelection('irreg')">Irregular</label>
+        </div>
+
+        <div class="grid-header-label">Active Tenses:</div>
+        <div class="row-grid">
+            <label class="row-label selected" id="lbl-opt-subj_pres"><input type="checkbox" id="chk-opt-subj_pres" checked onchange="updateFilterSelection('subj_pres')">Present Subj.</label>
+            <label class="row-label selected" id="lbl-opt-subj_impf"><input type="checkbox" id="chk-opt-subj_impf" checked onchange="updateFilterSelection('subj_impf')">Imperfect Subj.</label>
+            <label class="row-label selected" id="lbl-opt-subj_pp"><input type="checkbox" id="chk-opt-subj_pp" checked onchange="updateFilterSelection('subj_pp')">Present Perfect Subj.</label>
+            <label class="row-label" id="lbl-opt-subj_plu"><input type="checkbox" id="chk-opt-subj_plu" onchange="updateFilterSelection('subj_plu')">Pluperfect Subj.</label>
+        </div>
+        <p class="mode-hint">Pluperfect is off by default (advanced tier).</p>
+
+        <div class="grid-header-label">Active Pronouns:</div>
+        <div class="row-grid" style="grid-template-columns: repeat(3, 1fr);">
+            <label class="row-label selected" id="lbl-opt-yo"><input type="checkbox" id="chk-opt-yo" checked onchange="updateFilterSelection('yo')">Yo (I)</label>
+            <label class="row-label selected" id="lbl-opt-tu"><input type="checkbox" id="chk-opt-tu" checked onchange="updateFilterSelection('tu')">Tú (You)</label>
+            <label class="row-label selected" id="lbl-opt-el"><input type="checkbox" id="chk-opt-el" checked onchange="updateFilterSelection('el')">Él / Ella</label>
+            <label class="row-label selected" id="lbl-opt-nosotros"><input type="checkbox" id="chk-opt-nosotros" checked onchange="updateFilterSelection('nosotros')">Nosotros</label>
+            <label class="row-label selected" id="lbl-opt-vosotros"><input type="checkbox" id="chk-opt-vosotros" checked onchange="updateFilterSelection('vosotros')">Vosotros</label>
+            <label class="row-label selected" id="lbl-opt-ellos"><input type="checkbox" id="chk-opt-ellos" checked onchange="updateFilterSelection('ellos')">Ellos / Ellas</label>
+        </div>
+
+        <div class="grid-header-label">Isolate Specific Verb Drill:</div>
+        <select id="verb-isolate-selector" onchange="initSessionDeck()" style="width: 100%; padding: 0.45rem; background-color: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border); border-radius: 0.35rem; font-size: 0.85rem; outline: none; margin-top: 0.25rem; margin-bottom: 0.8rem;">
+            <option value="all">-- Drill All Verbs (Active Filter Set) --</option>
+        </select>
+
+        <div class="grid-header-label">Progress:</div>
+        <button onclick="resetAllProgress();" style="width: 100%; padding: 0.45rem; background-color: rgba(239, 68, 68, 0.15); color: var(--error); border: 1px solid var(--error); border-radius: 0.35rem; font-size: 0.8rem; cursor: pointer; font-weight: bold; margin-top: 0.25rem;">Reset all progress</button>
+    </div>
+
+    <div id="view-guide" style="display: none;">
+        <div class="guide-subtabs">
+            <button class="guide-subtab-btn active" id="guide-subtab-user" onclick="setGuideTab('user')">📖 User Guide</button>
+            <button class="guide-subtab-btn" id="guide-subtab-conj" onclick="setGuideTab('conj')">📚 Conjugation Tables</button>
+        </div>
+        <div class="guide-scroll">
+            <div id="guide-user-content" class="guide-body">
+                <h3 style="color: var(--accent); margin: 0 0 1rem 0; text-align: center; font-size: 1.15rem;">How to Use This App</h3>
+
+                <div class="guide-subsection" style="margin-top: 0;">What this is</div>
+                <p>A <strong>high-intensity drill tool</strong> for one thing: Spanish subjunctive conjugation. The subjunctive is a <em>mood</em>, not a tense — it expresses doubt, emotion, desire, hypotheticals, and things that haven't happened. It's the biggest remaining hurdle after mastering the indicative, and where intermediate learners most often plateau.</p>
+                <p>This app gives you <strong>39 verbs × 6 pronouns × 4 tenses = 936 cards</strong> (702 with the pluperfect tier off). It drills form production — the same principle as the base Spanish app, applied to the subjunctive family.</p>
+                <p class="guide-tagline">Think of this app as the second act after the base verb terminal.</p>
+
+                <div class="guide-subsection">What this app is not</div>
+                <p>It drills <strong>how to form the subjunctive</strong>, not <strong>when to use it</strong>. Those are separate skills. You can produce <em>hable</em> perfectly and still use the indicative <em>hablo</em> in a sentence that should trigger the subjunctive. Sentence-level <em>trigger recognition</em> is a different drill and a different app — see the final note.</p>
+                <p>For a summary of common triggers, see the Conjugation Tables tab (Trigger Phrases section). It's a reference, not a drill.</p>
+
+                <div class="guide-subsection">The four piles</div>
+                <div class="guide-pile"><span class="guide-pile-label">⚪ Active</span><span class="guide-pile-desc">Cards you're still working through. Appear in every drill. A card is Active if it's new <em>or</em> if you've failed it once and corrected it.</span></div>
+                <div class="guide-pile"><span class="guide-pile-label">🟡 Pending</span><span class="guide-pile-desc">Cards you've recently missed. Mixed into the general rotation but called out separately so you can drill them deliberately. Pin with 📍 or use <strong>📌 All</strong>.</span></div>
+                <div class="guide-pile"><span class="guide-pile-label">🔴 Pinned</span><span class="guide-pile-desc">Your watchlist. Stays in rotation indefinitely. Auto-pin after 3 fails (adjustable). To retire, correct then unpin.</span></div>
+                <div class="guide-pile"><span class="guide-pile-label">💚 Known</span><span class="guide-pile-desc">Mastered. Skipped in Adaptive mode. To review, switch to Full Sweep or Forget All.</span></div>
+
+                <div class="guide-subsection">How cards move between piles</div>
+                <p>Cards change state based on your <strong>first answer in each session</strong>:</p>
+                <table class="ref-table" style="font-size: 0.8rem;">
+                    <tr><th>From</th><th>Correct (first attempt)</th><th>Wrong</th></tr>
+                    <tr><td><strong>Active</strong></td><td>→ Known</td><td>→ Pending</td></tr>
+                    <tr><td><strong>Pending</strong></td><td>→ Active</td><td>→ Pending</td></tr>
+                    <tr><td><strong>Pinned</strong></td><td>→ Pinned (stays)</td><td>→ Pinned (stays)</td></tr>
+                    <tr><td><strong>Known</strong></td><td>→ Known (stays)</td><td>→ Pending (Sweep only)</td></tr>
+                </table>
+
+                <div class="guide-section-header">The Tenses</div>
+
+                <div class="guide-subsection" style="margin-top: 0;">Present subjunctive</div>
+                <p>The workhorse. Used for present or future uncertainty: <em>Quiero que hables</em> ("I want you to speak"). Forms from the yo-form of the present indicative, with "opposite vowel" endings: -ar verbs take e-endings (hable), -er/-ir verbs take a-endings (coma, viva). Stem changes follow the boot pattern. Irregular yo-forms carry over (tengo → tenga) — except for the five verbs whose subjunctive is entirely irregular (ser, estar, ir, saber, dar).</p>
+
+                <div class="guide-subsection">Imperfect subjunctive</div>
+                <p>Used for past uncertainty, hypotheticals, and polite softening: <em>Si hablara...</em> ("If I spoke..."). Forms from the 3rd-person-plural preterite stem + <code>-ra</code> endings: <em>hablaron → hablara</em>, <em>tuvieron → tuviera</em>, <em>dijeron → dijera</em>. Once you know a verb's preterite 3pl, the imperfect subjunctive is mechanical.</p>
+                <p>Only the <code>-ra</code> form is drilled, not <code>-se</code> (hablase etc). Both are correct; <code>-ra</code> is far more common in modern speech and writing. <code>-se</code> is noted in the conjugation tables but not drilled.</p>
+
+                <div class="guide-subsection">Present perfect subjunctive</div>
+                <p>Haya/hayas/etc. + past participle: <em>Espero que hayas comido</em> ("I hope you've eaten"). Used for past events with present relevance in a subjunctive clause — the subjunctive equivalent of the indicative present perfect.</p>
+
+                <div class="guide-subsection">Pluperfect subjunctive</div>
+                <p>Hubiera/hubieras/etc. + past participle: <em>Si hubiera sabido...</em> ("If I had known..."). Used for counterfactual past scenarios. It's the highest tier — off by default. Turn it on in Options when you're ready.</p>
+
+                <div class="guide-section-header">The Verb Classes</div>
+
+                <p>The seven class tags in the drawer are designed to teach you <strong>why each verb behaves the way it does</strong>:</p>
+
+                <div class="guide-pile"><span class="guide-pile-label">AR / ER / IR</span><span class="guide-pile-desc">Fully regular verbs. Present subjunctive uses simple opposite-vowel endings; imperfect subjunctive follows the 3pl preterite stem. These are your baseline.</span></div>
+                <div class="guide-pile"><span class="guide-pile-label">SPL</span><span class="guide-pile-desc">Spelling-change verbs (<em>buscar</em>, <em>llegar</em>, <em>empezar</em>). The letter before the ending shifts to preserve the sound — c→qu (busque), g→gu (llegue), z→c (empiece). Affects only the present subjunctive; imperfect is unaffected.</span></div>
+                <div class="guide-pile"><span class="guide-pile-label">STEM</span><span class="guide-pile-desc">Stem-changing verbs. The boot pattern: the stem changes in stressed forms, reverts in nosotros/vosotros. For -ir verbs (<em>dormir</em>, <em>sentir</em>, <em>pedir</em>), the nosotros/vosotros shift takes a different vowel (durmamos, sintamos) — a distinctive marker. <em>Jugar</em> and <em>seguir</em> combine a stem change with a spelling change (juegue, siga).</span></div>
+                <div class="guide-pile"><span class="guide-pile-label">GO</span><span class="guide-pile-desc">Verbs whose subjunctive derives from an irregular yo-form ending in <code>-go</code> or <code>-zco</code>: <em>tener</em> (tengo → tenga), <em>hacer</em> (hago → haga), <em>decir</em> (digo → diga), <em>venir</em> (vengo → venga), <em>poner</em> (pongo → ponga), <em>salir</em> (salgo → salga), <em>conocer</em> (conozco → conozca), <em>oír</em> (oigo → oiga). The subjunctive stem is the yo-form minus <code>-o</code>.</span></div>
+                <div class="guide-pile"><span class="guide-pile-label">IRREG</span><span class="guide-pile-desc">Verbs whose subjunctive is <em>not</em> derived from the yo-form: <em>ser</em> (sea), <em>estar</em> (esté), <em>ir</em> (vaya), <em>saber</em> (sepa), <em>dar</em> (dé). Five verbs to memorise — that's the whole list.</span></div>
+
+                <div class="guide-section-header">The Settings</div>
+
+                <div class="guide-subsection" style="margin-top: 0;">Adaptive vs Full Sweep</div>
+                <p><strong>Adaptive</strong> (default) draws from Active + Pending + Pinned, skipping Known. <strong>Full Sweep</strong> draws from everything, useful for a check-up. Failing a Known card in Sweep demotes it back to Pending.</p>
+
+                <div class="guide-subsection">Production vs acoustic</div>
+                <ul>
+                    <li><strong>Production Lane</strong> — you see the English gloss and target tense, you type the conjugated form.</li>
+                    <li><strong>Acoustic Lane</strong> — you hear the form, you identify person and tense. Self-assess (honour).</li>
+                </ul>
+
+                <div class="guide-subsection">Accent handling</div>
+                <p>The subjunctive has multiple accent-bearing forms: <em>habléis, comáis, tengáis</em> (present vosotros); <em>habláramos, comiéramos</em> (imperfect nosotros); <em>hayáis, hubiéramos</em> (compound). Lenient mode forgives them; strict requires them.</p>
+
+                <div class="guide-section-header">Drilling</div>
+
+                <div class="guide-subsection" style="margin-top: 0;">Reading the scoreboard</div>
+                <ul>
+                    <li><strong>Correct / Checked</strong> — lifetime totals.</li>
+                    <li><strong>Streak</strong> — resets on any wrong answer; 👑 = 15+.</li>
+                    <li><strong>Known / Deck</strong> — under current filters.</li>
+                    <li><strong>Progress</strong> — current session only.</li>
+                </ul>
+
+                <div class="guide-subsection">Hotkeys</div>
+                <p><strong>Space</strong> or <strong>Enter</strong> for move on / correct, <strong>X</strong> (or <strong>1</strong>) for incorrect, <strong>2</strong> for correct (honour mode), <strong>Ctrl+Z</strong> to undo the last answer.</p>
+
+                <div class="guide-section-header">Suggested Workflow</div>
+
+                <p><strong>Beginners to subjunctive.</strong> Start with <em>Present Subjunctive only</em> (uncheck imperfect, perfect, pluperfect). Filter to <em>AR + ER + IR regular verbs</em>. Get the basic endings automatic before adding stem-changers or irregulars.</p>
+                <p><strong>Add the irregular yo-form family.</strong> Turn on the GO class. The pattern is uniform (yo-form minus -o + endings), so if you know <em>tengo</em> → <em>tenga</em>, you can extend to <em>vengo</em>, <em>pongo</em>, <em>salgo</em>.</p>
+                <p><strong>Add the five IRREG verbs.</strong> Ser, estar, ir, saber, dar. These must be memorised; there's no shortcut. Do them one at a time.</p>
+                <p><strong>Add stem-changers.</strong> Pay particular attention to Dormir and Sentir — the nosotros vowel shift (durmamos, sintamos) is the most distinctive subjunctive pattern in Spanish.</p>
+                <p><strong>Add Imperfect Subjunctive.</strong> This is nearly free once the preterite is solid — just 3pl preterite stem + <code>-ra</code>. Watch the y-insertion verbs (Leer, Oír) and the 3pl-shift verbs (Dormir, Pedir, Sentir).</p>
+                <p><strong>Add compound tenses.</strong> Present perfect subjunctive is Tier 2. Pluperfect is Tier 3 — off by default. Turn it on when the earlier tenses feel solid.</p>
+                <p><strong>Every third or fourth session.</strong> Hit <strong>Drill Pending</strong> in the Reviews tab. This is where you patch the holes.</p>
+                <p><strong>When you're tired.</strong> Turn on 🎮 Play Mode. Nothing gets recorded.</p>
+
+                <div class="guide-section-header">Final Note</div>
+                <p>This app drills the <strong>four subjunctive tenses</strong>. Not covered: the <code>-se</code> variant of the imperfect subjunctive (hablase — see conjugation tables), the future subjunctive (fuere — archaic, only legal texts), or the imperative (a separate mood). Sentence-level <em>trigger selection</em> — deciding whether a clause needs subjunctive at all — is a separate skill and a separate app's worth of content. Use this to get the forms automatic; use the trigger-phrase reference in the Conjugation Tables to recognise when to reach for them.</p>
+            </div>
+
+            <div id="guide-conj-content" style="display: none;">
+                <h3 style="color: var(--accent); margin-top: 0; text-align: center;">Present Subjunctive Endings</h3>
+                <table class="ref-table">
+                    <tr><th>Class</th><th>yo</th><th>tú</th><th>él / ella</th><th>nosotros</th><th>vosotros</th><th>ellos / ellas</th></tr>
+                    <tr><td>-AR</td><td>-e</td><td>-es</td><td>-e</td><td>-emos</td><td>-éis</td><td>-en</td></tr>
+                    <tr><td>-ER</td><td>-a</td><td>-as</td><td>-a</td><td>-amos</td><td>-áis</td><td>-an</td></tr>
+                    <tr><td>-IR</td><td>-a</td><td>-as</td><td>-a</td><td>-amos</td><td>-áis</td><td>-an</td></tr>
+                </table>
+                <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-top: 0.4rem;">
+                    <strong>Note:</strong> "Opposite vowel" endings — -ar takes e-, -er/-ir take a-. Formed from the yo-form of the present indicative: <em>hablo → hable</em>, <em>tengo → tenga</em>, <em>conozco → conozca</em>.
+                </p>
+
+                <h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">Imperfect Subjunctive Endings (-ra)</h3>
+                <table class="ref-table">
+                    <tr><th>All verbs</th><th>yo</th><th>tú</th><th>él / ella</th><th>nosotros</th><th>vosotros</th><th>ellos / ellas</th></tr>
+                    <tr><td>-ra form</td><td>-ra</td><td>-ras</td><td>-ra</td><td>-ramos</td><td>-rais</td><td>-ran</td></tr>
+                </table>
+                <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-top: 0.4rem;">
+                    <strong>Note:</strong> Formed from the <em>3rd-person plural preterite</em> stem. <em>hablaron → hablara</em>, <em>tuvieron → tuviera</em>, <em>dijeron → dijera</em>, <em>durmieron → durmiera</em>. Accents on nosotros: <em>habláramos, comiéramos, tuviéramos</em>.
+                </p>
+
+                <h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">Haber Subjunctive Paradigms</h3>
+                <table class="ref-table">
+                    <tr><th>Tense</th><th>yo</th><th>tú</th><th>él / ella</th><th>nosotros</th><th>vosotros</th><th>ellos / ellas</th></tr>
+                    <tr><td>Present perfect subj.</td><td>haya</td><td>hayas</td><td>haya</td><td>hayamos</td><td>hayáis</td><td>hayan</td></tr>
+                    <tr><td>Pluperfect subj.</td><td>hubiera</td><td>hubieras</td><td>hubiera</td><td>hubiéramos</td><td>hubierais</td><td>hubieran</td></tr>
+                </table>
+                <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-top: 0.4rem;">
+                    <strong>Note:</strong> Both are attached silently to every verb for the compound tenses. Haber itself isn't drilled as a standalone verb — its subjunctive forms only appear inside the compound cards.
+                </p>
+
+                <h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">Irregular Participles</h3>
+                <table class="ref-table">
+                    <tr><th>Verb</th><th>Participle</th></tr>
+                    <tr><td>hacer</td><td>hecho</td></tr>
+                    <tr><td>decir</td><td>dicho</td></tr>
+                    <tr><td>poner</td><td>puesto</td></tr>
+                    <tr><td>escribir</td><td>escrito</td></tr>
+                    <tr><td>abrir</td><td>abierto</td></tr>
+                    <tr><td>volver</td><td>vuelto</td></tr>
+                    <tr><td>ver</td><td>visto</td></tr>
+                    <tr><td>ser</td><td>sido</td></tr>
+                    <tr><td>ir</td><td>ido</td></tr>
+                    <tr><td>leer</td><td>leído</td></tr>
+                    <tr><td>oír</td><td>oído</td></tr>
+                </table>
+
+                <h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">Special Stem Families</h3>
+                <table class="ref-table" style="font-size: 0.78rem;">
+                    <tr><th>Family</th><th>Verbs</th><th>What happens</th></tr>
+                    <tr><td>y-insertion (imperfect only)</td><td>leer, oír</td><td>leyeron → leyera; oyeron → oyera. Preterite stem gains a y.</td></tr>
+                    <tr><td>3pl preterite shift (imperfect only)</td><td>dormir, pedir, sentir</td><td>durmieron → durmiera; pidieron → pidiera; sintieron → sintiera. Stem changes only in 3sg and 3pl preterite.</td></tr>
+                    <tr><td>Strong preterite</td><td>poder, querer, tener, hacer, saber, decir, venir, poner, estar</td><td>pudieron → pudiera; quisieron → quisiera; tuvieron → tuviera; etc. Preterite stem is uniformly irregular.</td></tr>
+                    <tr><td>Double-change (present only)</td><td>jugar, seguir</td><td><strong>jugar</strong>: u→ue + g→gu (juegue, juguemos). <strong>seguir</strong>: e→i + gu before e (siga, sigas) but gu retained in imperfect (siguiera).</td></tr>
+                    <tr><td>Not from yo-form</td><td>ser, estar, ir, saber, dar</td><td>sea, esté, vaya, sepa, dé. The only five verbs with subjunctive that doesn't derive from the yo-form.</td></tr>
+                </table>
+
+                <h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">Trigger Phrases (Reference)</h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">
+                    These are the sentence patterns that typically require the subjunctive. Reference only — the drill does not test trigger recognition.
+                </p>
+                <table class="ref-table" style="font-size: 0.78rem;">
+                    <tr><th>Category</th><th>Triggers</th></tr>
+                    <tr><td>Wishes / volition</td><td>querer que, esperar que, preferir que, pedir que</td></tr>
+                    <tr><td>Emotion</td><td>me alegro de que, me sorprende que, es una lástima que</td></tr>
+                    <tr><td>Impersonal expressions</td><td>es importante que, es posible que, es necesario que</td></tr>
+                    <tr><td>Doubt / denial</td><td>dudo que, no creo que, no es cierto que</td></tr>
+                    <tr><td>Conjunctions</td><td>para que, antes de que, a menos que, sin que, cuando (future)</td></tr>
+                    <tr><td>Hypotheticals (imperfect subj.)</td><td>si tuviera..., como si fuera..., ojalá...</td></tr>
+                </table>
+
+                <h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">Full Paradigm — Representative Verbs</h3>
+                <table class="ref-table" style="font-size: 0.72rem;">
+                    <tr><th>Form</th><th>hablar</th><th>comer</th><th>vivir</th><th>tener</th><th>dormir</th><th>ser</th></tr>
+                    <tr><td>Present subj. (yo)</td><td>hable</td><td>coma</td><td>viva</td><td>tenga</td><td>duerma</td><td>sea</td></tr>
+                    <tr><td>Imperfect subj. (yo)</td><td>hablara</td><td>comiera</td><td>viviera</td><td>tuviera</td><td>durmiera</td><td>fuera</td></tr>
+                    <tr><td>Present perfect subj.</td><td>haya hablado</td><td>haya comido</td><td>haya vivido</td><td>haya tenido</td><td>haya dormido</td><td>haya sido</td></tr>
+                    <tr><td>Pluperfect subj.</td><td>hubiera hablado</td><td>hubiera comido</td><td>hubiera vivido</td><td>hubiera tenido</td><td>hubiera dormido</td><td>hubiera sido</td></tr>
+                </table>
+
+                <h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">Collisions &amp; Ambiguities</h3>
+                <table class="ref-table" style="font-size: 0.78rem;">
+                    <tr><th>Overlap</th><th>Detail</th></tr>
+                    <tr><td>yo = él / ella</td><td>Same form in every subjunctive tense. This is why the pronoun is always shown in the prompt.</td></tr>
+                    <tr><td>ser = ir (imperfect)</td><td>Both are <em>fuera, fueras, fuera, fuéramos, fuerais, fueran</em> — because they share preterite forms (<em>fui, fuiste...</em>). This is why the verb is always shown.</td></tr>
+                    <tr><td>-ra vs -se</td><td>Only -ra is drilled. The -se variant (hablase, comiese) is equally correct but less common in modern speech.</td></tr>
+                    <tr><td>Subjunctive vs conditional</td><td>Imperfect subjunctive <em>hablara</em> and conditional <em>hablaría</em> pair in conditionals: <em>Si hablara, hablaría</em>. Both drill differently; the conditional lives in the base verb app.</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-review" style="display: none;">
+        <button id="drill-all-btn" class="drill-all-btn" onclick="drillFromLog('all')">🎯 Drill All Reviews (Pending &amp; Pinned) (0)</button>
+
+        <div class="review-tabs">
+            <button class="review-tab" data-bucket="known" id="tab-known" onclick="setReviewTab('known')">💚 Known (<span id="count-known">0</span>)</button>
+            <button class="review-tab" data-bucket="active" id="tab-active" onclick="setReviewTab('active')">⚪ Active (<span id="count-active">0</span>)</button>
+            <button class="review-tab active" data-bucket="pending" id="tab-pending" onclick="setReviewTab('pending')">🟡 Pending (<span id="count-pending">0</span>)</button>
+            <button class="review-tab" data-bucket="pinned" id="tab-pinned" onclick="setReviewTab('pinned')">🔴 Pinned (<span id="count-pinned">0</span>)</button>
+        </div>
+
+        <div id="review-header" class="review-header"></div>
+        <div id="review-list-container" style="max-height: 40vh; overflow-y: auto;"></div>
+
+        <div class="review-actions">
+            <button id="drill-bucket-btn" onclick="drillActiveBucket()">🎯 Drill</button>
+            <button id="clear-bucket-btn" onclick="clearActiveBucket()">🗑️ Clear</button>
+        </div>
+    </div>
+
+</div>
+
+<div class="portal-shortcut-bar">
+    <a href="index.html">Return to Hub</a>
+    <div class="terminal-label">S-App 02</div>
+</div>
+
+<script>
+    var sessionStarted = false;
+    var productionMethod = "type";
+    var accentMode = "lenient";
+    var autoSpeakInfinitiveSetting = true;
+    var hintLevel = "basic";
+    var autoPinThreshold = 3;
+    var knownMode = "adaptive";
+    var playMode = false;
+    var currentClockObj = null;
+    var currentQuizDirection = "read";
+    var totalCorrect = 0;
+    var totalQuestions = 0;
+    var currentStreak = 0;
+    var mistakeLog = [];
+    var knownCards = {};
+    var currentSessionDeck = [];
+    var activeCardIndex = 0;
+    var coreDeckOriginalCount = 0;
+    var userActionHistory = [];
+    var pendingInfinitiveTimer = null;
+    var emptyReason = null;
+    var totalFilteredCount = 0;
+
+    var reviewTab = "pending";
+    var guideTab = "user";
+
+    var sessionMode = "normal";
+    var sessionFirstAttempts = {};
+    var sessionCorrect = 0;
+    var sessionTotal = 0;
+    var sessionCurrentStreak = 0;
+    var sessionBestStreak = 0;
+    var sessionRecoveredCount = 0;
+    var sessionKnownCount = 0;
+    var sessionComplete = false;
+
+    var selectedIntervals = {
+        ar: true, er: true, ir: true, spl: true, stem: true, go: true, irreg: true,
+        subj_pres: true, subj_impf: true, subj_pp: true, subj_plu: false,
+        yo: true, tu: true, el: true, nosotros: true, vosotros: true, ellos: true
+    };
+
+    function cancelPendingInfinitive() {
+        if (pendingInfinitiveTimer) {
+            clearTimeout(pendingInfinitiveTimer);
+            pendingInfinitiveTimer = null;
+        }
+    }
+
+    // ============================================================
+    // SHARED HABER SUBJUNCTIVE PARADIGMS
+    // ============================================================
+    var SUBJ_PP_PARADIGM  = { yo: "haya",    tu: "hayas",    el: "haya",    nosotros: "hayamos",    vosotros: "hayáis",    ellos: "hayan" };
+    var SUBJ_PLU_PARADIGM = { yo: "hubiera", tu: "hubieras", el: "hubiera", nosotros: "hubiéramos", vosotros: "hubierais", ellos: "hubieran" };
+
+    // ============================================================
+    // VERB DICTIONARY — 39 verbs
+    // ============================================================
+    var masterVerbDictionary = [
+        // ==================== AR REGULAR (4) ====================
+        { verb: "Hablar", types: ["ar"], meaning: "to speak",
+          english: { base: "speak", third: "speaks", past: "spoke", enPP: "spoken" }, participle: "hablado",
+          tenseHints: {},
+          subj_pres: { yo: "hable", tu: "hables", el: "hable", nosotros: "hablemos", vosotros: "habléis", ellos: "hablen" },
+          subj_impf: { yo: "hablara", tu: "hablaras", el: "hablara", nosotros: "habláramos", vosotros: "hablarais", ellos: "hablaran" }
+        },
+        { verb: "Cantar", types: ["ar"], meaning: "to sing",
+          english: { base: "sing", third: "sings", past: "sang", enPP: "sung" }, participle: "cantado",
+          tenseHints: {},
+          subj_pres: { yo: "cante", tu: "cantes", el: "cante", nosotros: "cantemos", vosotros: "cantéis", ellos: "canten" },
+          subj_impf: { yo: "cantara", tu: "cantaras", el: "cantara", nosotros: "cantáramos", vosotros: "cantarais", ellos: "cantaran" }
+        },
+        { verb: "Trabajar", types: ["ar"], meaning: "to work",
+          english: { base: "work", third: "works", past: "worked", enPP: "worked" }, participle: "trabajado",
+          tenseHints: {},
+          subj_pres: { yo: "trabaje", tu: "trabajes", el: "trabaje", nosotros: "trabajemos", vosotros: "trabajéis", ellos: "trabajen" },
+          subj_impf: { yo: "trabajara", tu: "trabajaras", el: "trabajara", nosotros: "trabajáramos", vosotros: "trabajarais", ellos: "trabajaran" }
+        },
+        { verb: "Estudiar", types: ["ar"], meaning: "to study",
+          english: { base: "study", third: "studies", past: "studied", enPP: "studied" }, participle: "estudiado",
+          tenseHints: {},
+          subj_pres: { yo: "estudie", tu: "estudies", el: "estudie", nosotros: "estudiemos", vosotros: "estudiéis", ellos: "estudien" },
+          subj_impf: { yo: "estudiara", tu: "estudiaras", el: "estudiara", nosotros: "estudiáramos", vosotros: "estudiarais", ellos: "estudiaran" }
+        },
+
+        // ==================== ER REGULAR (5) ====================
+        { verb: "Comer", types: ["er"], meaning: "to eat",
+          english: { base: "eat", third: "eats", past: "ate", enPP: "eaten" }, participle: "comido",
+          tenseHints: {},
+          subj_pres: { yo: "coma", tu: "comas", el: "coma", nosotros: "comamos", vosotros: "comáis", ellos: "coman" },
+          subj_impf: { yo: "comiera", tu: "comieras", el: "comiera", nosotros: "comiéramos", vosotros: "comierais", ellos: "comieran" }
+        },
+        { verb: "Beber", types: ["er"], meaning: "to drink",
+          english: { base: "drink", third: "drinks", past: "drank", enPP: "drunk" }, participle: "bebido",
+          tenseHints: {},
+          subj_pres: { yo: "beba", tu: "bebas", el: "beba", nosotros: "bebamos", vosotros: "bebáis", ellos: "beban" },
+          subj_impf: { yo: "bebiera", tu: "bebieras", el: "bebiera", nosotros: "bebiéramos", vosotros: "bebierais", ellos: "bebieran" }
+        },
+        { verb: "Aprender", types: ["er"], meaning: "to learn",
+          english: { base: "learn", third: "learns", past: "learned", enPP: "learned" }, participle: "aprendido",
+          tenseHints: {},
+          subj_pres: { yo: "aprenda", tu: "aprendas", el: "aprenda", nosotros: "aprendamos", vosotros: "aprendáis", ellos: "aprendan" },
+          subj_impf: { yo: "aprendiera", tu: "aprendieras", el: "aprendiera", nosotros: "aprendiéramos", vosotros: "aprendierais", ellos: "aprendieran" }
+        },
+        { verb: "Leer", types: ["er"], meaning: "to read",
+          english: { base: "read", third: "reads", past: "read", enPP: "read" }, participle: "leído",
+          tenseHints: { subj_impf: "y-insertion in preterite stem" },
+          tenseDetails: { subj_impf: "leyeron → leyera" },
+          subj_pres: { yo: "lea", tu: "leas", el: "lea", nosotros: "leamos", vosotros: "leáis", ellos: "lean" },
+          subj_impf: { yo: "leyera", tu: "leyeras", el: "leyera", nosotros: "leyéramos", vosotros: "leyerais", ellos: "leyeran" }
+        },
+        { verb: "Ver", types: ["er"], meaning: "to see / watch",
+          english: { base: "see", third: "sees", past: "saw", enPP: "seen" }, participle: "visto",
+          tenseHints: { subj_pres: "Short stem from yo-form", subj_pp: "Irregular participle", subj_plu: "Irregular participle" },
+          tenseDetails: { subj_pres: "veo → vea", subj_pp: "visto", subj_plu: "visto" },
+          subj_pres: { yo: "vea", tu: "veas", el: "vea", nosotros: "veamos", vosotros: "veáis", ellos: "vean" },
+          subj_impf: { yo: "viera", tu: "vieras", el: "viera", nosotros: "viéramos", vosotros: "vierais", ellos: "vieran" }
+        },
+
+        // ==================== IR REGULAR (4) ====================
+        { verb: "Vivir", types: ["ir"], meaning: "to live",
+          english: { base: "live", third: "lives", past: "lived", enPP: "lived" }, participle: "vivido",
+          tenseHints: {},
+          subj_pres: { yo: "viva", tu: "vivas", el: "viva", nosotros: "vivamos", vosotros: "viváis", ellos: "vivan" },
+          subj_impf: { yo: "viviera", tu: "vivieras", el: "viviera", nosotros: "viviéramos", vosotros: "vivierais", ellos: "vivieran" }
+        },
+        { verb: "Escribir", types: ["ir"], meaning: "to write",
+          english: { base: "write", third: "writes", past: "wrote", enPP: "written" }, participle: "escrito",
+          tenseHints: { subj_pp: "Irregular participle", subj_plu: "Irregular participle" },
+          tenseDetails: { subj_pp: "escrito", subj_plu: "escrito" },
+          subj_pres: { yo: "escriba", tu: "escribas", el: "escriba", nosotros: "escribamos", vosotros: "escribáis", ellos: "escriban" },
+          subj_impf: { yo: "escribiera", tu: "escribieras", el: "escribiera", nosotros: "escribiéramos", vosotros: "escribierais", ellos: "escribieran" }
+        },
+        { verb: "Recibir", types: ["ir"], meaning: "to receive",
+          english: { base: "receive", third: "receives", past: "received", enPP: "received" }, participle: "recibido",
+          tenseHints: {},
+          subj_pres: { yo: "reciba", tu: "recibas", el: "reciba", nosotros: "recibamos", vosotros: "recibáis", ellos: "reciban" },
+          subj_impf: { yo: "recibiera", tu: "recibieras", el: "recibiera", nosotros: "recibiéramos", vosotros: "recibierais", ellos: "recibieran" }
+        },
+        { verb: "Abrir", types: ["ir"], meaning: "to open",
+          english: { base: "open", third: "opens", past: "opened", enPP: "opened" }, participle: "abierto",
+          tenseHints: { subj_pp: "Irregular participle", subj_plu: "Irregular participle" },
+          tenseDetails: { subj_pp: "abierto", subj_plu: "abierto" },
+          subj_pres: { yo: "abra", tu: "abras", el: "abra", nosotros: "abramos", vosotros: "abráis", ellos: "abran" },
+          subj_impf: { yo: "abriera", tu: "abrieras", el: "abriera", nosotros: "abriéramos", vosotros: "abrierais", ellos: "abrieran" }
+        },
+
+        // ==================== SPL: SPELLING-CHANGE (3) ====================
+        { verb: "Buscar", types: ["ar", "spl"], meaning: "to look for",
+          english: { base: "look for", third: "looks for", past: "looked for", enPP: "looked for" }, participle: "buscado",
+          tenseHints: { subj_pres: "Spelling change: c → qu" },
+          subj_pres: { yo: "busque", tu: "busques", el: "busque", nosotros: "busquemos", vosotros: "busquéis", ellos: "busquen" },
+          subj_impf: { yo: "buscara", tu: "buscaras", el: "buscara", nosotros: "buscáramos", vosotros: "buscarais", ellos: "buscaran" }
+        },
+        { verb: "Llegar", types: ["ar", "spl"], meaning: "to arrive",
+          english: { base: "arrive", third: "arrives", past: "arrived", enPP: "arrived" }, participle: "llegado",
+          tenseHints: { subj_pres: "Spelling change: g → gu" },
+          subj_pres: { yo: "llegue", tu: "llegues", el: "llegue", nosotros: "lleguemos", vosotros: "lleguéis", ellos: "lleguen" },
+          subj_impf: { yo: "llegara", tu: "llegaras", el: "llegara", nosotros: "llegáramos", vosotros: "llegarais", ellos: "llegaran" }
+        },
+        { verb: "Empezar", types: ["ar", "spl", "stem"], meaning: "to begin",
+          english: { base: "begin", third: "begins", past: "began", enPP: "begun" }, participle: "empezado",
+          tenseHints: { subj_pres: "z → c + boot stem change (e → ie)" },
+          subj_pres: { yo: "empiece", tu: "empieces", el: "empiece", nosotros: "empecemos", vosotros: "empecéis", ellos: "empiecen" },
+          subj_impf: { yo: "empezara", tu: "empezaras", el: "empezara", nosotros: "empezáramos", vosotros: "empezarais", ellos: "empezaran" }
+        },
+
+        // ==================== STEM: STEM-CHANGE (10) ====================
+        { verb: "Pensar", types: ["ar", "stem"], meaning: "to think",
+          english: { base: "think", third: "thinks", past: "thought", enPP: "thought" }, participle: "pensado",
+          tenseHints: { subj_pres: "Boot stem change (e → ie)" },
+          subj_pres: { yo: "piense", tu: "pienses", el: "piense", nosotros: "pensemos", vosotros: "penséis", ellos: "piensen" },
+          subj_impf: { yo: "pensara", tu: "pensaras", el: "pensara", nosotros: "pensáramos", vosotros: "pensarais", ellos: "pensaran" }
+        },
+        { verb: "Entender", types: ["er", "stem"], meaning: "to understand",
+          english: { base: "understand", third: "understands", past: "understood", enPP: "understood" }, participle: "entendido",
+          tenseHints: { subj_pres: "Boot stem change (e → ie)" },
+          subj_pres: { yo: "entienda", tu: "entiendas", el: "entienda", nosotros: "entendamos", vosotros: "entendáis", ellos: "entiendan" },
+          subj_impf: { yo: "entendiera", tu: "entendieras", el: "entendiera", nosotros: "entendiéramos", vosotros: "entendierais", ellos: "entendieran" }
+        },
+        { verb: "Poder", types: ["er", "stem"], meaning: "to be able to / can",
+          english: { base: "be able to", third: "is able to", past: "was able to", enPP: "been able to" }, participle: "podido",
+          tenseHints: { subj_pres: "Boot stem change (o → ue)", subj_impf: "Strong preterite" },
+          tenseDetails: { subj_impf: "pudieron → pudiera" },
+          subj_pres: { yo: "pueda", tu: "puedas", el: "pueda", nosotros: "podamos", vosotros: "podáis", ellos: "puedan" },
+          subj_impf: { yo: "pudiera", tu: "pudieras", el: "pudiera", nosotros: "pudiéramos", vosotros: "pudierais", ellos: "pudieran" }
+        },
+        { verb: "Querer", types: ["er", "stem"], meaning: "to want / love",
+          english: { base: "want", third: "wants", past: "wanted", enPP: "wanted" }, participle: "querido",
+          tenseHints: { subj_pres: "Boot stem change (e → ie)", subj_impf: "Strong preterite" },
+          tenseDetails: { subj_impf: "quisieron → quisiera" },
+          subj_pres: { yo: "quiera", tu: "quieras", el: "quiera", nosotros: "queramos", vosotros: "queráis", ellos: "quieran" },
+          subj_impf: { yo: "quisiera", tu: "quisieras", el: "quisiera", nosotros: "quisiéramos", vosotros: "quisierais", ellos: "quisieran" }
+        },
+        { verb: "Dormir", types: ["ir", "stem"], meaning: "to sleep",
+          english: { base: "sleep", third: "sleeps", past: "slept", enPP: "slept" }, participle: "dormido",
+          tenseHints: { subj_pres: "Boot stem change (o → ue), vowel shift in nosotros/vosotros", subj_impf: "3pl preterite shift" },
+          tenseDetails: { subj_pres: "nosotros/vosotros shift o → u (durmamos, durmáis)", subj_impf: "durmieron → durmiera" },
+          subj_pres: { yo: "duerma", tu: "duermas", el: "duerma", nosotros: "durmamos", vosotros: "durmáis", ellos: "duerman" },
+          subj_impf: { yo: "durmiera", tu: "durmieras", el: "durmiera", nosotros: "durmiéramos", vosotros: "durmierais", ellos: "durmieran" }
+        },
+        { verb: "Pedir", types: ["ir", "stem"], meaning: "to ask for / request",
+          english: { base: "ask for", third: "asks for", past: "asked for", enPP: "asked for" }, participle: "pedido",
+          tenseHints: { subj_pres: "Stem change (e → i)", subj_impf: "3pl preterite shift" },
+          tenseDetails: { subj_impf: "pidieron → pidiera" },
+          subj_pres: { yo: "pida", tu: "pidas", el: "pida", nosotros: "pidamos", vosotros: "pidáis", ellos: "pidan" },
+          subj_impf: { yo: "pidiera", tu: "pidieras", el: "pidiera", nosotros: "pidiéramos", vosotros: "pidierais", ellos: "pidieran" }
+        },
+        { verb: "Sentir", types: ["ir", "stem"], meaning: "to feel",
+          english: { base: "feel", third: "feels", past: "felt", enPP: "felt" }, participle: "sentido",
+          tenseHints: { subj_pres: "Boot stem change (e → ie), vowel shift in nosotros/vosotros", subj_impf: "3pl preterite shift" },
+          tenseDetails: { subj_pres: "nosotros/vosotros shift e → i (sintamos, sintáis)", subj_impf: "sintieron → sintiera" },
+          subj_pres: { yo: "sienta", tu: "sientas", el: "sienta", nosotros: "sintamos", vosotros: "sintáis", ellos: "sientan" },
+          subj_impf: { yo: "sintiera", tu: "sintieras", el: "sintiera", nosotros: "sintiéramos", vosotros: "sintierais", ellos: "sintieran" }
+        },
+        { verb: "Volver", types: ["er", "stem"], meaning: "to return",
+          english: { base: "return", third: "returns", past: "returned", enPP: "returned" }, participle: "vuelto",
+          tenseHints: { subj_pres: "Boot stem change (o → ue)", subj_pp: "Irregular participle", subj_plu: "Irregular participle" },
+          tenseDetails: { subj_pp: "vuelto", subj_plu: "vuelto" },
+          subj_pres: { yo: "vuelva", tu: "vuelvas", el: "vuelva", nosotros: "volvamos", vosotros: "volváis", ellos: "vuelvan" },
+          subj_impf: { yo: "volviera", tu: "volvieras", el: "volviera", nosotros: "volviéramos", vosotros: "volvierais", ellos: "volvieran" }
+        },
+        { verb: "Jugar", types: ["ar", "stem"], meaning: "to play",
+          english: { base: "play", third: "plays", past: "played", enPP: "played" }, participle: "jugado",
+          tenseHints: { subj_pres: "u → ue + spelling change (g → gu)" },
+          subj_pres: { yo: "juegue", tu: "juegues", el: "juegue", nosotros: "juguemos", vosotros: "juguéis", ellos: "jueguen" },
+          subj_impf: { yo: "jugara", tu: "jugaras", el: "jugara", nosotros: "jugáramos", vosotros: "jugarais", ellos: "jugaran" }
+        },
+        { verb: "Seguir", types: ["ir", "stem"], meaning: "to follow / continue",
+          english: { base: "follow", third: "follows", past: "followed", enPP: "followed" }, participle: "seguido",
+          tenseHints: { subj_pres: "Stem change (e → i) + gu retained", subj_impf: "3pl preterite shift" },
+          tenseDetails: { subj_pres: "sig- (siga, sigas, siga, sigamos, sigáis, sigan)", subj_impf: "siguieron → siguiera" },
+          subj_pres: { yo: "siga", tu: "sigas", el: "siga", nosotros: "sigamos", vosotros: "sigáis", ellos: "sigan" },
+          subj_impf: { yo: "siguiera", tu: "siguieras", el: "siguiera", nosotros: "siguiéramos", vosotros: "siguierais", ellos: "siguieran" }
+        },
+
+        // ==================== GO: SUBJ FROM YO-FORM (8) ====================
+        { verb: "Tener", types: ["er", "go"], meaning: "to have",
+          english: { base: "have", third: "has", past: "had", enPP: "had" }, participle: "tenido",
+          tenseHints: { subj_pres: "Irregular yo-form", subj_impf: "Strong preterite" },
+          tenseDetails: { subj_pres: "tengo → tenga", subj_impf: "tuvieron → tuviera" },
+          subj_pres: { yo: "tenga", tu: "tengas", el: "tenga", nosotros: "tengamos", vosotros: "tengáis", ellos: "tengan" },
+          subj_impf: { yo: "tuviera", tu: "tuvieras", el: "tuviera", nosotros: "tuviéramos", vosotros: "tuvierais", ellos: "tuvieran" }
+        },
+        { verb: "Hacer", types: ["er", "go"], meaning: "to do / make",
+          english: { base: "do", third: "does", past: "did", enPP: "done" }, participle: "hecho",
+          tenseHints: { subj_pres: "Irregular yo-form", subj_impf: "Strong preterite", subj_pp: "Irregular participle", subj_plu: "Irregular participle" },
+          tenseDetails: { subj_pres: "hago → haga", subj_impf: "hicieron → hiciera", subj_pp: "hecho", subj_plu: "hecho" },
+          subj_pres: { yo: "haga", tu: "hagas", el: "haga", nosotros: "hagamos", vosotros: "hagáis", ellos: "hagan" },
+          subj_impf: { yo: "hiciera", tu: "hicieras", el: "hiciera", nosotros: "hiciéramos", vosotros: "hicierais", ellos: "hicieran" }
+        },
+        { verb: "Decir", types: ["ir", "go"], meaning: "to say / tell",
+          english: { base: "say", third: "says", past: "said", enPP: "said" }, participle: "dicho",
+          tenseHints: { subj_pres: "Irregular yo-form", subj_impf: "Strong preterite", subj_pp: "Irregular participle", subj_plu: "Irregular participle" },
+          tenseDetails: { subj_pres: "digo → diga", subj_impf: "dijeron → dijera", subj_pp: "dicho", subj_plu: "dicho" },
+          subj_pres: { yo: "diga", tu: "digas", el: "diga", nosotros: "digamos", vosotros: "digáis", ellos: "digan" },
+          subj_impf: { yo: "dijera", tu: "dijeras", el: "dijera", nosotros: "dijéramos", vosotros: "dijerais", ellos: "dijeran" }
+        },
+        { verb: "Venir", types: ["ir", "go"], meaning: "to come",
+          english: { base: "come", third: "comes", past: "came", enPP: "come" }, participle: "venido",
+          tenseHints: { subj_pres: "Irregular yo-form", subj_impf: "Strong preterite" },
+          tenseDetails: { subj_pres: "vengo → venga", subj_impf: "vinieron → viniera" },
+          subj_pres: { yo: "venga", tu: "vengas", el: "venga", nosotros: "vengamos", vosotros: "vengáis", ellos: "vengan" },
+          subj_impf: { yo: "viniera", tu: "vinieras", el: "viniera", nosotros: "viniéramos", vosotros: "vinierais", ellos: "vinieran" }
+        },
+        { verb: "Poner", types: ["er", "go"], meaning: "to put / place",
+          english: { base: "put", third: "puts", past: "put", enPP: "put" }, participle: "puesto",
+          tenseHints: { subj_pres: "Irregular yo-form", subj_impf: "Strong preterite", subj_pp: "Irregular participle", subj_plu: "Irregular participle" },
+          tenseDetails: { subj_pres: "pongo → ponga", subj_impf: "pusieron → pusiera", subj_pp: "puesto", subj_plu: "puesto" },
+          subj_pres: { yo: "ponga", tu: "pongas", el: "ponga", nosotros: "pongamos", vosotros: "pongáis", ellos: "pongan" },
+          subj_impf: { yo: "pusiera", tu: "pusieras", el: "pusiera", nosotros: "pusiéramos", vosotros: "pusierais", ellos: "pusieran" }
+        },
+        { verb: "Salir", types: ["ir", "go"], meaning: "to leave / go out",
+          english: { base: "leave", third: "leaves", past: "left", enPP: "left" }, participle: "salido",
+          tenseHints: { subj_pres: "Irregular yo-form" },
+          tenseDetails: { subj_pres: "salgo → salga" },
+          subj_pres: { yo: "salga", tu: "salgas", el: "salga", nosotros: "salgamos", vosotros: "salgáis", ellos: "salgan" },
+          subj_impf: { yo: "saliera", tu: "salieras", el: "saliera", nosotros: "saliéramos", vosotros: "salierais", ellos: "salieran" }
+        },
+        { verb: "Conocer", types: ["er", "go"], meaning: "to know (people/places)",
+          english: { base: "know", third: "knows", past: "knew", enPP: "known" }, participle: "conocido",
+          tenseHints: { subj_pres: "Irregular yo-form (-zco)" },
+          tenseDetails: { subj_pres: "conozco → conozca" },
+          subj_pres: { yo: "conozca", tu: "conozcas", el: "conozca", nosotros: "conozcamos", vosotros: "conozcáis", ellos: "conozcan" },
+          subj_impf: { yo: "conociera", tu: "conocieras", el: "conociera", nosotros: "conociéramos", vosotros: "conocierais", ellos: "conocieran" }
+        },
+        { verb: "Oír", types: ["ir", "go"], meaning: "to hear",
+          english: { base: "hear", third: "hears", past: "heard", enPP: "heard" }, participle: "oído",
+          tenseHints: { subj_pres: "Irregular yo-form", subj_impf: "y-insertion in preterite stem" },
+          tenseDetails: { subj_pres: "oigo → oiga", subj_impf: "oyeron → oyera" },
+          subj_pres: { yo: "oiga", tu: "oigas", el: "oiga", nosotros: "oigamos", vosotros: "oigáis", ellos: "oigan" },
+          subj_impf: { yo: "oyera", tu: "oyeras", el: "oyera", nosotros: "oyéramos", vosotros: "oyerais", ellos: "oyeran" }
+        },
+
+        // ==================== IRREG: NOT FROM YO-FORM (5) ====================
+        { verb: "Ser", types: ["irreg"], meaning: "to be (essential)",
+          english: { base: "be", third: "is", past: "was", enPP: "been" }, participle: "sido",
+          tenseHints: { subj_pres: "Fully irregular", subj_impf: "Fully irregular", subj_pp: "Irregular participle", subj_plu: "Irregular participle" },
+          tenseDetails: { subj_pres: "sea, seas, sea, seamos, seáis, sean", subj_impf: "fuera, fueras, fuera, fuéramos, fuerais, fueran (same as ir)", subj_pp: "sido", subj_plu: "sido" },
+          subj_pres: { yo: "sea", tu: "seas", el: "sea", nosotros: "seamos", vosotros: "seáis", ellos: "sean" },
+          subj_impf: { yo: "fuera", tu: "fueras", el: "fuera", nosotros: "fuéramos", vosotros: "fuerais", ellos: "fueran" }
+        },
+        { verb: "Estar", types: ["irreg"], meaning: "to be (location/state)",
+          english: { base: "be", third: "is", past: "was", enPP: "been" }, participle: "estado",
+          tenseHints: { subj_pres: "Irregular", subj_impf: "Strong preterite" },
+          tenseDetails: { subj_pres: "esté, estés, esté, estemos, estéis, estén", subj_impf: "estuvieron → estuviera" },
+          subj_pres: { yo: "esté", tu: "estés", el: "esté", nosotros: "estemos", vosotros: "estéis", ellos: "estén" },
+          subj_impf: { yo: "estuviera", tu: "estuvieras", el: "estuviera", nosotros: "estuviéramos", vosotros: "estuvierais", ellos: "estuvieran" }
+        },
+        { verb: "Ir", types: ["irreg"], meaning: "to go",
+          english: { base: "go", third: "goes", past: "went", enPP: "gone" }, participle: "ido",
+          tenseHints: { subj_pres: "Fully irregular", subj_impf: "Fully irregular" },
+          tenseDetails: { subj_pres: "vaya, vayas, vaya, vayamos, vayáis, vayan", subj_impf: "fuera, fueras, fuera, fuéramos, fuerais, fueran (same as ser)" },
+          subj_pres: { yo: "vaya", tu: "vayas", el: "vaya", nosotros: "vayamos", vosotros: "vayáis", ellos: "vayan" },
+          subj_impf: { yo: "fuera", tu: "fueras", el: "fuera", nosotros: "fuéramos", vosotros: "fuerais", ellos: "fueran" }
+        },
+        { verb: "Saber", types: ["irreg"], meaning: "to know (facts)",
+          english: { base: "know", third: "knows", past: "knew", enPP: "known" }, participle: "sabido",
+          tenseHints: { subj_pres: "Irregular (not from yo-form)", subj_impf: "Strong preterite" },
+          tenseDetails: { subj_pres: "sepa, sepas, sepa, sepamos, sepáis, sepan", subj_impf: "supieron → supiera" },
+          subj_pres: { yo: "sepa", tu: "sepas", el: "sepa", nosotros: "sepamos", vosotros: "sepáis", ellos: "sepan" },
+          subj_impf: { yo: "supiera", tu: "supieras", el: "supiera", nosotros: "supiéramos", vosotros: "supierais", ellos: "supieran" }
+        },
+        { verb: "Dar", types: ["irreg"], meaning: "to give",
+          english: { base: "give", third: "gives", past: "gave", enPP: "given" }, participle: "dado",
+          tenseHints: { subj_pres: "Irregular — short forms, accent on 1st & 3rd sg", subj_impf: "Regular from preterite stem" },
+          tenseDetails: { subj_pres: "dé, des, dé, demos, deis, den", subj_impf: "dieron → diera" },
+          subj_pres: { yo: "dé", tu: "des", el: "dé", nosotros: "demos", vosotros: "deis", ellos: "den" },
+          subj_impf: { yo: "diera", tu: "dieras", el: "diera", nosotros: "diéramos", vosotros: "dierais", ellos: "dieran" }
+        }
+    ];
+
+    var tenseNamesFullMap = { subj_pres: "Presente Subj.", subj_impf: "Imperfecto Subj.", subj_pp: "Pretérito Perfecto Subj.", subj_plu: "Pluscuamperfecto Subj." };
+    var tenseFullNames = { subj_pres: "Present Subjunctive", subj_impf: "Imperfect Subjunctive", subj_pp: "Present Perfect Subjunctive", subj_plu: "Pluperfect Subjunctive" };
+    var subjectPronounsArray = ["yo", "tu", "el", "nosotros", "vosotros", "ellos"];
+    var subjectLabelsFullMap = { yo: "Yo (I)", tu: "Tú (You)", el: "Él / Ella (He/She)", nosotros: "Nosotros (We)", vosotros: "Vosotros (You pl.)", ellos: "Ellos / Ellas (They)" };
+
+    // ============================================================
+    // HELPERS
+    // ============================================================
+    function cardKey(card) {
+        return (card.verb + "|" + card.tense + "|" + card.pronoun).toLowerCase();
+    }
+    function entryKey(entry) {
+        if (entry.key) return entry.key;
+        return (entry.verb + "|" + entry.tense + "|" + entry.pronoun).toLowerCase();
+    }
+    function findLogEntry(key) {
+        for (var i = 0; i < mistakeLog.length; i++) {
+            if (entryKey(mistakeLog[i]) === key) return mistakeLog[i];
+        }
+        return null;
+    }
+    function removeLogEntry(key) {
+        for (var i = 0; i < mistakeLog.length; i++) {
+            if (entryKey(mistakeLog[i]) === key) {
+                mistakeLog.splice(i, 1);
+                return;
+            }
+        }
+    }
+    function graduateToKnown(key) {
+        if (!knownCards[key]) {
+            knownCards[key] = { firstKnownAt: Date.now() };
+        }
+    }
+    function verbMatchesFilter(item) {
+        for (var i = 0; i < item.types.length; i++) {
+            if (selectedIntervals[item.types[i]] !== false) return true;
+        }
+        return false;
+    }
+
+    function cleanString(str) {
+        if (accentMode === 'strict') return str.toLowerCase().trim();
+        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+    }
+
+    function computeFullWord(card) {
+        if (card.tense === 'subj_pp') return card.ending + " " + card.participle;
+        if (card.tense === 'subj_plu') return card.ending + " " + card.participle;
+        return card.ending;
+    }
+
+    function buildEnglishGloss(card) {
+        var entry = null;
+        for (var i = 0; i < masterVerbDictionary.length; i++) {
+            if (masterVerbDictionary[i].verb === card.verb) { entry = masterVerbDictionary[i]; break; }
+        }
+        if (!entry || !entry.english) return "";
+        var e = entry.english;
+        var pronMap = { yo: "I", tu: "you", el: "he/she", nosotros: "we", vosotros: "you all", ellos: "they" };
+        var pron = pronMap[card.pronoun];
+        var isThirdSg = (card.pronoun === 'el');
+
+        // Disambiguate glosses that collide (saber/conocer, ser/estar) using the
+        // parenthetical from the meaning field: "to know (facts)" → "(facts)".
+        var disambig = "";
+        if (entry.meaning) {
+            var m = entry.meaning.match(/\(([^)]+)\)/);
+            if (m) disambig = " (" + m[1] + ")";
+        }
+
+        if (card.tense === 'subj_pres') return "that " + pron + " " + (isThirdSg ? e.third : e.base) + disambig;
+        if (card.tense === 'subj_impf') return "that " + pron + " " + e.past + disambig;
+        if (card.tense === 'subj_pp')   return "that " + pron + " " + (isThirdSg ? "has" : "have") + " " + e.enPP + disambig;
+        if (card.tense === 'subj_plu')  return "that " + pron + " had " + e.enPP + disambig;
+        return "";
+    }
+
+    function tenseAspectNote(tenseKey) {
+        if (tenseKey === 'subj_pres') return "doubt, wish, emotion, hypothetical present";
+        if (tenseKey === 'subj_impf') return "hypothetical past, polite softening, si-clauses";
+        if (tenseKey === 'subj_pp')   return "past event with present relevance in a subjunctive clause";
+        if (tenseKey === 'subj_plu')  return "counterfactual past (si hubiera...)";
+        return "";
+    }
+
+    // ============================================================
+    // LOG ENTRY HELPERS
+    // ============================================================
+    function makeLogEntry(card, yours) {
+        return {
+            key: cardKey(card),
+            verb: card.verb,
+            tense: card.tense,
+            pronoun: card.pronoun,
+            prompt: card.verb + " (" + tenseNamesFullMap[card.tense] + " • " + card.pronoun + ")",
+            correct: computeFullWord(card),
+            yours: yours,
+            status: "pending",
+            failCount: 1,
+            firstSeen: Date.now(),
+            lastSeen: Date.now()
+        };
+    }
+
+    function normalizeEntry(e) {
+        if (!e) return null;
+        if (e.key && e.verb && e.tense && e.pronoun) {
+            var newStatus = "pending";
+            if (e.pinned === true) newStatus = "pinned";
+            else if (e.status === "pinned") newStatus = "pinned";
+            else if (e.status === "active") newStatus = "active";
+            else if (e.status === "pending") newStatus = "pending";
+            else if (e.status === "redeemed") newStatus = "active";
+            e.status = newStatus;
+            delete e.pinned;
+            delete e.redeemStreak;
+            if (typeof e.failCount !== "number") e.failCount = 1;
+            if (!e.firstSeen) e.firstSeen = Date.now();
+            if (!e.lastSeen) e.lastSeen = Date.now();
+            return e;
+        }
+        return null;
+    }
+
+    function migrateLog() {
+        var migrated = [];
+        var seen = {};
+        for (var i = 0; i < mistakeLog.length; i++) {
+            var norm = normalizeEntry(mistakeLog[i]);
+            if (!norm) continue;
+            if (norm.status === "active") continue;
+            if (seen[norm.key]) {
+                seen[norm.key].failCount += norm.failCount;
+                seen[norm.key].yours = norm.yours || seen[norm.key].yours;
+                if (norm.lastSeen > seen[norm.key].lastSeen) seen[norm.key].lastSeen = norm.lastSeen;
+                continue;
+            }
+            seen[norm.key] = norm;
+            migrated.push(norm);
+        }
+        mistakeLog = migrated;
+    }
+
+    // ============================================================
+    // LOG UPDATE — four-pile state machine
+    // ============================================================
+    function handleLogUpdate(card, isCorrect, userInput) {
+        if (playMode) return { mode: 'play' };
+
+        var key = cardKey(card);
+        var entry = findLogEntry(key);
+        var isKnown = !!knownCards[key];
+        var isFirstAttempt = !(key in sessionFirstAttempts);
+
+        if (!isFirstAttempt) return { mode: 'not-first-attempt' };
+        sessionFirstAttempts[key] = isCorrect;
+
+        var result = { mode: 'no-change' };
+
+        if (isCorrect) {
+            if (isKnown) {
+                result.mode = 'still-known';
+            } else if (entry) {
+                if (entry.status === "pinned") {
+                    entry.lastSeen = Date.now();
+                    result.mode = 'still-pinned';
+                } else if (entry.status === "pending") {
+                    entry.status = "active";
+                    entry.lastSeen = Date.now();
+                    sessionRecoveredCount++;
+                    result.mode = 'pending-to-active';
+                } else if (entry.status === "active") {
+                    graduateToKnown(key);
+                    sessionKnownCount++;
+                    removeLogEntry(key);
+                    result.mode = 'active-to-known';
+                }
+            } else {
+                graduateToKnown(key);
+                sessionKnownCount++;
+                result.mode = 'fresh-to-known';
+            }
+        } else {
+            if (isKnown) {
+                delete knownCards[key];
+                mistakeLog.push(makeLogEntry(card, userInput));
+                result.mode = 'known-to-pending';
+            } else if (entry) {
+                entry.failCount = (entry.failCount || 1) + 1;
+                entry.yours = userInput;
+                entry.lastSeen = Date.now();
+                if (entry.status === "pinned") {
+                    result.mode = 'still-pinned-wrong';
+                    result.failCount = entry.failCount;
+                } else {
+                    entry.status = "pending";
+                    if (autoPinThreshold > 0 && entry.failCount >= autoPinThreshold) {
+                        entry.status = "pinned";
+                        result.mode = 'auto-pinned';
+                        result.failCount = entry.failCount;
+                    } else {
+                        result.mode = 'pending-wrong';
+                        result.failCount = entry.failCount;
+                    }
+                }
+            } else {
+                mistakeLog.push(makeLogEntry(card, userInput));
+                result.mode = 'fresh-to-pending';
+            }
+        }
+        updateLogBadges();
+        updateScoreboard();
+        return result;
+    }
+
+    function logUpdateMessage(result) {
+        if (!result) return '';
+        switch (result.mode) {
+            case 'pending-to-active': return '<br><small style="color:#fbbf24;">↩️ Moved back to Active deck</small>';
+            case 'active-to-known': return '<br><small style="color:#4ade80;">✨ Graduated to Known</small>';
+            case 'fresh-to-known': return '<br><small style="color:#4ade80;">✨ Added to Known deck</small>';
+            case 'known-to-pending': return '<br><small style="color:#fbbf24;">↪️ Demoted to Pending (was Known)</small>';
+            case 'auto-pinned': return '<br><small style="color:#ef4444;">🔴 Auto-pinned (fail #' + result.failCount + ')</small>';
+            case 'fresh-to-pending': return '<br><small style="color:#fbbf24;">🟡 Added to Pending</small>';
+            case 'still-pinned-wrong': return '<br><small style="color:#ef4444;">📌 Still pinned (fail #' + result.failCount + ')</small>';
+            case 'play': return '<br><small style="color:#fdba74;">🎮 Play mode — progress not recorded</small>';
+            default: return '';
+        }
+    }
+
+    function computeCounts() {
+        var counts = { known: 0, active: 0, pending: 0, pinned: 0, total: 0 };
+        var tenses = ['subj_pres', 'subj_impf', 'subj_pp', 'subj_plu'];
+        var isolateSel = document.getElementById('verb-isolate-selector');
+        var isolatedVerb = isolateSel ? isolateSel.value : "all";
+
+        for (var i = 0; i < masterVerbDictionary.length; i++) {
+            var item = masterVerbDictionary[i];
+            if (isolatedVerb !== "all" && isolatedVerb !== item.verb) continue;
+            if (!verbMatchesFilter(item)) continue;
+            for (var t = 0; t < tenses.length; t++) {
+                if (!selectedIntervals[tenses[t]]) continue;
+                for (var p = 0; p < subjectPronounsArray.length; p++) {
+                    if (!selectedIntervals[subjectPronounsArray[p]]) continue;
+                    counts.total++;
+                    var key = (item.verb + "|" + tenses[t] + "|" + subjectPronounsArray[p]).toLowerCase();
+                    if (knownCards[key]) { counts.known++; continue; }
+                    var entry = findLogEntry(key);
+                    if (entry) {
+                        if (entry.status === "pinned") counts.pinned++;
+                        else if (entry.status === "pending") counts.pending++;
+                        else counts.active++;
+                    } else {
+                        counts.active++;
+                    }
+                }
+            }
+        }
+        return counts;
+    }
+
+    function getFilteredKnownKeys() {
+        var keys = [];
+        var tenses = ['subj_pres', 'subj_impf', 'subj_pp', 'subj_plu'];
+        var isolateSel = document.getElementById('verb-isolate-selector');
+        var isolatedVerb = isolateSel ? isolateSel.value : "all";
+        for (var i = 0; i < masterVerbDictionary.length; i++) {
+            var item = masterVerbDictionary[i];
+            if (isolatedVerb !== "all" && isolatedVerb !== item.verb) continue;
+            if (!verbMatchesFilter(item)) continue;
+            for (var t = 0; t < tenses.length; t++) {
+                if (!selectedIntervals[tenses[t]]) continue;
+                for (var p = 0; p < subjectPronounsArray.length; p++) {
+                    if (!selectedIntervals[subjectPronounsArray[p]]) continue;
+                    var key = (item.verb + "|" + tenses[t] + "|" + subjectPronounsArray[p]).toLowerCase();
+                    if (knownCards[key]) keys.push(key);
+                }
+            }
+        }
+        return keys;
+    }
+
+    function updateLogBadges() {
+        var counts = computeCounts();
+        document.getElementById('review-count').innerText = counts.pending;
+        document.getElementById('count-known').innerText = counts.known;
+        document.getElementById('count-active').innerText = counts.active;
+        document.getElementById('count-pending').innerText = counts.pending;
+        document.getElementById('count-pinned').innerText = counts.pinned;
+
+        var dall = document.getElementById('drill-all-btn');
+        if (dall) {
+            var drillable = counts.pending + counts.pinned;
+            dall.innerText = "🎯 Drill All Reviews (Pending & Pinned) (" + drillable + ")";
+            dall.disabled = drillable === 0;
+        }
+    }
+
+    function updatePlayModePill() {
+        var pill = document.getElementById('play-mode-pill');
+        if (pill) pill.style.display = playMode ? "inline-block" : "none";
+    }
+
+    function updateFilterStatusLine() {
+        var counts = computeCounts();
+        var el = document.getElementById('filter-status-line');
+        if (el) {
+            var remaining = counts.active + counts.pending + counts.pinned;
+            el.innerText = counts.total + " cards under current filters · " + counts.known + " mastered · " + remaining + " remaining";
+        }
+    }
+
+    // ============================================================
+    // STATE SAVE / LOAD
+    // ============================================================
+    function saveState() {
+        try {
+            var sizeSel = document.getElementById('deck-size-selector');
+            var isolateSel = document.getElementById('verb-isolate-selector');
+            var state = {
+                dataVersion: 1,
+                filters: selectedIntervals,
+                direction: currentQuizDirection,
+                productionMethod: productionMethod,
+                accentMode: accentMode,
+                autoSpeakInfinitive: autoSpeakInfinitiveSetting,
+                hintLevel: hintLevel,
+                knownMode: knownMode,
+                autoPinThreshold: autoPinThreshold,
+                playMode: playMode,
+                verbIsolate: isolateSel ? isolateSel.value : "all",
+                deckSize: sizeSel ? sizeSel.value : "15",
+                reviewTab: reviewTab,
+                guideTab: guideTab,
+                stats: { correct: totalCorrect, total: totalQuestions, streak: currentStreak },
+                knownCards: knownCards,
+                cardUniverseTotal: computeCounts().total,
+                mistakes: mistakeLog
+            };
+            localStorage.setItem('spa_verbs_subjunctive_state', JSON.stringify(state));
+        } catch (e) {}
+    }
+
+    function loadState() {
+        try {
+            var raw = localStorage.getItem('spa_verbs_subjunctive_state');
+            if (!raw) return;
+            var state = JSON.parse(raw);
+
+            if (state.filters) {
+                for (var k in state.filters) {
+                    if (state.filters.hasOwnProperty(k) && typeof selectedIntervals[k] !== 'undefined') {
+                        selectedIntervals[k] = state.filters[k];
+                    }
+                }
+                applyFilterCheckboxes();
+            }
+
+            if (state.direction) {
+                currentQuizDirection = state.direction;
+                document.getElementById('dir-r').classList.remove('active');
+                document.getElementById('dir-w').classList.remove('active');
+                document.getElementById('dir-' + (state.direction === 'read' ? 'r' : 'w')).classList.add('active');
+            }
+
+            if (state.productionMethod) {
+                productionMethod = state.productionMethod;
+                var methodType = document.getElementById('lbl-method-type');
+                var methodHonour = document.getElementById('lbl-method-honour');
+                var chkType = document.getElementById('chk-method-type');
+                var chkHonour = document.getElementById('chk-method-honour');
+                if (productionMethod === 'honour') {
+                    if (methodType) methodType.classList.remove('selected');
+                    if (methodHonour) methodHonour.classList.add('selected');
+                    if (chkType) chkType.checked = false;
+                    if (chkHonour) chkHonour.checked = true;
+                } else {
+                    if (methodType) methodType.classList.add('selected');
+                    if (methodHonour) methodHonour.classList.remove('selected');
+                    if (chkType) chkType.checked = true;
+                    if (chkHonour) chkHonour.checked = false;
+                }
+            }
+
+            if (state.accentMode === 'strict' || state.accentMode === 'lenient') {
+                accentMode = state.accentMode;
+                var lL = document.getElementById('lbl-accent-lenient');
+                var lS = document.getElementById('lbl-accent-strict');
+                var cL = document.getElementById('chk-accent-lenient');
+                var cS = document.getElementById('chk-accent-strict');
+                if (accentMode === 'strict') {
+                    if (lL) lL.classList.remove('selected');
+                    if (lS) lS.classList.add('selected');
+                    if (cL) cL.checked = false;
+                    if (cS) cS.checked = true;
+                } else {
+                    if (lL) lL.classList.add('selected');
+                    if (lS) lS.classList.remove('selected');
+                    if (cL) cL.checked = true;
+                    if (cS) cS.checked = false;
+                }
+            }
+
+            if (typeof state.autoSpeakInfinitive !== 'undefined') {
+                autoSpeakInfinitiveSetting = state.autoSpeakInfinitive;
+                var chkAuto = document.getElementById('chk-opt-auto-speak-inf');
+                var lblAuto = document.getElementById('lbl-opt-auto-speak-inf');
+                if (chkAuto) chkAuto.checked = autoSpeakInfinitiveSetting;
+                if (lblAuto) {
+                    if (autoSpeakInfinitiveSetting) lblAuto.classList.add('selected');
+                    else lblAuto.classList.remove('selected');
+                }
+            }
+            // Hint level: prefer new string format, migrate from old boolean
+            if (typeof state.hintLevel === 'string' && ['none','basic','detailed'].indexOf(state.hintLevel) !== -1) {
+                hintLevel = state.hintLevel;
+            } else if (typeof state.detailedHints === 'boolean') {
+                hintLevel = state.detailedHints ? 'detailed' : 'basic';
+            }
+            var chkN = document.getElementById('chk-hint-none');
+            var chkB = document.getElementById('chk-hint-basic');
+            var chkD = document.getElementById('chk-hint-detailed');
+            if (chkN) chkN.checked = (hintLevel === 'none');
+            if (chkB) chkB.checked = (hintLevel === 'basic');
+            if (chkD) chkD.checked = (hintLevel === 'detailed');
+            document.getElementById('lbl-hint-none').classList.toggle('selected', hintLevel === 'none');
+            document.getElementById('lbl-hint-basic').classList.toggle('selected', hintLevel === 'basic');
+            document.getElementById('lbl-hint-detailed').classList.toggle('selected', hintLevel === 'detailed');
+
+            if (state.knownMode === "sweep" || state.knownMode === "adaptive") {
+                knownMode = state.knownMode;
+                document.getElementById('lbl-known-adaptive').classList.remove('selected');
+                document.getElementById('lbl-known-sweep').classList.remove('selected');
+                document.getElementById('chk-known-adaptive').checked = false;
+                document.getElementById('chk-known-sweep').checked = false;
+                document.getElementById('lbl-known-' + knownMode).classList.add('selected');
+                document.getElementById('chk-known-' + knownMode).checked = true;
+            }
+
+            if (typeof state.autoPinThreshold === "number") {
+                autoPinThreshold = state.autoPinThreshold;
+                var aps = document.getElementById('auto-pin-selector');
+                if (aps) aps.value = String(autoPinThreshold);
+            }
+
+            if (typeof state.playMode !== 'undefined') {
+                playMode = state.playMode;
+                var chkPlay = document.getElementById('chk-opt-play-mode');
+                var lblPlay = document.getElementById('lbl-opt-play-mode');
+                if (chkPlay) chkPlay.checked = playMode;
+                if (lblPlay) {
+                    if (playMode) lblPlay.classList.add('selected');
+                    else lblPlay.classList.remove('selected');
+                }
+            }
+
+            if (state.knownCards && typeof state.knownCards === "object") {
+                knownCards = state.knownCards;
+            }
+
+            if (state.verbIsolate) {
+                var isolateSel = document.getElementById('verb-isolate-selector');
+                if (isolateSel) isolateSel.value = state.verbIsolate;
+            }
+
+            if (state.deckSize) {
+                var sizeSel = document.getElementById('deck-size-selector');
+                if (sizeSel) sizeSel.value = state.deckSize;
+            }
+
+            if (state.reviewTab && ["known", "active", "pending", "pinned"].indexOf(state.reviewTab) !== -1) {
+                reviewTab = state.reviewTab;
+                document.querySelectorAll('.review-tab').forEach(function(b) {
+                    b.classList.toggle('active', b.dataset.bucket === reviewTab);
+                });
+            }
+
+            if (state.guideTab === "user" || state.guideTab === "conj") {
+                setGuideTab(state.guideTab);
+            }
+
+            if (state.stats) {
+                totalCorrect = state.stats.correct || 0;
+                totalQuestions = state.stats.total || 0;
+                currentStreak = state.stats.streak || 0;
+            }
+
+            if (Array.isArray(state.mistakes)) {
+                mistakeLog = state.mistakes;
+                migrateLog();
+            }
+
+            updateScoreboard();
+            updateLogBadges();
+            updatePlayModePill();
+        } catch (e) {}
+    }
+
+    // ============================================================
+    // FILTERS / DRAWER
+    // ============================================================
+    function applyFilterCheckboxes() {
+        var keys = Object.keys(selectedIntervals);
+        for (var i = 0; i < keys.length; i++) {
+            var key = keys[i];
+            var chk = document.getElementById('chk-opt-' + key);
+            var lbl = document.getElementById('lbl-opt-' + key);
+            if (chk) chk.checked = selectedIntervals[key];
+            if (lbl) {
+                if (selectedIntervals[key]) lbl.classList.add('selected');
+                else lbl.classList.remove('selected');
+            }
+        }
+    }
+
+    function updateKnownMode(mode) {
+        knownMode = mode;
+        document.getElementById('lbl-known-adaptive').classList.remove('selected');
+        document.getElementById('lbl-known-sweep').classList.remove('selected');
+        document.getElementById('lbl-known-' + mode).classList.add('selected');
+        saveState();
+        initSessionDeck();
+    }
+
+    function updatePlayMode() {
+        var chk = document.getElementById('chk-opt-play-mode');
+        var lbl = document.getElementById('lbl-opt-play-mode');
+        if (!chk) return;
+        playMode = chk.checked;
+        if (lbl) {
+            if (playMode) lbl.classList.add('selected');
+            else lbl.classList.remove('selected');
+        }
+        updatePlayModePill();
+        saveState();
+    }
+
+    function setAutoPinThreshold(val) {
+        autoPinThreshold = parseInt(val, 10) || 0;
+        saveState();
+    }
+
+    function updateAccentMode(mode) {
+        accentMode = mode;
+        var lL = document.getElementById('lbl-accent-lenient');
+        var lS = document.getElementById('lbl-accent-strict');
+        if (lL) lL.classList.toggle('selected', mode === 'lenient');
+        if (lS) lS.classList.toggle('selected', mode === 'strict');
+        saveState();
+    }
+
+    function resetAllProgress() {
+        if (!confirm("Clear all progress, scores, review log, and known cards?")) return;
+        try { localStorage.removeItem('spa_verbs_subjunctive_state'); } catch (e) {}
+
+        totalCorrect = 0;
+        totalQuestions = 0;
+        currentStreak = 0;
+        mistakeLog = [];
+        knownCards = {};
+        reviewTab = "pending";
+        guideTab = "user";
+        knownMode = "adaptive";
+        playMode = false;
+        autoPinThreshold = 3;
+        accentMode = "lenient";
+
+        var defaults = { ar: true, er: true, ir: true, spl: true, stem: true, go: true, irreg: true,
+                         subj_pres: true, subj_impf: true, subj_pp: true, subj_plu: false,
+                         yo: true, tu: true, el: true, nosotros: true, vosotros: true, ellos: true };
+        for (var k in defaults) {
+            if (defaults.hasOwnProperty(k)) selectedIntervals[k] = defaults[k];
+        }
+        applyFilterCheckboxes();
+
+        var isolateSel = document.getElementById('verb-isolate-selector');
+        if (isolateSel) isolateSel.value = "all";
+
+        productionMethod = "type";
+        document.getElementById('lbl-method-type').classList.add('selected');
+        document.getElementById('lbl-method-honour').classList.remove('selected');
+        document.getElementById('chk-method-type').checked = true;
+        document.getElementById('chk-method-honour').checked = false;
+
+        document.getElementById('lbl-accent-lenient').classList.add('selected');
+        document.getElementById('lbl-accent-strict').classList.remove('selected');
+        document.getElementById('chk-accent-lenient').checked = true;
+        document.getElementById('chk-accent-strict').checked = false;
+
+        document.getElementById('lbl-known-adaptive').classList.add('selected');
+        document.getElementById('lbl-known-sweep').classList.remove('selected');
+        document.getElementById('chk-known-adaptive').checked = true;
+        document.getElementById('chk-known-sweep').checked = false;
+
+        document.getElementById('chk-opt-play-mode').checked = false;
+        document.getElementById('lbl-opt-play-mode').classList.remove('selected');
+        document.getElementById('auto-pin-selector').value = "3";
+
+        autoSpeakInfinitiveSetting = true;
+        document.getElementById('chk-opt-auto-speak-inf').checked = true;
+        document.getElementById('lbl-opt-auto-speak-inf').classList.add('selected');
+        hintLevel = "basic";
+        document.getElementById('chk-hint-none').checked = false;
+        document.getElementById('chk-hint-basic').checked = true;
+        document.getElementById('chk-hint-detailed').checked = false;
+        document.getElementById('lbl-hint-none').classList.remove('selected');
+        document.getElementById('lbl-hint-basic').classList.add('selected');
+        document.getElementById('lbl-hint-detailed').classList.remove('selected');
+
+        document.getElementById('deck-size-selector').value = "15";
+
+        document.querySelectorAll('.review-tab').forEach(function(b) {
+            b.classList.toggle('active', b.dataset.bucket === "pending");
+        });
+        setGuideTab("user");
+
+        var drawer = document.getElementById('settings-drawer');
+        var btn = document.getElementById('drawer-toggle-btn');
+        if (drawer) drawer.style.display = "none";
+        if (btn) btn.innerText = "Customise Drill Settings ▾";
+
+        updateScoreboard();
+        updateLogBadges();
+        updatePlayModePill();
+        initSessionDeck();
+    }
+
+    function switchView(target) {
+        document.getElementById('view-quiz').style.display = target === 'quiz' ? 'block' : 'none';
+        document.getElementById('view-guide').style.display = target === 'guide' ? 'block' : 'none';
+        document.getElementById('view-review').style.display = target === 'review' ? 'block' : 'none';
+
+        var btns = document.getElementsByClassName('nav-btn');
+        for (var i = 0; i < btns.length; i++) { btns[i].classList.remove('active'); }
+        document.getElementById('tab-' + target).classList.add('active');
+
+        var drawer = document.getElementById('settings-drawer');
+        var btn = document.getElementById('drawer-toggle-btn');
+        if (drawer) drawer.style.display = "none";
+        if (btn) btn.innerText = "Customise Drill Settings ▾";
+
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter) shutter.classList.remove('collapsed');
+
+        if (target === 'review') renderReviewList();
+    }
+
+    function setGuideTab(tab) {
+        guideTab = tab;
+        document.getElementById('guide-subtab-user').classList.toggle('active', tab === 'user');
+        document.getElementById('guide-subtab-conj').classList.toggle('active', tab === 'conj');
+        document.getElementById('guide-user-content').style.display = tab === 'user' ? 'block' : 'none';
+        document.getElementById('guide-conj-content').style.display = tab === 'conj' ? 'block' : 'none';
+        var scroll = document.querySelector('.guide-scroll');
+        if (scroll) scroll.scrollTop = 0;
+        saveState();
+    }
+
+    function applyPanelVisibility() {
+        var readPanel = document.getElementById('panel-read-mode');
+        var writePanel = document.getElementById('panel-write-mode');
+        var useHonourPanel = (currentQuizDirection === 'write') ||
+                             (currentQuizDirection === 'read' && productionMethod === 'honour');
+        if (useHonourPanel) {
+            if (readPanel) readPanel.style.display = 'none';
+            if (writePanel) writePanel.style.display = 'block';
+        } else {
+            if (readPanel) readPanel.style.display = 'block';
+            if (writePanel) writePanel.style.display = 'none';
+        }
+    }
+
+    function populateVerbSelector() {
+        var sel = document.getElementById('verb-isolate-selector');
+        if (!sel) return;
+        var currentValue = sel.value;
+        while (sel.options.length > 1) { sel.remove(1); }
+        for (var i = 0; i < masterVerbDictionary.length; i++) {
+            var v = masterVerbDictionary[i];
+            if (!verbMatchesFilter(v)) continue;
+            var opt = document.createElement('option');
+            opt.value = v.verb;
+            opt.textContent = v.verb + " — " + v.meaning;
+            sel.appendChild(opt);
+        }
+        var stillValid = false;
+        for (var j = 0; j < sel.options.length; j++) {
+            if (sel.options[j].value === currentValue) { stillValid = true; break; }
+        }
+        sel.value = stillValid ? currentValue : "all";
+    }
+
+    function setDirection(dir) {
+        currentQuizDirection = dir;
+        document.getElementById('dir-r').classList.remove('active');
+        document.getElementById('dir-w').classList.remove('active');
+        document.getElementById('dir-' + (dir === 'read' ? 'r' : 'w')).classList.add('active');
+        applyPanelVisibility();
+        initSessionDeck();
+    }
+
+    function updateProductionMethod(method) {
+        productionMethod = method;
+        document.getElementById('lbl-method-type').classList.remove('selected');
+        document.getElementById('lbl-method-honour').classList.remove('selected');
+        document.getElementById('lbl-method-' + method).classList.add('selected');
+        applyPanelVisibility();
+        saveState();
+        initSessionDeck();
+    }
+
+    function updateAutoSpeakInfinitive() {
+        var chk = document.getElementById('chk-opt-auto-speak-inf');
+        var lbl = document.getElementById('lbl-opt-auto-speak-inf');
+        if (!chk) return;
+        autoSpeakInfinitiveSetting = chk.checked;
+        if (lbl) {
+            if (chk.checked) lbl.classList.add('selected');
+            else lbl.classList.remove('selected');
+        }
+        saveState();
+    }
+
+    function updateHintLevel(level) {
+        hintLevel = level;
+        document.getElementById('lbl-hint-none').classList.toggle('selected', level === 'none');
+        document.getElementById('lbl-hint-basic').classList.toggle('selected', level === 'basic');
+        document.getElementById('lbl-hint-detailed').classList.toggle('selected', level === 'detailed');
+        saveState();
+        if (currentClockObj && sessionStarted) generateQuestion();
+    }
+
+    function updateFilterSelection(optKey) {
+        var chk = document.getElementById('chk-opt-' + optKey);
+        var lbl = document.getElementById('lbl-opt-' + optKey);
+        if (chk) {
+            selectedIntervals[optKey] = chk.checked;
+            if (chk.checked) lbl.classList.add('selected');
+            else lbl.classList.remove('selected');
+        }
+        verifyAndReloadFilters();
+    }
+
+    function verifyAndReloadFilters() {
+        var paradigmKeys = ['ar', 'er', 'ir', 'spl', 'stem', 'go', 'irreg'];
+        var tenseKeys = ['subj_pres', 'subj_impf', 'subj_pp', 'subj_plu'];
+        var pronounKeys = ['yo', 'tu', 'el', 'nosotros', 'vosotros', 'ellos'];
+
+        var paradigmChecked = paradigmKeys.some(k => selectedIntervals[k]);
+        var tenseChecked = tenseKeys.some(k => selectedIntervals[k]);
+        var pronounChecked = pronounKeys.some(k => selectedIntervals[k]);
+
+        if (!paradigmChecked) { selectedIntervals.ar = true; document.getElementById('chk-opt-ar').checked = true; document.getElementById('lbl-opt-ar').classList.add('selected'); }
+        if (!tenseChecked) { selectedIntervals.subj_pres = true; document.getElementById('chk-opt-subj_pres').checked = true; document.getElementById('lbl-opt-subj_pres').classList.add('selected'); }
+        if (!pronounChecked) { selectedIntervals.yo = true; document.getElementById('chk-opt-yo').checked = true; document.getElementById('lbl-opt-yo').classList.add('selected'); }
+
+        initSessionDeck();
+    }
+
+    // ============================================================
+    // SESSION LIFECYCLE
+    // ============================================================
+    function resetSessionCounters() {
+        sessionFirstAttempts = {};
+        sessionCorrect = 0;
+        sessionTotal = 0;
+        sessionCurrentStreak = 0;
+        sessionBestStreak = 0;
+        sessionRecoveredCount = 0;
+        sessionKnownCount = 0;
+        sessionComplete = false;
+    }
+
+    function updateDrillPill() {
+        var pill = document.getElementById('drill-pill');
+        if (!pill) return;
+        if (sessionMode === "drill" && sessionStarted) {
+            pill.style.display = "inline-block";
+            document.getElementById('drill-count').innerText = currentSessionDeck.length - activeCardIndex;
+        } else {
+            pill.style.display = "none";
+        }
+    }
+
+    function showStartScreen() {
+        sessionStarted = false;
+        sessionComplete = false;
+
+        var promptDisplay = document.getElementById('verb-prompt-display');
+        var subDisplay = document.getElementById('verb-sub-display');
+
+        var subLabel = document.getElementById('verb-subject-display');
+        if (subLabel) subLabel.style.display = "none";
+        var speakBtn = document.getElementById('speak-btn');
+        if (speakBtn) speakBtn.style.display = "none";
+        var infinitiveBtn = document.getElementById('infinitive-btn');
+        if (infinitiveBtn) infinitiveBtn.style.display = "none";
+        var warningBadge = document.getElementById('verb-stem-warning-badge');
+        if (warningBadge) warningBadge.style.display = "none";
+
+        document.getElementById('verb-track-badge').innerText = "";
+        document.getElementById('panel-read-mode').style.display = "none";
+        document.getElementById('panel-write-mode').style.display = "none";
+        document.getElementById('feedback-container').style.display = "none";
+        document.getElementById('deck-progress').innerText = "0";
+
+        // MOBILE SCROLL FIX: Restore input panels
+        var restoreIds = ['panel-read-mode', 'panel-write-mode', 'honour-system-controls', 'btn-reveal-container'];
+        restoreIds.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.remove('hidden-during-feedback');
+        });
+
+        if (currentSessionDeck.length === 0) {
+            document.getElementById('start-btn-container').style.display = "none";
+            promptDisplay.style.fontSize = "1.6rem";
+            promptDisplay.style.color = "var(--accent)";
+
+            if (emptyReason === "all-known") {
+                promptDisplay.innerHTML = "🌟 All Known!";
+                promptDisplay.style.color = "var(--success)";
+                subDisplay.innerHTML = "All " + totalFilteredCount + " cards under these filters are known.<br><small>Switch to <strong>Full Sweep</strong> mode in Options to review them, or expand your filters.</small>";
+            } else if (emptyReason === "no-match") {
+                promptDisplay.innerHTML = "No Cards";
+                promptDisplay.style.color = "var(--accent)";
+                subDisplay.innerHTML = "No cards match the current filter combination.<br><small>Try enabling another tense or pronoun in Options.</small>";
+            } else {
+                promptDisplay.innerHTML = "No Cards";
+                promptDisplay.style.color = "var(--accent)";
+                subDisplay.innerText = "No cards available.";
+            }
+
+            updateDrillPill();
+            return;
+        }
+
+        promptDisplay.innerText = "Ready?";
+        promptDisplay.style.fontSize = "2rem";
+        promptDisplay.style.color = "var(--accent)";
+        subDisplay.innerText = "Click Start to begin";
+        document.getElementById('start-btn-container').style.display = "block";
+
+        var startBtn = document.getElementById('start-btn');
+        if (sessionMode === "drill") {
+            startBtn.innerText = "▶ Start Drill (" + currentSessionDeck.length + " cards)";
+        } else {
+            startBtn.innerText = "▶ Start Session";
+        }
+
+        updateDrillPill();
+    }
+
+    function startSession() {
+        if (sessionStarted) return;
+        if (currentSessionDeck.length === 0) return;
+        sessionStarted = true;
+        document.getElementById('start-btn-container').style.display = "none";
+        applyPanelVisibility();
+        updateDrillPill();
+        generateQuestion();
+    }
+
+    function openOptionsPanel() {
+        var inp = document.getElementById('user-input');
+        if (inp) inp.blur();
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter) shutter.classList.remove('collapsed');
+        var drawer = document.getElementById('settings-drawer');
+        var btn = document.getElementById('drawer-toggle-btn');
+        if (drawer) drawer.style.display = "block";
+        if (btn) btn.innerText = "Close Options ▴";
+
+        // Scroll to the drawer
+        setTimeout(function() {
+            var drawer = document.getElementById('settings-drawer');
+            if (drawer) {
+                drawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }, 100);
+    }
+
+    function toggleSettingsDrawer() {
+        var drawer = document.getElementById('settings-drawer');
+        var btn = document.getElementById('drawer-toggle-btn');
+        if (drawer.style.display === "block") {
+            drawer.style.display = "none";
+            btn.innerText = "Customise Drill Settings ▾";
+        } else {
+            drawer.style.display = "block";
+            btn.innerText = "Close Options ▴";
+        }
+    }
+
+    function initSessionDeck() {
+        currentSessionDeck = [];
+        activeCardIndex = 0;
+        userActionHistory = [];
+        sessionMode = "normal";
+        emptyReason = null;
+        totalFilteredCount = 0;
+        resetSessionCounters();
+
+        var tenses = ['subj_pres', 'subj_impf', 'subj_pp', 'subj_plu'];
+
+        populateVerbSelector();
+        var isolateSel = document.getElementById('verb-isolate-selector');
+        var isolatedVerb = isolateSel ? isolateSel.value : "all";
+
+        for (var i = 0; i < masterVerbDictionary.length; i++) {
+            var item = masterVerbDictionary[i];
+            if (isolatedVerb !== "all" && isolatedVerb !== item.verb) continue;
+            if (!verbMatchesFilter(item)) continue;
+
+            for (var t = 0; t < tenses.length; t++) {
+                var tenseKey = tenses[t];
+                if (!selectedIntervals[tenseKey]) continue;
+
+                for (var p = 0; p < subjectPronounsArray.length; p++) {
+                    var pronoun = subjectPronounsArray[p];
+                    if (!selectedIntervals[pronoun]) continue;
+
+                    var ending;
+                    if (tenseKey === 'subj_pres') ending = item.subj_pres[pronoun];
+                    else if (tenseKey === 'subj_impf') ending = item.subj_impf[pronoun];
+                    else if (tenseKey === 'subj_pp') ending = SUBJ_PP_PARADIGM[pronoun];
+                    else ending = SUBJ_PLU_PARADIGM[pronoun];
+
+                    var card = {
+                        verb: item.verb,
+                        types: item.types,
+                        participle: item.participle,
+                        meaning: item.meaning,
+                        tenseHints: item.tenseHints,
+                        tenseDetails: item.tenseDetails,
+                        tense: tenseKey,
+                        pronoun: pronoun,
+                        ending: ending
+                    };
+
+                    totalFilteredCount++;
+                    var cKey = cardKey(card);
+                    var isKnown = !!knownCards[cKey];
+
+                    if (knownMode === "adaptive" && isKnown) continue;
+
+                    currentSessionDeck.push(card);
+                }
+            }
+        }
+
+        if (currentSessionDeck.length === 0) {
+            if (totalFilteredCount === 0) emptyReason = "no-match";
+            else if (knownMode === "adaptive") emptyReason = "all-known";
+            else emptyReason = "unknown";
+        }
+
+        for (var i = currentSessionDeck.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = currentSessionDeck[i];
+            currentSessionDeck[i] = currentSessionDeck[j];
+            currentSessionDeck[j] = temp;
+        }
+
+        var sizeSel = document.getElementById('deck-size-selector');
+        var maxDeckSize = sizeSel ? parseInt(sizeSel.value, 10) : 15;
+        if (currentSessionDeck.length > maxDeckSize) currentSessionDeck = currentSessionDeck.slice(0, maxDeckSize);
+        coreDeckOriginalCount = currentSessionDeck.length;
+        document.getElementById('deck-total').innerText = coreDeckOriginalCount;
+
+        var pBox = document.getElementById('progress-box');
+        if (pBox) pBox.className = "score-item";
+        document.getElementById('review-status-label').innerText = "";
+
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter) shutter.classList.remove('collapsed');
+
+        saveState();
+        showStartScreen();
+        updateDrillPill();
+        updateFilterStatusLine();
+    }
+
+    // ============================================================
+    // DRILL FROM LOG
+    // ============================================================
+    function buildCardFromEntry(entry) {
+        for (var i = 0; i < masterVerbDictionary.length; i++) {
+            if (masterVerbDictionary[i].verb === entry.verb) {
+                var item = masterVerbDictionary[i];
+                var ending;
+                if (entry.tense === 'subj_pres') ending = item.subj_pres[entry.pronoun];
+                else if (entry.tense === 'subj_impf') ending = item.subj_impf[entry.pronoun];
+                else if (entry.tense === 'subj_pp') ending = SUBJ_PP_PARADIGM[entry.pronoun];
+                else ending = SUBJ_PLU_PARADIGM[entry.pronoun];
+
+                return {
+                    verb: item.verb,
+                    types: item.types,
+                    participle: item.participle,
+                    meaning: item.meaning,
+                    tenseHints: item.tenseHints,
+                    tenseDetails: item.tenseDetails,
+                    tense: entry.tense,
+                    pronoun: entry.pronoun,
+                    ending: ending
+                };
+            }
+        }
+        return null;
+    }
+
+    function speakLogEntry(entryIndex) {
+        var entry = mistakeLog[entryIndex];
+        if (!entry) return;
+        var card = buildCardFromEntry(entry);
+        if (!card) return;
+        var fullWord = computeFullWord(card);
+        var utterance = new SpeechSynthesisUtterance(fullWord);
+        utterance.lang = "es-ES";
+        utterance.rate = 0.8;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function drillFromLog(bucket) {
+        var pool;
+        if (bucket === "pinned") {
+            pool = mistakeLog.filter(function(e) { return e.status === "pinned"; });
+        } else if (bucket === "pending") {
+            pool = mistakeLog.filter(function(e) { return e.status === "pending"; });
+        } else if (bucket === "all") {
+            pool = mistakeLog.filter(function(e) { return e.status === "pending" || e.status === "pinned"; });
+        } else {
+            return;
+        }
+        if (pool.length === 0) return;
+
+        currentSessionDeck = [];
+        for (var i = 0; i < pool.length; i++) {
+            var card = buildCardFromEntry(pool[i]);
+            if (card) currentSessionDeck.push(card);
+        }
+        if (currentSessionDeck.length === 0) return;
+
+        for (var i = currentSessionDeck.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = currentSessionDeck[i];
+            currentSessionDeck[i] = currentSessionDeck[j];
+            currentSessionDeck[j] = temp;
+        }
+
+        activeCardIndex = 0;
+        userActionHistory = [];
+        sessionMode = "drill";
+        resetSessionCounters();
+        emptyReason = null;
+        coreDeckOriginalCount = currentSessionDeck.length;
+        document.getElementById('deck-total').innerText = coreDeckOriginalCount;
+
+        var pBox = document.getElementById('progress-box');
+        if (pBox) pBox.className = "score-item";
+        document.getElementById('review-status-label').innerText = "";
+
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter) shutter.classList.remove('collapsed');
+
+        saveState();
+        switchView('quiz');
+        showStartScreen();
+        updateDrillPill();
+    }
+
+    function drillActiveBucket() {
+        if (reviewTab === "pending" || reviewTab === "pinned") {
+            drillFromLog(reviewTab);
+        }
+    }
+
+    function exitDrillToReview() {
+        switchView('review');
+    }
+
+    // ============================================================
+    // QUESTION GENERATION
+    // ============================================================
+    function generateQuestion() {
+        document.getElementById('user-input').value = "";
+        document.getElementById('user-input').disabled = false;
+        document.getElementById('feedback-container').style.display = "none";
+        document.getElementById('submit-btn').disabled = false;
+        document.getElementById('btn-reveal-container').style.display = "block";
+        document.getElementById('honour-system-controls').style.display = "none";
+        document.getElementById('deck-progress').innerText = activeCardIndex;
+        updateDrillPill();
+
+        // MOBILE SCROLL FIX: Restore input panels for the next card
+        var restoreIds = ['panel-read-mode', 'panel-write-mode', 'honour-system-controls', 'btn-reveal-container'];
+        restoreIds.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.remove('hidden-during-feedback');
+        });
+
+        var pBox = document.getElementById('progress-box');
+        if (activeCardIndex >= coreDeckOriginalCount && activeCardIndex < currentSessionDeck.length) {
+            if (pBox) pBox.className = "score-item review-phase-text";
+            document.getElementById('review-status-label').innerText = " 🔄 Reviewing Misses";
+        } else if (activeCardIndex === 0) {
+            if (pBox) pBox.className = "score-item";
+            document.getElementById('review-status-label').innerText = "";
+        }
+
+        if (activeCardIndex >= currentSessionDeck.length) {
+            var shutter = document.getElementById('shutter-header-area');
+            if (shutter) shutter.classList.add('collapsed');
+            triggerCompletionState();
+            return;
+        }
+
+        currentClockObj = currentSessionDeck[activeCardIndex];
+
+        var subLabel = document.getElementById('verb-subject-display');
+        if (currentQuizDirection === 'read') {
+            subLabel.innerText = subjectLabelsFullMap[currentClockObj.pronoun];
+            subLabel.style.display = "block";
+        } else {
+            subLabel.style.display = "none";
+        }
+
+        var warningBadge = document.getElementById('verb-stem-warning-badge');
+        if (hintLevel === 'none') {
+            warningBadge.style.display = "none";
+        } else {
+            var hint = currentClockObj.tenseHints && currentClockObj.tenseHints[currentClockObj.tense];
+            if (hint && hintLevel === 'detailed' && currentClockObj.tenseDetails && currentClockObj.tenseDetails[currentClockObj.tense]) {
+                hint = hint + " — " + currentClockObj.tenseDetails[currentClockObj.tense];
+            }
+            if (hint && currentQuizDirection === 'read') {
+                warningBadge.innerText = "⚠️ " + hint;
+                warningBadge.style.display = "block";
+            } else {
+                warningBadge.style.display = "none";
+            }
+        }
+
+        var promptDisplay = document.getElementById('verb-prompt-display');
+        var subDisplay = document.getElementById('verb-sub-display');
+        var trackBadge = document.getElementById('verb-track-badge');
+
+        if (currentQuizDirection === 'read') {
+            var speakBtn = document.getElementById('speak-btn');
+            speakBtn.style.display = "none";
+            document.getElementById('infinitive-btn').style.display = "inline-block";
+
+            promptDisplay.innerText = buildEnglishGloss(currentClockObj);
+            promptDisplay.style.fontSize = "2rem";
+            promptDisplay.style.color = "var(--text-main)";
+            subDisplay.innerText = currentClockObj.verb + " • " + tenseNamesFullMap[currentClockObj.tense] + " • " + currentClockObj.meaning;
+            subDisplay.style.color = "var(--accent)";
+
+            if (productionMethod === 'honour') {
+                trackBadge.innerText = "Say the answer aloud, then tap Reveal";
+            } else if (currentClockObj.tense === 'subj_pp' || currentClockObj.tense === 'subj_plu') {
+                trackBadge.innerText = "Compound form — type auxiliary + participle in full";
+            } else {
+                trackBadge.innerText = "Type the full conjugated form";
+            }
+
+            cancelPendingInfinitive();
+            if (autoSpeakInfinitiveSetting) {
+                pendingInfinitiveTimer = setTimeout(function() {
+                    pendingInfinitiveTimer = null;
+                    var utterance = new SpeechSynthesisUtterance(currentClockObj.verb);
+                    utterance.lang = "es-ES";
+                    utterance.rate = 0.85;
+                    window.speechSynthesis.speak(utterance);
+                }, 300);
+            }
+        } else {
+            var speakBtn = document.getElementById('speak-btn');
+            speakBtn.style.display = "block";
+            document.getElementById('infinitive-btn').style.display = "none";
+
+            promptDisplay.innerText = "🔊 Listening...";
+            subDisplay.innerText = "Which person AND tense is this?";
+            promptDisplay.style.fontSize = "2rem";
+            promptDisplay.style.color = "var(--accent)";
+            trackBadge.innerText = "";
+
+            setTimeout(speakSpanishPrompt, 300);
+        }
+    }
+
+    function speakSpanishPrompt() {
+        if (!currentClockObj) return;
+        var fullWord = computeFullWord(currentClockObj);
+        var utterance = new SpeechSynthesisUtterance(fullWord);
+        utterance.lang = "es-ES";
+        utterance.rate = 0.8;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function speakInfinitive() {
+        if (!currentClockObj) return;
+        var utterance = new SpeechSynthesisUtterance(currentClockObj.verb);
+        utterance.lang = "es-ES";
+        utterance.rate = 0.85;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function buildAnswerLine(card) {
+        return "Full form: <strong>" + computeFullWord(card) + "</strong>";
+    }
+
+    // ============================================================
+    // ANSWER CHECKING
+    // ============================================================
+    function checkAnswer() {
+        if (currentQuizDirection !== 'read') return;
+        cancelPendingInfinitive();
+        var inputField = document.getElementById('user-input');
+        var userInput = inputField.value.trim();
+        if (userInput === "") return;
+
+        collapseHeaderShutter();
+        var feedbackContainer = document.getElementById('feedback-container');
+        var feedbackMessage = document.getElementById('feedback-message');
+
+        document.getElementById('submit-btn').disabled = true;
+        inputField.disabled = true;
+
+        totalQuestions++;
+        sessionTotal++;
+
+        var fullForm = computeFullWord(currentClockObj);
+        var isCorrect = cleanString(userInput) === cleanString(fullForm);
+
+        userActionHistory.push({
+            streakBefore: currentStreak, correctBefore: totalCorrect, questionsBefore: totalQuestions - 1,
+            activeCardIndexBefore: activeCardIndex, wasMistakeLogged: !isCorrect,
+            wasCardPushed: !isCorrect, cardObjectSnapshot: Object.assign({}, currentClockObj)
+        });
+
+        if (isCorrect) {
+            totalCorrect++; currentStreak++;
+            sessionCorrect++;
+            sessionCurrentStreak++;
+            if (sessionCurrentStreak > sessionBestStreak) sessionBestStreak = sessionCurrentStreak;
+        } else {
+            currentStreak = 0;
+            sessionCurrentStreak = 0;
+        }
+
+        var logResult = handleLogUpdate(currentClockObj, isCorrect, userInput);
+
+        var speakIcon = ' <span style="cursor:pointer; opacity:0.8;" onclick="speakSpanishPrompt();" title="Hear the answer">🔊</span>';
+
+        if (isCorrect) {
+            feedbackMessage.className = "feedback correct-box";
+            feedbackMessage.innerHTML = "<strong>Correct!</strong> 🎉<br>" + speakIcon + " " + buildAnswerLine(currentClockObj) + "<br><small>" + currentClockObj.verb + " = " + currentClockObj.meaning + "</small>" + logUpdateMessage(logResult);
+            setTimeout(speakSpanishPrompt, 200);
+        } else {
+            feedbackMessage.className = "feedback incorrect-box";
+            feedbackMessage.innerHTML = "<strong>Incorrect.</strong><br>" + speakIcon + " " + buildAnswerLine(currentClockObj) + "<br><small>" + currentClockObj.verb + " • " + tenseFullNames[currentClockObj.tense] + "</small>" + logUpdateMessage(logResult);
+            currentSessionDeck.push(Object.assign({}, currentClockObj));
+            document.getElementById('deck-total').innerText = currentSessionDeck.length;
+            setTimeout(speakSpanishPrompt, 200);
+        }
+
+        document.getElementById('speak-btn').style.display = "block";
+        activeCardIndex++;
+        document.getElementById('deck-progress').innerText = activeCardIndex;
+        updateScoreboard();
+        feedbackContainer.style.display = "block";
+
+        // MOBILE SCROLL FIX: Hide input areas to save vertical space
+        var hideIds = ['panel-read-mode', 'panel-write-mode', 'honour-system-controls', 'btn-reveal-container'];
+        hideIds.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.add('hidden-during-feedback');
+        });
+
+        setTimeout(function() {
+            var nextBtn = document.getElementById('next-btn');
+            if (nextBtn) {
+                nextBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }, 100);
+
+        updateDrillPill();
+        saveState();
+    }
+
+    function collapseHeaderShutter() {
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter && !shutter.classList.contains('collapsed')) {
+            shutter.classList.add('collapsed');
+        }
+    }
+
+    function revealVerbAnswer() {
+        cancelPendingInfinitive();
+        collapseHeaderShutter();
+        document.getElementById('btn-reveal-container').style.display = "none";
+        document.getElementById('honour-system-controls').style.display = "flex";
+
+        var promptDisplay = document.getElementById('verb-prompt-display');
+        var subDisplay = document.getElementById('verb-sub-display');
+
+        var fullWord = computeFullWord(currentClockObj);
+
+        promptDisplay.innerText = fullWord;
+        promptDisplay.style.fontSize = "2.4rem";
+        promptDisplay.style.color = "var(--text-main)";
+
+        var gloss = buildEnglishGloss(currentClockObj);
+        var aspect = tenseAspectNote(currentClockObj.tense);
+
+        var html = subjectLabelsFullMap[currentClockObj.pronoun] + " • " +
+            tenseFullNames[currentClockObj.tense] + " • " +
+            currentClockObj.verb + " (" + currentClockObj.meaning + ")";
+
+        if (gloss) {
+            html += "<br><span style='color:var(--text-main); font-style:italic;'>\"" + gloss + "\"</span> " +
+                "<span style='color:var(--text-muted); font-size:0.85rem;'>— " + aspect + "</span>";
+        }
+
+        subDisplay.innerHTML = html;
+        document.getElementById('speak-btn').style.display = "block";
+        setTimeout(speakSpanishPrompt, 150);
+    }
+
+    function assessHonour(isCorrect) {
+        totalQuestions++;
+        sessionTotal++;
+
+        var feedbackContainer = document.getElementById('feedback-container');
+        var feedbackMessage = document.getElementById('feedback-message');
+        document.getElementById('honour-system-controls').style.display = "none";
+
+        userActionHistory.push({
+            streakBefore: currentStreak, correctBefore: totalCorrect, questionsBefore: totalQuestions - 1,
+            activeCardIndexBefore: activeCardIndex, wasMistakeLogged: !isCorrect, wasCardPushed: !isCorrect,
+            cardObjectSnapshot: Object.assign({}, currentClockObj)
+        });
+
+        if (isCorrect) {
+            totalCorrect++; currentStreak++;
+            sessionCorrect++;
+            sessionCurrentStreak++;
+            if (sessionCurrentStreak > sessionBestStreak) sessionBestStreak = sessionCurrentStreak;
+        } else {
+            currentStreak = 0;
+            sessionCurrentStreak = 0;
+        }
+
+        var yoursLabel = currentQuizDirection === 'read' ? "[Honour System Miss]" : "[Acoustic Self-Assessed Miss]";
+        var logResult = handleLogUpdate(currentClockObj, isCorrect, isCorrect ? "" : yoursLabel);
+
+        var fullWord = computeFullWord(currentClockObj);
+        var tenseLabel = tenseFullNames[currentClockObj.tense];
+
+        var speakIconH = ' <span style="cursor:pointer; opacity:0.8;" onclick="speakSpanishPrompt();" title="Hear the answer">🔊</span>';
+
+        if (isCorrect) {
+            feedbackMessage.className = "feedback correct-box";
+            var gloss = buildEnglishGloss(currentClockObj);
+            var aspect = tenseAspectNote(currentClockObj.tense);
+            var glossHtml = gloss ? "<br><em>\"" + gloss + "\"</em> <span style='color:var(--text-muted); font-size:0.85rem;'>— " + aspect + "</span>" : "";
+            feedbackMessage.innerHTML = "<strong>Marked Correct!</strong> 👍" + speakIconH + "<br>Decoded form: <strong>" + fullWord + "</strong> (" + tenseLabel + ")." + glossHtml + logUpdateMessage(logResult);
+        } else {
+            feedbackMessage.className = "feedback incorrect-box";
+            var gloss = buildEnglishGloss(currentClockObj);
+            var aspect = tenseAspectNote(currentClockObj.tense);
+            var glossHtml = gloss ? "<br><em>\"" + gloss + "\"</em> <span style='color:var(--text-muted); font-size:0.85rem;'>— " + aspect + "</span>" : "";
+            feedbackMessage.innerHTML = "<strong>Marked Incorrect.</strong> 📚" + speakIconH + "<br>Inflection target was <strong>" + fullWord + "</strong> (" + tenseLabel + ")." + glossHtml + logUpdateMessage(logResult);
+            currentSessionDeck.push(Object.assign({}, currentClockObj));
+            document.getElementById('deck-total').innerText = currentSessionDeck.length;
+        }
+
+        activeCardIndex++;
+        document.getElementById('deck-progress').innerText = activeCardIndex;
+        updateScoreboard();
+        feedbackContainer.style.display = "block";
+
+        // MOBILE SCROLL FIX: Hide input areas to save vertical space
+        var hideIds = ['panel-read-mode', 'panel-write-mode', 'honour-system-controls', 'btn-reveal-container'];
+        hideIds.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.add('hidden-during-feedback');
+        });
+
+        setTimeout(function() {
+            var nextBtn = document.getElementById('next-btn');
+            if (nextBtn) {
+                nextBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }, 100);
+
+        updateDrillPill();
+        saveState();
+    }
+
+    function updateScoreboard() {
+        document.getElementById('score-correct').innerText = totalCorrect;
+        document.getElementById('score-total').innerText = totalQuestions;
+        document.getElementById('score-streak').innerText = currentStreak;
+        var counts = computeCounts();
+        document.getElementById('score-known').innerText = counts.known;
+        document.getElementById('score-known-total').innerText = counts.total;
+        document.getElementById('score-filtered').innerText = counts.total;
+        updateStreakEmoji();
+        updatePlayModePill();
+        updateFilterStatusLine();
+    }
+
+    function executeUndoAction() {
+        if (userActionHistory.length === 0) return;
+        var previousState = userActionHistory.pop();
+        currentStreak = previousState.streakBefore;
+        totalCorrect = previousState.correctBefore;
+        totalQuestions = previousState.questionsBefore;
+        activeCardIndex = previousState.activeCardIndexBefore;
+        if (previousState.wasCardPushed) {
+            currentSessionDeck.pop();
+            document.getElementById('deck-total').innerText = currentSessionDeck.length;
+        }
+        updateScoreboard(); generateQuestion();
+        saveState();
+    }
+
+    // ============================================================
+    // COMPLETION SCREEN
+    // ============================================================
+    function triggerCompletionState() {
+        sessionComplete = true;
+        sessionStarted = false;
+
+        var accuracy = sessionTotal > 0 ? Math.round(sessionCorrect / sessionTotal * 100) : 0;
+        var remainingPending = mistakeLog.filter(function(e) { return e.status === "pending"; }).length;
+
+        var promptDisplay = document.getElementById('verb-prompt-display');
+        var subDisplay = document.getElementById('verb-sub-display');
+        promptDisplay.innerHTML = "🎉 ¡Enhorabuena!";
+        promptDisplay.style.color = "var(--success)";
+        promptDisplay.style.fontSize = "2.2rem";
+        subDisplay.innerText = "";
+
+        var subLabel = document.getElementById('verb-subject-display');
+        if (subLabel) subLabel.style.display = "none";
+        var speakBtn = document.getElementById('speak-btn');
+        if (speakBtn) speakBtn.style.display = "none";
+        var infinitiveBtn = document.getElementById('infinitive-btn');
+        if (infinitiveBtn) infinitiveBtn.style.display = "none";
+        var warningBadge = document.getElementById('verb-stem-warning-badge');
+        if (warningBadge) warningBadge.style.display = "none";
+        document.getElementById('verb-track-badge').innerText = "";
+
+        document.getElementById('btn-reveal-container').style.display = "none";
+        document.getElementById('honour-system-controls').style.display = "none";
+
+        var feedbackContainer = document.getElementById('feedback-container');
+        var feedbackMessage = document.getElementById('feedback-message');
+        feedbackMessage.className = "feedback correct-box";
+
+        var counts = computeCounts();
+        var knownStat = sessionKnownCount > 0
+            ? '<div><span class="completion-stat-label">Newly Known</span><span class="completion-stat-value" style="color:#4ade80;">+' + sessionKnownCount + '</span></div>'
+            : '';
+        var recoveredStat = sessionRecoveredCount > 0
+            ? '<div><span class="completion-stat-label">Recovered</span><span class="completion-stat-value" style="color:#fbbf24;">' + sessionRecoveredCount + '</span></div>'
+            : '';
+
+        feedbackMessage.innerHTML =
+            '<div style="text-align:center;">' +
+                '<div class="completion-stats">' +
+                    '<div><span class="completion-stat-label">Accuracy</span><span class="completion-stat-value">' + accuracy + '%</span></div>' +
+                    '<div><span class="completion-stat-label">Best Streak</span><span class="completion-stat-value">🔥 ' + sessionBestStreak + '</span></div>' +
+                    recoveredStat +
+                    knownStat +
+                '</div>' +
+                '<div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.25rem;">' + sessionCorrect + ' / ' + sessionTotal + ' correct this run</div>' +
+                '<div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.5rem;">' + counts.known + ' / ' + counts.total + ' known under current filters</div>' +
+                (playMode ? '<div style="font-size:0.75rem; color:#fdba74; margin-bottom:0.5rem;">🎮 Play mode active — progress not recorded</div>' : '') +
+            '</div>';
+
+        var nextBtn = document.getElementById('next-btn');
+        if (nextBtn) nextBtn.style.display = "none";
+
+        var actionsHtml = '<div class="completion-actions">';
+        actionsHtml += '<button class="completion-btn primary" onclick="startNewSessionFromComplete()">🔄 New Session</button>';
+        actionsHtml += '<button class="completion-btn" onclick="exitDrillToReview()">📝 Reviews</button>';
+        if (sessionMode === "drill" && remainingPending > 0) {
+            actionsHtml += '<button class="completion-btn" style="background-color:var(--warning); color:#0d0c10;" onclick="drillFromLog(\'pending\')">🎯 Drill ' + remainingPending + ' Pending</button>';
+        }
+        actionsHtml += '</div>';
+
+        var existingBar = feedbackContainer.querySelector('.completion-actions');
+        if (existingBar) existingBar.remove();
+        feedbackContainer.insertAdjacentHTML('beforeend', actionsHtml);
+
+        feedbackContainer.style.display = "block";
+        updateDrillPill();
+
+        setTimeout(function() {
+            if (feedbackContainer) feedbackContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 450);
+    }
+
+    function startNewSessionFromComplete() {
+        var fb = document.getElementById('feedback-container');
+        var bar = fb.querySelector('.completion-actions');
+        if (bar) bar.remove();
+        var nb = document.getElementById('next-btn');
+        if (nb) nb.style.display = "";
+
+        sessionComplete = false;
+        initSessionDeck();
+    }
+
+    function handleNextWorkflow() {
+        generateQuestion();
+        setTimeout(function() {
+            if (sessionComplete) return;
+            var inputField = document.getElementById('user-input');
+            if (inputField && currentQuizDirection === 'read') {
+                inputField.focus();
+                inputField.select();
+            }
+        }, 30);
+    }
+
+    function updateStreakEmoji() {
+        var emojiSpan = document.getElementById('streak-emoji');
+        if (emojiSpan) {
+            if (currentStreak >= 15) emojiSpan.innerHTML = "👑";
+            else if (currentStreak >= 10) emojiSpan.innerHTML = "🥷";
+            else if (currentStreak >= 6) emojiSpan.innerHTML = "🔥";
+            else if (currentStreak >= 3) emojiSpan.innerHTML = "⚡";
+            else emojiSpan.innerHTML = "🐣";
+        }
+    }
+
+    // ============================================================
+    // REVIEW VIEW
+    // ============================================================
+    function setReviewTab(bucket) {
+        reviewTab = bucket;
+        document.querySelectorAll('.review-tab').forEach(function(b) {
+            b.classList.toggle('active', b.dataset.bucket === bucket);
+        });
+        saveState();
+        renderReviewList();
+    }
+
+    function renderReviewList() {
+        var container = document.getElementById('review-list-container');
+        var headerEl = document.getElementById('review-header');
+        updateLogBadges();
+
+        var counts = computeCounts();
+
+        if (reviewTab === "known") {
+            if (counts.known === 0) {
+                headerEl.className = "review-empty";
+                headerEl.innerHTML = "💚 <strong>No known cards yet.</strong><br>Answer cards correctly to graduate them here. They won't reappear in Adaptive sessions.";
+                container.innerHTML = "";
+                updateReviewActions(0);
+                return;
+            }
+            headerEl.className = "review-header";
+            headerEl.innerHTML = "💚 <strong>" + counts.known + " of " + counts.total + " cards mastered</strong> under current filters.<br>These are skipped in Adaptive mode. Use <em>Forget Filtered Known</em> below to reset them to active — they'll resurface in future sessions. To forget <em>every</em> known card regardless of filter, clear the filters first.";
+            container.innerHTML = "";
+            updateReviewActions(counts.known);
+            return;
+        }
+
+        if (reviewTab === "active") {
+            if (counts.active === 0) {
+                headerEl.className = "review-empty";
+                headerEl.innerHTML = "⚪ <strong>No active cards under current filters.</strong><br>Every card is either known, pending, or pinned.";
+                container.innerHTML = "";
+                updateReviewActions(0);
+                return;
+            }
+            var pct = counts.total > 0 ? Math.round((counts.known / counts.total) * 100) : 0;
+            headerEl.className = "review-header";
+            headerEl.innerHTML = "⚪ <strong>" + counts.active + " cards still learning</strong> under current filters.<br>These appear in your general rotation. Pass one on first attempt to graduate it to Known.";
+            container.innerHTML =
+                '<div class="big-stat">' + counts.active + '</div>' +
+                '<div style="text-align:center; color:var(--text-muted); font-size:0.75rem;">' + counts.known + ' / ' + counts.total + ' mastered (' + pct + '%)</div>' +
+                '<div class="progress-bar-container"><div class="progress-bar-fill" style="width:' + pct + '%;"></div></div>';
+            updateReviewActions(counts.active);
+            return;
+        }
+
+        if (reviewTab === "pending") {
+            var pendingEntries = mistakeLog.filter(function(e) { return e.status === "pending"; });
+            if (pendingEntries.length === 0) {
+                headerEl.className = "review-empty";
+                headerEl.innerHTML = "🟡 <strong>Nothing pending.</strong><br>Every mistake has been corrected.";
+                container.innerHTML = "";
+                updateReviewActions(0);
+                return;
+            }
+            headerEl.className = "review-header";
+            headerEl.innerHTML = "🟡 <strong>" + pendingEntries.length + " cards you've recently missed.</strong><br>Correct one on first attempt to return it to Active. Miss the same card " + (autoPinThreshold > 0 ? autoPinThreshold + " times" : "(never auto-pin)") + " and it auto-pins.<br><em>⚠️ Use <strong>Drill Pending</strong> below to focus on them.</em>";
+            renderLogTable(container, pendingEntries, 'pending');
+            updateReviewActions(pendingEntries.length);
+            return;
+        }
+
+        if (reviewTab === "pinned") {
+            var pinnedEntries = mistakeLog.filter(function(e) { return e.status === "pinned"; });
+            if (pinnedEntries.length === 0) {
+                headerEl.className = "review-empty";
+                headerEl.innerHTML = "🔴 <strong>Nothing pinned.</strong><br>Miss a card " + (autoPinThreshold > 0 ? autoPinThreshold + " times" : "(off)") + ", or click 📍 on any row, to add it to your watchlist.";
+                container.innerHTML = "";
+                updateReviewActions(0);
+                return;
+            }
+            headerEl.className = "review-header";
+            headerEl.innerHTML = "🔴 <strong>" + pinnedEntries.length + " cards in your watchlist.</strong><br>These stay in rotation indefinitely and require manual unpin to retire. Correct one and unpin it — or keep drilling forever.<br><em>⚠️ Use <strong>Drill Pinned</strong> below to focus on them.</em>";
+            renderLogTable(container, pinnedEntries, 'pinned');
+            updateReviewActions(pinnedEntries.length);
+            return;
+        }
+    }
+
+    function renderLogTable(container, entries, bucket) {
+        var actionHeader = "";
+        if (bucket === 'pending' && entries.length > 1) {
+            actionHeader = "<button class='pin-all-btn' title='Move all pending to Pinned' onclick='pinAllPending()'>📌 All</button>";
+        }
+        var html = "<table class='ref-table review-table'><tr><th>Prompt</th><th>Correct</th><th>Last wrong</th><th>Fails</th><th>" + actionHeader + "</th></tr>";
+        for (var i = 0; i < entries.length; i++) {
+            var item = entries[i];
+            var entryIndex = mistakeLog.indexOf(item);
+            var isPinned = item.status === "pinned";
+            var pinIcon = isPinned ? "📌" : "📍";
+            var pinTitle = isPinned ? "Unpin (→ Active)" : "Pin (permanent drill)";
+            html += "<tr>";
+            html += "<td class='prompt-cell'>" + item.prompt + "</td>";
+            html += "<td class='correct-cell'>" + item.correct + "</td>";
+            html += "<td class='wrong-cell'>" + item.yours + "</td>";
+            html += "<td class='fail-cell'>" + (item.failCount > 1 ? "×" + item.failCount : "") + "</td>";
+            html += "<td class='actions-cell'>";
+            html += "<button onclick='speakLogEntry(" + entryIndex + ")' title='Hear answer'>🔊</button>";
+            html += "<button onclick='togglePin(" + entryIndex + ")' title='" + pinTitle + "'>" + pinIcon + "</button>";
+            html += "<button onclick='deleteEntry(" + entryIndex + ")' title='Clear'>✖</button>";
+            html += "</td>";
+            html += "</tr>";
+        }
+        html += "</table>";
+        container.innerHTML = html;
+    }
+
+    function updateReviewActions(count) {
+        var drillBtn = document.getElementById('drill-bucket-btn');
+        var clearBtn = document.getElementById('clear-bucket-btn');
+
+        if (reviewTab === "active") {
+            if (drillBtn) { drillBtn.innerText = "🎯 Drill"; drillBtn.disabled = true; }
+            if (clearBtn) { clearBtn.innerText = "🗑️ Clear"; clearBtn.disabled = true; }
+            return;
+        }
+
+        if (reviewTab === "known") {
+            if (drillBtn) { drillBtn.innerText = "🎯 Drill"; drillBtn.disabled = true; }
+            if (clearBtn) { clearBtn.innerText = "🗑️ Forget Filtered Known (" + count + ")"; clearBtn.disabled = count === 0; }
+            return;
+        }
+
+        var bucketLabels = { pending: "Pending", pinned: "Pinned" };
+        if (drillBtn) {
+            drillBtn.innerText = "🎯 Drill " + bucketLabels[reviewTab] + " (" + count + ")";
+            drillBtn.disabled = count === 0;
+        }
+        if (clearBtn) {
+            clearBtn.innerText = "🗑️ Clear " + bucketLabels[reviewTab] + " (" + count + ")";
+            clearBtn.disabled = count === 0;
+        }
+    }
+
+    function pinAllPending() {
+        var pendingEntries = mistakeLog.filter(function(e) { return e.status === "pending"; });
+        if (pendingEntries.length === 0) return;
+        if (!confirm("Move all " + pendingEntries.length + " pending cards to Pinned? You can unpin them individually from the Pinned tab.")) return;
+        for (var i = 0; i < pendingEntries.length; i++) {
+            pendingEntries[i].status = "pinned";
+        }
+        saveState();
+        updateLogBadges();
+        updateScoreboard();
+        renderReviewList();
+    }
+
+    function togglePin(entryIndex) {
+        var e = mistakeLog[entryIndex];
+        if (!e) return;
+        if (e.status === "pinned") {
+            mistakeLog.splice(entryIndex, 1);
+        } else {
+            e.status = "pinned";
+        }
+        saveState();
+        updateLogBadges();
+        updateScoreboard();
+        renderReviewList();
+    }
+
+    function deleteEntry(entryIndex) {
+        if (entryIndex < 0 || entryIndex >= mistakeLog.length) return;
+        mistakeLog.splice(entryIndex, 1);
+        saveState();
+        updateLogBadges();
+        updateScoreboard();
+        renderReviewList();
+    }
+
+    function clearActiveBucket() {
+        if (reviewTab === "known") {
+            var filteredKeys = getFilteredKnownKeys();
+            if (filteredKeys.length === 0) return;
+            if (!confirm("Forget " + filteredKeys.length + " known cards under current filters? They'll return to Active and resurface in future sessions.")) return;
+            for (var i = 0; i < filteredKeys.length; i++) {
+                delete knownCards[filteredKeys[i]];
+            }
+            saveState();
+            updateScoreboard();
+            updateLogBadges();
+            renderReviewList();
+            return;
+        }
+        if (reviewTab === "active") return;
+        var filtered = mistakeLog.filter(function(e) { return e.status === reviewTab; });
+        if (filtered.length === 0) return;
+        var label = reviewTab.charAt(0).toUpperCase() + reviewTab.slice(1);
+        if (!confirm("Clear all " + filtered.length + " " + label + " entries? They'll return to Active and resurface in future sessions.")) return;
+        for (var i = 0; i < filtered.length; i++) {
+            var idx = mistakeLog.indexOf(filtered[i]);
+            if (idx >= 0) mistakeLog.splice(idx, 1);
+        }
+        saveState();
+        updateLogBadges();
+        updateScoreboard();
+        renderReviewList();
+    }
+
+    // ============================================================
+    // KEYBOARD
+    // ============================================================
+    document.addEventListener('keydown', function(event) {
+        var isFeedbackOpen = document.getElementById('feedback-container').style.display === 'block';
+        var isHonourOpen = document.getElementById('honour-system-controls').style.display === 'flex';
+        var isTyping = (document.activeElement && document.activeElement.tagName === "INPUT");
+        var isQuizView = document.getElementById('view-quiz').style.display !== 'none';
+
+        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') {
+            event.preventDefault();
+            executeUndoAction();
+            return;
+        }
+
+        if (!isQuizView) return;
+
+        if (!sessionStarted && !sessionComplete) {
+            if (event.key === ' ' || event.code === 'Space' || event.key === 'Enter') {
+                event.preventDefault();
+                startSession();
+            }
+            return;
+        }
+
+        if (sessionComplete) {
+            if (event.key === ' ' || event.code === 'Space' || event.key === 'Enter') {
+                event.preventDefault();
+                startNewSessionFromComplete();
+            }
+            return;
+        }
+
+        if (event.key === ' ' || event.code === 'Space' || event.key === 'Enter') {
+            if (isTyping && !isFeedbackOpen && currentQuizDirection === 'read' && productionMethod === 'type') {
+                return;
+            }
+            event.preventDefault();
+            if (isFeedbackOpen) {
+                handleNextWorkflow();
+                return;
+            }
+            if (currentQuizDirection === 'read' && productionMethod === 'type') { checkAnswer(); return; }
+            if (!isHonourOpen) { revealVerbAnswer(); return; }
+            if (isHonourOpen) { assessHonour(true); return; }
+        }
+
+        if (isHonourOpen) {
+            if (event.key === '1' || event.key.toLowerCase() === 'x') { event.preventDefault(); assessHonour(false); }
+            if (event.key === '2') { event.preventDefault(); assessHonour(true); }
+        }
+    });
+
+    window.onload = function() {
+        populateVerbSelector();
+        loadState();
+        initSessionDeck();
+        updateLogBadges();
+        updateScoreboard();
+        updatePlayModePill();
+    };
+</script>
+<!-- polyglot-copyright -->
+<footer style="text-align:center; margin:1rem auto 0 auto; padding:1rem 20px 0 20px;
+               font-size:0.7rem; color:#64748b; letter-spacing:0.3px; line-height:1.5;">
+    Copyright The Polyglot Gym 2026 · Simon Reynolds · All rights reserved.
+</footer>
+<!-- /polyglot-copyright -->
+</body>
+</html>

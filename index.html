@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Polyglot Gym</title>
+<style>
+:root {
+  --bg-color: #090d16;
+  --card-bg: #131b2e;
+  --text-main: #f8fafc;
+  --text-muted: #64748b;
+  --border: #243354;
+  --shadow: rgba(0, 0, 0, 0.5);
+  --accent-ja: #06b6d4;
+  --accent-ru: #ff4757;
+  --accent-es: #f59e0b;
+  --accent-it: #22c55e;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  margin: 0;
+  padding: 40px 20px;
+  min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.hub-container { width: 100%; max-width: 900px; }
+header { margin-bottom: 2rem; text-align: center; }
+h1 { font-size: 2rem; margin: 0; color: var(--text-main); letter-spacing: 0.5px; }
+.subtitle { color: var(--text-muted); margin-top: 0.5rem; font-size: 0.95rem; }
+
+.continue-bar {
+  margin: 1.5rem auto 0 auto;
+  max-width: 500px;
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(168, 85, 247, 0.12));
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  gap: 1rem;
+}
+.continue-bar a {
+  color: var(--text-main);
+  text-decoration: none;
+  font-weight: bold;
+}
+.continue-bar a:hover { text-decoration: underline; }
+.continue-label { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.reminder-bar {
+  margin: 1rem auto 0 auto;
+  max-width: 500px;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(239, 68, 68, 0.08));
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: 0.5rem;
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  gap: 0.75rem;
+}
+.reminder-bar .reminder-msg { color: var(--text-muted); }
+.reminder-bar .reminder-msg strong { color: var(--text-main); }
+.reminder-bar .reminder-link {
+  color: var(--accent-es);
+  text-decoration: none;
+  font-weight: bold;
+  white-space: nowrap;
+}
+.reminder-bar .reminder-link:hover { text-decoration: underline; }
+.reminder-bar .reminder-dismiss {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0 0.25rem;
+  opacity: 0.6;
+}
+.reminder-bar .reminder-dismiss:hover { opacity: 1; color: var(--text-main); }
+
+.footer-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 0.3rem 0.75rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
+}
+.footer-toggle:hover { color: var(--text-main); border-color: var(--text-muted); }
+.footer-toggle span { font-weight: bold; }
+
+.known-line { margin-top: 0.4rem; font-size: 0.75rem; }
+.known-badge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.25rem;
+  font-weight: bold;
+  letter-spacing: 0.3px;
+  background-color: rgba(148, 163, 184, 0.1);
+  color: var(--text-muted);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+.known-badge.star1 { background-color: rgba(16, 185, 129, 0.12); color: #6ee7b7; border-color: rgba(16, 185, 129, 0.35); }
+.known-badge.star2 { background-color: rgba(245, 158, 11, 0.12); color: #fcd34d; border-color: rgba(245, 158, 11, 0.35); }
+.known-badge.star3 { background-color: rgba(6, 182, 212, 0.12); color: #67e8f9; border-color: rgba(6, 182, 212, 0.35); }
+.known-badge.master { background-color: rgba(245, 158, 11, 0.18); color: #fbbf24; border-color: #f59e0b; }
+
+.filter-bar {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 2rem 0;
+  flex-wrap: wrap;
+}
+.filter-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+.filter-btn:hover { color: var(--text-main); border-color: var(--text-muted); }
+.filter-btn.active {
+  background-color: var(--border);
+  color: var(--text-main);
+  font-weight: bold;
+}
+
+.section { margin-bottom: 2rem; }
+.section.hidden { display: none; }
+.section h2 {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.section[data-lang="japanese"] h2 { color: var(--accent-ja); border-color: rgba(6, 182, 212, 0.3); }
+.section[data-lang="russian"] h2 { color: var(--accent-ru); border-color: rgba(255, 71, 87, 0.3); }
+.section[data-lang="spanish"] h2 { color: var(--accent-es); border-color: rgba(245, 158, 11, 0.3); }
+.section[data-lang="italian"] h2 { color: var(--accent-it); border-color: rgba(34, 197, 94, 0.3); }
+
+.apps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1rem;
+}
+@media(max-width: 450px) { .apps-grid { grid-template-columns: 1fr; } }
+
+.app-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 4px 20px var(--shadow);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+  color: inherit;
+}
+.app-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+}
+.app-card[data-lang="japanese"]:hover { border-color: var(--accent-ja); }
+.app-card[data-lang="russian"]:hover { border-color: var(--accent-ru); }
+.app-card[data-lang="spanish"]:hover { border-color: var(--accent-es); }
+.app-card[data-lang="italian"]:hover { border-color: var(--accent-it); }
+
+.card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; gap: 0.5rem; }
+.app-title { font-size: 1.05rem; font-weight: bold; margin: 0; color: var(--text-main); }
+.badge {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.25rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.badge.japanese { background-color: rgba(6, 182, 212, 0.12); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.3); }
+.badge.russian  { background-color: rgba(255, 71, 87, 0.12); color: #fb7185; border: 1px solid rgba(255, 71, 87, 0.3); }
+.badge.spanish  { background-color: rgba(245, 158, 11, 0.12); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+.badge.italian  { background-color: rgba(34, 197, 94, 0.12); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
+
+.desc { color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; margin: 0 0 1rem 0; }
+
+.stats-block { margin: 0.5rem 0 1rem 0; font-size: 0.8rem; }
+.progress-track {
+  width: 100%;
+  height: 4px;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 0.4rem;
+}
+.progress-fill { height: 100%; transition: width 0.3s ease; }
+.app-card[data-lang="japanese"] .progress-fill { background-color: var(--accent-ja); }
+.app-card[data-lang="russian"] .progress-fill { background-color: var(--accent-ru); }
+.app-card[data-lang="spanish"] .progress-fill { background-color: var(--accent-es); }
+.app-card[data-lang="italian"] .progress-fill { background-color: var(--accent-it); }
+
+.stats-line {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+.stats-line strong { color: var(--text-main); }
+.empty-state { color: var(--text-muted); font-size: 0.8rem; font-style: italic; }
+
+.footer-action {
+  display: flex;
+  align-items: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  transition: padding-left 0.2s ease;
+  margin-top: auto;
+}
+.app-card:hover .footer-action { padding-left: 4px; }
+.app-card[data-lang="japanese"] .footer-action { color: #22d3ee; }
+.app-card[data-lang="russian"] .footer-action { color: #fb7185; }
+.app-card[data-lang="spanish"] .footer-action { color: #fbbf24; }
+.app-card[data-lang="italian"] .footer-action { color: #4ade80; }
+
+.suite-summary {
+  margin-top: 2rem;
+  padding: 1.25rem 1.5rem;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  text-align: center;
+}
+.summary-stat .label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+.summary-stat .value { font-size: 1.3rem; font-weight: bold; color: var(--text-main); }
+
+footer {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+</style>
+    <meta name="copyright" content="© 2026 Simon Reynolds · The Polyglot Gym · All rights reserved.">
+</head>
+<body>
+
+<div class="hub-container" id="hub">
+  <header>
+    <h1>The Polyglot Gym</h1>
+    <p class="subtitle">Dedicated training terminals for language learners</p>
+    <div class="continue-bar" id="continue-bar" style="display: none;">
+      <span class="continue-label">Pick up where you left off</span>
+      <a id="continue-link" href="#">Continue →</a>
+    </div>
+    <div class="reminder-bar" id="reminder-bar"></div>
+  </header>
+
+  <div class="filter-bar" id="filter-bar">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="japanese">Japanese</button>
+    <button class="filter-btn" data-filter="russian">Russian</button>
+    <button class="filter-btn" data-filter="spanish">Spanish</button>
+    <button class="filter-btn" data-filter="italian">Italian</button>
+  </div>
+
+  <div class="suite-summary" id="suite-summary"></div>
+
+  <footer>
+    The Polyglot Gym • Language Training Suite<br>
+    <button class="footer-toggle" onclick="toggleReminderEnabled()">
+      Reminders: <span id="reminder-status">ON</span>
+    </button>
+  </footer>
+</div>
+
+<script>
+// ============================================================
+// APP REGISTRY — edit this list to add or remove trainers
+// ============================================================
+const APPS = [
+  { file: 'japanese_kana.html', title: 'Kana Syllabary Trainer',
+    lang: 'japanese', badge: 'Core',
+    desc: 'Recognise Hiragana and Katakana characters, dakuten marks, and blended sounds.',
+    key: 'jap_kana_state' },
+
+  { file: 'japanese_clock.html', title: 'Clock & Time Trainer',
+    lang: 'japanese', badge: 'Time',
+    desc: 'Listen to audio cues and type English digital times. Covers hour and minute mutations.',
+    key: 'jap_clock_state' },
+
+  { file: 'japanese_counters.html', title: 'Irregular Counters Trainer',
+    lang: 'japanese', badge: 'Counters',
+    desc: 'Drill number-counter sound mutations: people, cylinders, flat objects, animals, and books.',
+    key: 'jap_counters_state' },
+
+  { file: 'japanese_numbers.html', title: 'Number Reading Trainer',
+    lang: 'japanese', badge: 'Numbers',
+    desc: 'Read and hear numbers from 1 up to 兆 (chō, trillion). Drill kanji-to-rōmaji conversions with audio pronunciation.',
+    key: 'jap_numbers_state' },
+
+  { file: 'japanese_verbs.html', title: 'Verb Conjugation Trainer',
+    lang: 'japanese', badge: 'Verbs',
+    desc: 'Twenty verbs across seventeen forms — from dictionary to imperative. Includes godan/ichidan/irregular classification and kanji/romaji display toggles.',
+    key: 'jap_verbs_state' },
+
+  { file: 'russian_cyrillic.html', title: 'Cyrillic Script Trainer',
+    lang: 'russian', badge: 'Script',
+    desc: 'Learn the Russian alphabet with italic-form traps, false friends, and phoneme mnemonics.',
+    key: 'rus_cyrillic_state' },
+
+  { file: 'russian_cases.html', title: 'Case Inflection Trainer',
+    lang: 'russian', badge: 'Nouns',
+    desc: 'Produce all six cases across masculine, feminine, and neuter nouns in both numbers.',
+    key: 'rus_cases_state' },
+
+  { file: 'russian_numbers.html', title: 'Number Inflection Trainer',
+    lang: 'russian', badge: 'Numbers',
+    desc: 'Drill the declined forms of numbers 1–900 across all six grammatical cases.',
+    key: 'rus_numbers_state' },
+
+  { file: 'russian_verbs.html', title: 'Verb Conjugation Trainer',
+    lang: 'russian', badge: 'Verbs',
+    desc: 'Drill present, past, and future forms across aspects and conjugation classes.',
+    key: 'rus_verbs_state' },
+
+  { file: 'spanish_verbs.html', title: 'Verb Conjugation Trainer',
+    lang: 'spanish', badge: 'Verbs',
+    desc: 'Twenty-six verbs across six tenses — presente, pretérito indefinido, imperfecto, pretérito perfecto, futuro, condicional. Includes stem-changers, "go" verbs, and strict/lenient accent modes.',
+    key: 'spa_verbs_state' },
+
+  { file: 'spanish_subjunctive.html', title: 'Subjunctive Trainer',
+    lang: 'spanish', badge: 'Mood',
+    desc: 'Thirty-seven verbs across four subjunctive tenses — presente, imperfecto, perfecto, pluscuamperfecto. Includes irregular yo-derived classes, spelling changes, stem-changers, and the perfect tenses as an advanced tier.',
+    key: 'spa_verbs_subjunctive_state' },
+
+  { file: 'spanish_numbers.html', title: 'Numbers Trainer',
+    lang: 'spanish', badge: 'Numbers',
+    desc: 'Number words from zero to a billion, including trap forms like veintiuno, quinientos, and veintiún mil. Both directions, plus year cards with trivia.',
+    key: 'spa_numbers_state' },
+
+  { file: 'spanish_clitics.html', title: 'Clitics Trainer',
+    lang: 'spanish', badge: 'Clitics',
+    desc: 'Clitic pronouns in every combination — direct, indirect, modal double-placement, and gerund. 180 cards covering accent shifts, the le→se rule, and both valid placements for modal + infinitive.',
+    key: 'spa_clitics_state' },
+
+  { file: 'italian_verbs.html', title: 'Verb Conjugation Trainer',
+    lang: 'italian', badge: 'Verbs',
+    desc: 'Twenty-four verbs across six tenses — presente, imperfetto, passato remoto, passato prossimo, futuro, condizionale. Includes the -isc- class and essere/avere auxiliary selection.',
+    key: 'ita_verbs_state' },
+
+  { file: 'italian_subjunctive.html', title: 'Subjunctive Trainer',
+    lang: 'italian', badge: 'Mood',
+    desc: 'Twenty-nine verbs across four subjunctive tenses — presente, imperfetto, passato, trapassato. Includes essere/avere auxiliary selection, speaker-gender agreement for compound tenses, and spelling-change verbs.',
+    key: 'ita_verbs_subjunctive_state' },
+
+  { file: 'italian_numbers.html', title: 'Numbers Trainer',
+    lang: 'italian', badge: 'Numbers',
+    desc: 'Number words from zero to a billion, including trap forms like ventuno, ventotto, ventitré, and mille → -mila. Both directions, plus year cards with trivia.',
+    key: 'ita_numbers_state' },
+
+  { file: 'italian_clitics.html', title: 'Clitics Trainer',
+    lang: 'italian', badge: 'Clitics',
+    desc: 'Clitic pronouns in every combination — direct, indirect, and the glielo/gliela paradigm, plus modal double-placement and gerund attachment. Covers elision with apostrophe, ne and ci, and past-participle agreement with direct clitics.',
+    key: 'ita_clitics_state' },
+];
+
+const LANG_LABELS = {
+  japanese: 'Japanese',
+  russian:  'Russian',
+  spanish:  'Spanish',
+  italian:  'Italian'
+};
+
+// ============================================================
+// LOCALSTORAGE READER
+// ============================================================
+function readAppState(key) {
+  if (!key) return null;
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (e) {
+    return null;
+  }
+}
+
+// ============================================================
+// CARD RENDERING
+// ============================================================
+function buildKnownBadge(state) {
+  if (!state || !state.knownCards) return '';
+  const knownCount = Object.keys(state.knownCards).length;
+  if (knownCount === 0) return '';
+
+  const total = state.cardUniverseTotal || 0;
+  let milestone = '';
+  let label = '';
+
+  if (total > 0) {
+    const pct = Math.round((knownCount / total) * 100);
+    if (pct >= 100) { milestone = 'master'; label = '🏆 All known'; }
+    else if (pct >= 75) { milestone = 'star3'; label = '🌟 ' + pct + '% known'; }
+    else if (pct >= 50) { milestone = 'star2'; label = '⭐ ' + pct + '% known'; }
+    else if (pct >= 25) { milestone = 'star1'; label = '🌱 ' + pct + '% known'; }
+    else { label = knownCount + ' known'; }
+  } else {
+    label = knownCount + ' known';
+  }
+
+  return '<div class="known-line"><span class="known-badge ' + milestone + '">' + label + '</span></div>';
+}
+
+function buildCard(app) {
+  const state = readAppState(app.key);
+  const stats = (state && state.stats) || { correct: 0, total: 0, streak: 0 };
+  const mistakes = (state && state.mistakes) || [];
+  const hasData = stats.total > 0;
+  const accuracy = hasData ? Math.round((stats.correct / stats.total) * 100) : 0;
+  const knownHtml = buildKnownBadge(state);
+
+  const card = document.createElement('a');
+  card.href = app.file;
+  card.className = 'app-card';
+  card.dataset.lang = app.lang;
+  card.onclick = () => recordVisit(app);
+
+  const statsHtml = hasData ? `
+    <div class="stats-block">
+      <div class="progress-track">
+        <div class="progress-fill" style="width: ${accuracy}%;"></div>
+      </div>
+      <div class="stats-line">
+        <span><strong>${stats.correct}</strong> / ${stats.total} · ${accuracy}%</span>
+        <span>${stats.streak > 0 ? '🔥 ' + stats.streak : ''} ${mistakes.length > 0 ? '⚠️ ' + mistakes.length : ''}</span>
+      </div>
+    </div>
+  ` : `<div class="stats-block"><span class="empty-state">Not started yet</span></div>`;
+
+  card.innerHTML = `
+    <div>
+      <div class="card-header">
+        <h3 class="app-title">${app.title}</h3>
+        <span class="badge ${app.lang}">${app.badge}</span>
+      </div>
+      <p class="desc">${app.desc}</p>
+      ${statsHtml}
+    </div>
+    <div class="footer-action">Launch →</div>
+  `;
+  return card;
+}
+
+function renderSections() {
+  const grouped = {};
+  APPS.forEach(app => {
+    if (!grouped[app.lang]) grouped[app.lang] = [];
+    grouped[app.lang].push(app);
+  });
+
+  const orderedLangs = ['japanese', 'russian', 'spanish', 'italian'];
+  const summary = document.getElementById('suite-summary');
+
+  orderedLangs.forEach(lang => {
+    if (!grouped[lang] || grouped[lang].length === 0) return;
+
+    const section = document.createElement('section');
+    section.className = 'section';
+    section.dataset.lang = lang;
+    section.innerHTML = `<h2>${LANG_LABELS[lang]}</h2>`;
+
+    const grid = document.createElement('div');
+    grid.className = 'apps-grid';
+    grouped[lang].forEach(app => grid.appendChild(buildCard(app)));
+    section.appendChild(grid);
+
+    summary.parentNode.insertBefore(section, summary);
+  });
+}
+
+// ============================================================
+// LANGUAGE FILTER
+// ============================================================
+function initFilters() {
+  const buttons = document.querySelectorAll('.filter-btn');
+  buttons.forEach(btn => {
+    btn.onclick = () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      document.querySelectorAll('.section').forEach(sec => {
+        if (filter === 'all' || sec.dataset.lang === filter) {
+          sec.classList.remove('hidden');
+        } else {
+          sec.classList.add('hidden');
+        }
+      });
+    };
+  });
+}
+
+// ============================================================
+// CONTINUE WHERE YOU LEFT OFF
+// ============================================================
+function recordVisit(app) {
+  try {
+    localStorage.setItem('polyglot_last_visited', JSON.stringify({
+      file: app.file,
+      title: app.title,
+      timestamp: Date.now()
+    }));
+  } catch (e) {}
+}
+
+function renderContinueBar() {
+  const reminderBar = document.getElementById('reminder-bar');
+  if (reminderBar && reminderBar.style.display === 'flex') return;
+
+  let last = null;
+  try {
+    last = JSON.parse(localStorage.getItem('polyglot_last_visited') || 'null');
+  } catch (e) {}
+  if (!last || !last.file) return;
+
+  const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+  if (Date.now() - last.timestamp > THIRTY_DAYS) return;
+
+  const bar = document.getElementById('continue-bar');
+  const link = document.getElementById('continue-link');
+  link.href = last.file;
+  link.innerText = last.title + ' →';
+  bar.style.display = 'flex';
+}
+
+function renderReminder() {
+  const bar = document.getElementById('reminder-bar');
+  if (!bar) return;
+
+  let enabled = true;
+  try {
+    if (localStorage.getItem('polyglot_reminder_enabled') === 'false') enabled = false;
+  } catch (e) {}
+  if (!enabled) { bar.style.display = 'none'; return; }
+
+  let last = null;
+  try {
+    last = JSON.parse(localStorage.getItem('polyglot_last_visited') || 'null');
+  } catch (e) {}
+  if (!last || !last.timestamp) { bar.style.display = 'none'; return; }
+
+  const days = Math.floor((Date.now() - last.timestamp) / (1000 * 60 * 60 * 24));
+  if (days < 7) { bar.style.display = 'none'; return; }
+
+  let linkHref = '#';
+  let linkText = 'Browse the terminals';
+  if (last.file && APPS.some(function(a) { return a.file === last.file; })) {
+    linkHref = last.file;
+    linkText = 'Resume ' + last.title;
+  }
+
+  const dayWord = days === 1 ? 'day' : 'days';
+  bar.innerHTML =
+    '<span class="reminder-msg"><strong>Welcome back.</strong> Last session was ' + days + ' ' + dayWord + ' ago.</span>' +
+    '<a class="reminder-link" href="' + linkHref + '">' + linkText + ' →</a>' +
+    '<button class="reminder-dismiss" onclick="dismissReminder()">✕</button>';
+  bar.style.display = 'flex';
+}
+
+function dismissReminder() {
+  try { localStorage.setItem('polyglot_reminder_enabled', 'false'); } catch (e) {}
+  const bar = document.getElementById('reminder-bar');
+  if (bar) bar.style.display = 'none';
+  updateReminderStatus();
+}
+
+function toggleReminderEnabled() {
+  let current = 'true';
+  try { current = localStorage.getItem('polyglot_reminder_enabled') || 'true'; } catch (e) {}
+  const next = current === 'false' ? 'true' : 'false';
+  try { localStorage.setItem('polyglot_reminder_enabled', next); } catch (e) {}
+  updateReminderStatus();
+  renderReminder();
+}
+
+function updateReminderStatus() {
+  const el = document.getElementById('reminder-status');
+  if (!el) return;
+  let enabled = true;
+  try { enabled = localStorage.getItem('polyglot_reminder_enabled') !== 'false'; } catch (e) {}
+  el.textContent = enabled ? 'ON' : 'OFF';
+  el.style.color = enabled ? 'var(--accent-es)' : 'var(--text-muted)';
+}
+
+
+
+// ============================================================
+// SUITE AGGREGATE STATS
+// ============================================================
+function renderSummary() {
+  let totalCorrect = 0, totalChecked = 0, totalErrors = 0, bestStreak = 0, activeApps = 0;
+  APPS.forEach(app => {
+    const state = readAppState(app.key);
+    if (!state) return;
+    const stats = state.stats || {};
+    const mistakes = state.mistakes || [];
+    totalCorrect += stats.correct || 0;
+    totalChecked += stats.total || 0;
+    totalErrors += mistakes.length;
+    if ((stats.streak || 0) > bestStreak) bestStreak = stats.streak;
+    if ((stats.total || 0) > 0) activeApps++;
+  });
+
+  const accuracy = totalChecked > 0 ? Math.round((totalCorrect / totalChecked) * 100) : 0;
+
+  document.getElementById('suite-summary').innerHTML = `
+    <div class="summary-stat"><span class="label">Correct</span><span class="value">${totalCorrect}</span></div>
+    <div class="summary-stat"><span class="label">Checked</span><span class="value">${totalChecked}</span></div>
+    <div class="summary-stat"><span class="label">Accuracy</span><span class="value">${accuracy}%</span></div>
+    <div class="summary-stat"><span class="label">Best Streak</span><span class="value">${bestStreak}</span></div>
+    <div class="summary-stat"><span class="label">Pending Errors</span><span class="value">${totalErrors}</span></div>
+    <div class="summary-stat"><span class="label">Trainers in Use</span><span class="value">${activeApps}</span></div>
+  `;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  renderSections();
+  initFilters();
+  renderReminder();
+  renderContinueBar();
+  updateReminderStatus();
+  renderSummary();
+});
+</script>
+<!-- polyglot-copyright -->
+<footer style="text-align:center; margin:1rem auto 0 auto; padding:1rem 20px 0 20px;
+               font-size:0.7rem; color:#64748b; letter-spacing:0.3px; line-height:1.5;">
+    Copyright The Polyglot Gym 2026 · Simon Reynolds · All rights reserved.
+</footer>
+<!-- /polyglot-copyright -->
+</body>
+</html>

@@ -1,0 +1,1787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Japanese Kana</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --error: #f43f5e;
+            --warning: #f59e0b;
+            --border: #334155;
+        }
+        :root { font-size: 17px; }
+        html { scrollbar-gutter: stable; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 1rem;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-x: hidden;
+            overflow-anchor: none;
+        }
+        .container {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 550px;
+            border: 1px solid var(--border);
+            position: relative;
+        }
+        
+        /* NEW: Active Shutter Animations for Focus Control */
+        #shutter-header-area {
+            max-height: 500px;
+            opacity: 1;
+            overflow: hidden;
+            transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.4s ease;
+        }
+        #shutter-header-area.collapsed {
+            max-height: 0px;
+            opacity: 0;
+            margin-bottom: 0px !important;
+            pointer-events: none;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-top: 0;
+            text-align: center;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            background-color: rgba(0,0,0,0.15);
+            padding: 0.75rem;
+            border-radius: 0.5rem 0.5rem 0 0;
+            margin-top: 1rem;
+            margin-bottom: 0;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            font-size: 0.85rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .score-board-progress-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0,0,0,0.15);
+            padding: 0.6rem 0.75rem;
+            border-radius: 0 0 0.5rem 0.5rem;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.85rem;
+            position: relative;
+        }
+        .score-board-progress-row .score-item { margin: 0 auto; }
+        .score-board-gear-btn {
+            font-size: 1rem;
+            background: none;
+            color: var(--text-main);
+            padding: 0.2rem 0.5rem;
+            cursor: pointer;
+            border: none;
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            line-height: 1;
+        }
+        .score-item span {
+            font-weight: bold;
+            color: var(--accent);
+        }
+        .review-phase-text {
+            color: var(--warning) !important;
+            transition: color 0.3s ease;
+        }
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+        .nav-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.5rem 0.75rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border-radius: 0.25rem;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover { color: var(--text-main); }
+        .nav-btn.active {
+            background-color: var(--border);
+            color: var(--accent);
+            font-weight: bold;
+        }
+        .mode-selector {
+            display: flex;
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 0.25rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+        .mode-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: normal;
+            border-radius: 0.35rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .mode-btn:hover { color: var(--text-main); opacity: 1; }
+        .mode-btn.active {
+            background-color: var(--accent);
+            color: #0f172a;
+            font-weight: bold;
+        }
+        
+        .drawer-toggle {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+        .drawer-toggle:hover { color: var(--text-main); }
+        .settings-drawer {
+            background-color: rgba(0, 0, 0, 0.15);
+            border: 1px dashed var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+        .row-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .row-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 0.35rem;
+            padding: 0.4rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .row-label input { display: none; }
+        .row-label.selected {
+            background-color: rgba(6, 182, 212, 0.15);
+            border-color: var(--accent);
+            color: var(--text-main);
+            font-weight: bold;
+        }
+        .toggle-switch-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            padding-top: 0.75rem;
+        }
+
+        .question-box {
+            background-color: rgba(0,0,0,0.3);
+            padding: 2.2rem 1.5rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+            min-height: 6rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .kana-display {
+            font-size: 3.8rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            line-height: 1;
+        }
+        .type-sub-badge {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 0.5rem;
+        }
+        .input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        input.text-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+            background-color: rgba(0,0,0,0.2);
+            color: var(--text-main);
+            font-size: 1.1rem;
+            outline: none;
+            text-align: center;
+        }
+        input.text-input:focus { border-color: var(--accent); }
+        .feedback {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        .correct-box {
+            background-color: rgba(16, 185, 129, 0.15);
+            border: 1px solid var(--success);
+            color: #34d399;
+        }
+        .incorrect-box {
+            background-color: rgba(244, 63, 94, 0.15);
+            border: 1px solid var(--error);
+            color: #fb7185;
+        }
+        .honour-group {
+            display: flex;
+            gap: 0.75rem;
+            width: 100%;
+        }
+        .honour-btn {
+            flex: 1;
+            font-size: 0.95rem;
+            padding: 0.75rem;
+        }
+        .next-btn {
+            width: 100%;
+            margin-top: 1rem;
+            background-color: #334155;
+            color: var(--text-main);
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        #submit-btn, #reveal-btn {
+            background-color: var(--accent);
+            color: #0f172a;
+            font-weight: bold;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        #submit-btn { padding: 0 1.5rem; }
+        #reveal-btn { width: 100%; height: 2.8rem; font-size: 0.95rem; }
+        #submit-btn:hover, #reveal-btn:hover { opacity: 0.85; }
+        .ref-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+        .ref-table th, .ref-table td {
+            border: 1px solid var(--border);
+            padding: 0.5rem;
+            text-align: center;
+        }
+        .ref-table th { background-color: rgba(0,0,0,0.2); color: var(--accent); }
+
+        .portal-shortcut-bar {
+            width: 100%;
+            max-width: 550px;
+            margin: 1.5rem auto 0 auto;
+            padding: 0.75rem 1rem;
+            background-color: rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            box-sizing: border-box;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        .portal-shortcut-bar a { color: var(--accent); text-decoration: none; font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; gap: 0.4rem; transition: opacity 0.2s; }
+        .portal-shortcut-bar a:hover { opacity: 0.8; }
+        .portal-shortcut-bar .terminal-label { margin-left: auto; font-size: 0.75rem; color: var(--text-muted); font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase; }
+
+        /* Feedback / completion */
+        .completion-actions { display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
+        .completion-btn { flex: 1; min-width: 120px; padding: 0.65rem; border: none; border-radius: 0.5rem; font-weight: bold; cursor: pointer; font-size: 0.85rem; background-color: var(--border); color: var(--text-main); }
+        .completion-btn.primary { background-color: var(--accent); color: #0f172a; }
+        .completion-stats { display: flex; justify-content: center; gap: 1.5rem; margin: 1rem 0 0.5rem 0; flex-wrap: wrap; }
+        .completion-stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; }
+        .completion-stat-value { font-size: 1.6rem; font-weight: bold; color: var(--text-main); }
+
+        .hidden-during-feedback { display: none !important; }
+
+        /* === MOBILE FIXES === */
+        @media (max-width: 550px) {
+            .container { padding: 1rem; }
+            .score-board {
+                flex-wrap: wrap !important;
+                justify-content: center !important;
+                font-size: 0.9rem !important;
+                padding: 0.5rem 0.75rem !important;
+                gap: 0.4rem 0.75rem !important;
+                line-height: 1.4 !important;
+            }
+            .score-item { font-size: 0 !important; white-space: nowrap !important; }
+            .score-item span, .score-item a { font-size: 0.9rem !important; }
+            .score-board-progress-row .score-item { font-size: 0.9rem !important; text-align: center; }
+            .score-board-gear-btn {
+                position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%);
+            }
+            #review-status-label {
+                display: block !important; width: 100% !important;
+                text-align: center !important;
+                font-size: 0.75rem !important;
+                color: var(--warning) !important;
+                margin-top: 0.25rem !important;
+                font-style: italic !important;
+            }
+            .question-box {
+                padding: 1.25rem 1rem !important;
+                min-height: auto !important;
+                justify-content: flex-start !important;
+                padding-top: 1.5rem !important;
+            }
+            .kana-display { font-size: 2.8rem !important; }
+            .mode-btn { font-size: 0.8rem !important; padding: 0.55rem 0.3rem !important; }
+        }
+        @media (max-width: 380px) {
+            .mode-btn { font-size: 0.72rem !important; }
+            .score-item span, .score-item a { font-size: 0.82rem !important; }
+        }
+    </style>
+    <meta name="copyright" content="© 2026 Simon Reynolds · The Polyglot Gym · All rights reserved.">
+</head>
+<body>
+<div class="container">
+    <!-- GLOBAL NAVIGATION HEADERS -->
+    <h1>JAPANESE KANA</h1>
+    
+    <div class="nav-tabs">
+        <button class="nav-btn active" id="tab-quiz" onclick="switchView('quiz')">🎯 Drills</button>
+        <button class="nav-btn" id="tab-guide" onclick="switchView('guide')">📚 Guide</button>
+        <button class="nav-btn" id="tab-review" onclick="switchView('review')">📝 Reviews (<span id="review-count">0</span>)</button>
+    </div>
+
+    <!-- PANEL 1: PRACTICE QUIZ VIEW -->
+    <div id="view-quiz">
+        <!-- FOCUS SHUTTER AREA -->
+        <div id="shutter-header-area">
+            <div class="mode-selector">
+                <button class="mode-btn active" id="dir-r" onclick="setDirection('read')">Read</button>
+                <button class="mode-btn" id="dir-w" onclick="setDirection('write')">Write</button>
+            </div>
+        </div>
+
+        <!-- SCOREBOARD ROW -->
+        <div class="score-board">
+            <div class="score-item">Correct: <span id="score-correct">0</span></div>
+            <div class="score-item">Checked: <span id="score-total">0</span></div>
+            <div class="score-item">Streak: <span id="score-streak">0</span> <span id="streak-emoji">🐣</span></div>
+        </div>
+        <div class="score-board-progress-row">
+            <div class="score-item" id="progress-box">Progress: <span id="deck-progress">0</span> / <span id="deck-total">--</span><span id="review-status-label"></span></div>
+            <button onclick="openOptionsPanel();" class="score-board-gear-btn">⚙️</button>
+        </div>
+
+        <!-- ACTIVE QUESTION BOX -->
+        <div class="question-box">
+            <div class="kana-display" id="char-display">Loading...</div>
+            <div class="type-sub-badge" id="type-sub-display" style="display: none;"></div>
+            <button id="speak-btn" style="background-color: #334155; color: var(--text-main); font-size: 0.85rem; padding: 0.4rem 0.8rem; border-radius: 0.25rem;" onclick="speakKanaCharacter();">Listen 🔊</button>
+        </div>
+
+        <div id="panel-read-mode">
+            <div class="input-group">
+                <input type="text" class="text-input" id="user-input" placeholder="Type Rōmaji & press Space or Enter" autocomplete="off" onkeydown="if(event.key === 'Enter') { event.preventDefault(); event.stopPropagation(); checkAnswer(); }">
+                <button id="submit-btn" onclick="checkAnswer();">Check</button>
+            </div>
+        </div>
+
+        <div id="panel-write-mode" style="display: none;">
+            <div class="input-group" id="btn-reveal-container">
+                <button id="reveal-btn" style="width: 100%;" onclick="revealWriteAnswer()">Reveal Answer</button>
+            </div>
+            <div class="honour-group" id="honour-system-controls" style="display: none; margin-bottom: 1rem;">
+                <button class="honour-btn" style="background-color: var(--error); color: var(--text-main);" onclick="assessHonour(false)">Wrong ✖</button>
+                <button class="honour-btn" style="background-color: var(--success); color: #0f172a;" onclick="assessHonour(true)">Correct ✔</button>
+            </div>
+        </div>
+
+        <!-- SESSION START GATE -->
+        <div id="start-btn-container" style="display: none;">
+            <div class="input-group">
+                <button id="start-btn" style="width: 100%; height: 2.8rem; background-color: var(--accent); color: #0f172a; font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 1rem;" onclick="startSession();">▶ Start Session</button>
+            </div>
+        </div>
+
+        <div id="feedback-container" style="display: none;">
+            <div id="feedback-message" class="feedback"></div>
+            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                <button class="next-btn" id="next-btn" onclick="handleNextWorkflow();" style="flex: 2; margin-top: 0;">Next Character →</button>
+                <button class="next-btn" id="undo-btn" onclick="executeUndoAction();" style="flex: 1; margin-top: 0; background-color: var(--warning); color: #0f172a;">↩ Undo</button>
+            </div>
+        </div>
+
+        <button class="drawer-toggle" id="drawer-toggle-btn" onclick="toggleSettingsDrawer();">⚙️ Options & Filters ▾</button>
+
+        <div class="settings-drawer" id="settings-drawer">
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: bold;">Read Mode Input Method:</div>
+            <div class="row-grid" style="grid-template-columns: repeat(2, 1fr); margin-top: 0.3rem; margin-bottom: 0.8rem;">
+                <label class="row-label selected" id="lbl-method-type"><input type="radio" name="rad-method" id="chk-method-type" checked onchange="updateProductionMethod('type')">Type Answer</label>
+                <label class="row-label" id="lbl-method-honour"><input type="radio" name="rad-method" id="chk-method-honour" onchange="updateProductionMethod('honour')">Self-Assess</label>
+            </div>
+
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: bold;">Alphabet:</div>
+            <div class="mode-selector" style="margin-top: 0.5rem; margin-bottom: 0.8rem;">
+                <button class="mode-btn active" id="mode-hiragana" onclick="setAlphabet('hiragana')">Hiragana (あ)</button>
+                <button class="mode-btn" id="mode-katakana" onclick="setAlphabet('katakana')">Katakana (ア)</button>
+                <button class="mode-btn" id="mode-mixed" onclick="setAlphabet('mixed')">Mixed</button>
+            </div>
+
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: bold;">Basic Consonant Rows:</div>
+            <div class="row-grid" style="grid-template-columns: repeat(5, 1fr);">
+                <label class="row-label selected" id="lbl-row-a"><input type="checkbox" id="chk-row-a" checked onchange="updateRowSelection('a')">A-O</label>
+                <label class="row-label selected" id="lbl-row-k"><input type="checkbox" id="chk-row-k" checked onchange="updateRowSelection('k')">K-row</label>
+                <label class="row-label selected" id="lbl-row-s"><input type="checkbox" id="chk-row-s" checked onchange="updateRowSelection('s')">S-row</label>
+                <label class="row-label selected" id="lbl-row-t"><input type="checkbox" id="chk-row-t" checked onchange="updateRowSelection('t')">T-row</label>
+                <label class="row-label selected" id="lbl-row-n"><input type="checkbox" id="chk-row-n" checked onchange="updateRowSelection('n')">N-row</label>
+                <label class="row-label selected" id="lbl-row-h"><input type="checkbox" id="chk-row-h" checked onchange="updateRowSelection('h')">H-row</label>
+                <label class="row-label selected" id="lbl-row-m"><input type="checkbox" id="chk-row-m" checked onchange="updateRowSelection('m')">M-row</label>
+                <label class="row-label selected" id="lbl-row-y"><input type="checkbox" id="chk-row-y" checked onchange="updateRowSelection('y')">Y-row</label>
+                <label class="row-label selected" id="lbl-row-r"><input type="checkbox" id="chk-row-r" checked onchange="updateRowSelection('r')">R-row</label>
+                <label class="row-label selected" id="lbl-row-w"><input type="checkbox" id="chk-row-w" checked onchange="updateRowSelection('w')">W/N</label>
+            </div>
+
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: bold; margin-top: 0.5rem;">Diacritics &amp; Sound Modifiers:</div>
+            <div class="row-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 1rem;">
+                <label class="row-label" id="lbl-row-dakuten"><input type="checkbox" id="chk-row-dakuten" onchange="updateRowSelection('dakuten')">Voiced</label>
+                <label class="row-label" id="lbl-row-handakuten"><input type="checkbox" id="chk-row-handakuten" onchange="updateRowSelection('handakuten')">Plosive (pa)</label>
+                <label class="row-label" id="lbl-row-sokuon"><input type="checkbox" id="chk-row-sokuon" onchange="updateRowSelection('sokuon')">Small Tsu</label>
+            </div>
+
+            <div class="toggle-switch-container">
+                <div>Endless Loop Mode</div>
+                <button id="endless-toggle-btn" style="font-size: 0.75rem; padding: 0.3rem 0.6rem; background-color: #334155; color: var(--text-muted); border: none; border-radius: 0.25rem; cursor: pointer;" onclick="toggleEndlessMode();">OFF ⏸</button>
+            </div>
+
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: bold; margin-top: 0.75rem;">Progress:</div>
+            <button onclick="resetAllProgress();" style="width: 100%; padding: 0.45rem; background-color: rgba(244, 63, 94, 0.15); color: var(--error); border: 1px solid var(--error); border-radius: 0.35rem; font-size: 0.8rem; cursor: pointer; font-weight: bold; margin-top: 0.25rem;">Reset all progress</button>
+        </div>
+    </div>
+
+    <!-- PANEL 2: MATRIX DATA GUIDE VIEW -->
+    <div id="view-guide" style="display: none; max-height: 60vh; overflow-y: auto; padding-right: 0.5rem;">
+        <h3 style="color: var(--accent); margin-top: 0; text-align: center;">Gojūon — Basic Kana</h3>
+        <table class="ref-table" style="font-size: 0.72rem;">
+            <tr><th></th><th>-a</th><th>-i</th><th>-u</th><th>-e</th><th>-o</th></tr>
+            <tr><td><strong>vowel</strong></td>
+                <td>あ / ア<br><small>a</small></td><td>い / イ<br><small>i</small></td><td>う / ウ<br><small>u</small></td><td>え / エ<br><small>e</small></td><td>お / オ<br><small>o</small></td></tr>
+            <tr><td><strong>k</strong></td>
+                <td>か / カ<br><small>ka</small></td><td>き / キ<br><small>ki</small></td><td>く / ク<br><small>ku</small></td><td>け / ケ<br><small>ke</small></td><td>こ / コ<br><small>ko</small></td></tr>
+            <tr><td><strong>s</strong></td>
+                <td>さ / サ<br><small>sa</small></td><td>し / シ<br><small>shi</small></td><td>す / ス<br><small>su</small></td><td>せ / セ<br><small>se</small></td><td>そ / ソ<br><small>so</small></td></tr>
+            <tr><td><strong>t</strong></td>
+                <td>た / タ<br><small>ta</small></td><td>ち / チ<br><small>chi</small></td><td>つ / ツ<br><small>tsu</small></td><td>て / テ<br><small>te</small></td><td>と / ト<br><small>to</small></td></tr>
+            <tr><td><strong>n</strong></td>
+                <td>な / ナ<br><small>na</small></td><td>に / ニ<br><small>ni</small></td><td>ぬ / ヌ<br><small>nu</small></td><td>ね / ネ<br><small>ne</small></td><td>の / ノ<br><small>no</small></td></tr>
+            <tr><td><strong>h</strong></td>
+                <td>は / ハ<br><small>ha</small></td><td>ひ / ヒ<br><small>hi</small></td><td>ふ / フ<br><small>fu</small></td><td>へ / ヘ<br><small>he</small></td><td>ほ / ホ<br><small>ho</small></td></tr>
+            <tr><td><strong>m</strong></td>
+                <td>ま / マ<br><small>ma</small></td><td>み / ミ<br><small>mi</small></td><td>む / ム<br><small>mu</small></td><td>め / メ<br><small>me</small></td><td>も / モ<br><small>mo</small></td></tr>
+            <tr><td><strong>y</strong></td>
+                <td>や / ヤ<br><small>ya</small></td><td>—</td><td>ゆ / ユ<br><small>yu</small></td><td>—</td><td>よ / ヨ<br><small>yo</small></td></tr>
+            <tr><td><strong>r</strong></td>
+                <td>ら / ラ<br><small>ra</small></td><td>り / リ<br><small>ri</small></td><td>る / ル<br><small>ru</small></td><td>れ / レ<br><small>re</small></td><td>ろ / ロ<br><small>ro</small></td></tr>
+            <tr><td><strong>w</strong></td>
+                <td>わ / ワ<br><small>wa</small></td><td>—</td><td>—</td><td>—</td><td>を / ヲ<br><small>wo</small></td></tr>
+            <tr><td><strong>n</strong></td>
+                <td colspan="5">ん / ン<br><small>n</small></td></tr>
+        </table>
+
+        <h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">Voiced & Plosive (Dakuten / Handakuten)</h3>
+        <table class="ref-table" style="font-size: 0.72rem;">
+            <tr><th></th><th>-a</th><th>-i</th><th>-u</th><th>-e</th><th>-o</th></tr>
+            <tr><td><strong>g</strong></td>
+                <td>が / ガ<br><small>ga</small></td><td>ぎ / ギ<br><small>gi</small></td><td>ぐ / グ<br><small>gu</small></td><td>げ / ゲ<br><small>ge</small></td><td>ご / ゴ<br><small>go</small></td></tr>
+            <tr><td><strong>z</strong></td>
+                <td>ざ / ザ<br><small>za</small></td><td>じ / ジ<br><small>ji</small></td><td>ず / ズ<br><small>zu</small></td><td>ぜ / ゼ<br><small>ze</small></td><td>ぞ / ゾ<br><small>zo</small></td></tr>
+            <tr><td><strong>d</strong></td>
+                <td>だ / ダ<br><small>da</small></td><td>ぢ / ヂ<br><small>ji</small></td><td>づ / ヅ<br><small>zu</small></td><td>で / デ<br><small>de</small></td><td>ど / ド<br><small>do</small></td></tr>
+            <tr><td><strong>b</strong></td>
+                <td>ば / バ<br><small>ba</small></td><td>び / ビ<br><small>bi</small></td><td>ぶ / ブ<br><small>bu</small></td><td>べ / ベ<br><small>be</small></td><td>ぼ / ボ<br><small>bo</small></td></tr>
+            <tr><td><strong>p</strong></td>
+                <td>ぱ / パ<br><small>pa</small></td><td>ぴ / ピ<br><small>pi</small></td><td>ぷ / プ<br><small>pu</small></td><td>ぺ / ペ<br><small>pe</small></td><td>ぽ / ポ<br><small>po</small></td></tr>
+        </table>
+
+        <h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">Modifiers</h3>
+        <table class="ref-table" style="font-size: 0.8rem;">
+            <tr><th>Type</th><th>Symbol</th><th>Effect</th></tr>
+            <tr><td>Sokuon<br>(Small Tsu)</td><td style="font-size: 1.4rem;">っ / ッ</td><td>Doubles the following consonant — a glottal pause. Typed as <strong>tsu</strong> or <strong>xtsu</strong> in isolated drills.</td></tr>
+        </table>
+        <h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">Special Notes</h3>
+        <table class="ref-table" style="font-size: 0.8rem;">
+            <tr><th>Kana</th><th>Romanised</th><th>Actually Pronounced</th><th>Notes</th></tr>
+            <tr><td style="font-size: 1.3rem;">を / ヲ</td><td><strong>wo</strong></td><td><strong>o</strong></td><td>Historically a distinct sound, now merged with お. Used almost exclusively as the object particle を. Romanised <em>wo</em> by convention.</td></tr>
+            <tr><td style="font-size: 1.3rem;">ぢ / ヂ</td><td><strong>ji</strong></td><td><strong>ji</strong></td><td>Merged with じ in modern Standard Japanese. Typed as <em>di</em> on most IMEs. Rare in contemporary text.</td></tr>
+            <tr><td style="font-size: 1.3rem;">づ / ヅ</td><td><strong>zu</strong></td><td><strong>zu</strong></td><td>Merged with ず in modern Standard Japanese. Typed as <em>du</em> on most IMEs. Rare in contemporary text.</td></tr>
+        </table>
+
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 1rem; text-align: center;">
+            <strong>Note:</strong> Each cell shows <em>hiragana / katakana</em> in the top line, romaji below. Cells marked <em>—</em> are gaps in the modern kana set (archaic forms like ゐ / ゑ are omitted).
+        </p>
+    </div>
+
+    <!-- PANEL 3: MISTAKE REVIEW LOG VIEW -->
+    <div id="view-review" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="color: var(--accent); margin: 0;">Characters to Review</h3>
+            <button onclick="clearReviewLog();" style="background-color: #334155; color: var(--text-main); font-size: 0.85rem; padding: 0.4rem 0.8rem; border-radius: 0.25rem;">Clear List 🗑️</button>
+        </div>
+
+        <button class="drawer-toggle" id="review-drawer-toggle-btn" style="margin-top: 0; margin-bottom: 1.5rem;" onclick="toggleReviewDrawer();">Export or Paste Recovery Codes ▾</button>
+
+        <div style="background-color: rgba(0,0,0,0.2); border: 1px dashed var(--border); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem; display: none;" id="review-code-drawer">
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: bold; margin-bottom: 0.5rem;">Session Recovery Code (Save / Paste):</div>
+            <div style="display: flex; gap: 0.5rem;">
+                <input type="text" id="session-code-io" placeholder="No code generated yet. Finish cards to export or paste a code here..." style="flex: 1; font-size: 0.85rem; padding: 0.5rem; text-align: left;" autocomplete="off">
+                <button onclick="loadCustomSessionCode()" style="font-size: 0.85rem; padding: 0.5rem 1rem;">Load Code 📥</button>
+            </div>
+            <div id="code-feedback-alert" style="font-size: 0.75rem; margin-top: 0.4rem; font-weight: bold; display: none;"></div>
+        </div>
+
+        <button id="drill-mistakes-btn" style="width: 100%; background-color: var(--warning); color: #0f172a; margin-bottom: 1.5rem; display: none; margin-top: -0.5rem;" onclick="drillMistakesOnly()">🎯 Drill These Saved Errors Only</button>
+        
+        <div id="review-placeholder" style="color: var(--text-muted); text-align: center; padding: 2rem 0;">🌟 <strong>Absolute Perfection!</strong> You've answered every character correctly. No errors to review!</div>
+        <div id="review-list-container" style="max-height: 40vh; overflow-y: auto;"></div>
+    </div>
+</div> <!-- End of container card wrapper securely synced -->
+
+<div class="portal-shortcut-bar">
+    <a href="index.html">Return to Hub</a>
+    <div class="terminal-label">J-App 01</div>
+</div>
+
+<script>
+    let sessionStarted = false;
+    let currentKanaObj = null;
+    let currentAlphabet = "hiragana";
+    let currentQuizDirection = "read"; 
+    let readProductionMethod = "type";
+    let totalCorrect = 0;
+    let totalQuestions = 0;
+    let currentStreak = 0;
+    let mistakeLog = [];
+
+    // Session State Tracking Arrays
+    let currentSessionDeck = []; 
+    let activeCardIndex = 0;     
+    let isEndlessMode = false;   
+    let coreDeckOriginalCount = 0; 
+    
+    // Action History Tracker for Ctrl+Z Undo States
+    let userActionHistory = [];
+
+    // Session-level stats (reset each session, shown on completion screen)
+    let sessionCorrect = 0;
+    let sessionTotal = 0;
+    let sessionBestStreak = 0;
+    let sessionCurrentStreak = 0;
+    let sessionComplete = false;
+
+    const kanaMasterDeck = [
+        { hira: "あ", kata: "ア", romaji: "a", row: "a" },
+        { hira: "い", kata: "イ", romaji: "i", row: "a" },
+        { hira: "う", kata: "ウ", romaji: "u", row: "a" },
+        { hira: "え", kata: "エ", romaji: "e", row: "a" },
+        { hira: "お", kata: "オ", romaji: "o", row: "a" },
+        { hira: "か", kata: "カ", romaji: "ka", row: "k" },
+        { hira: "き", kata: "キ", romaji: "ki", row: "k" },
+        { hira: "く", kata: "ク", romaji: "ku", row: "k" },
+        { hira: "け", kata: "ケ", romaji: "ke", row: "k" },
+        { hira: "こ", kata: "コ", romaji: "ko", row: "k" },
+        { hira: "さ", kata: "サ", romaji: "sa", row: "s" },
+        { hira: "し", kata: "シ", romaji: "shi", row: "s" },
+        { hira: "す", kata: "ス", romaji: "su", row: "s" },
+        { hira: "せ", kata: "セ", romaji: "se", row: "s" },
+        { hira: "そ", kata: "ソ", romaji: "so", row: "s" },
+        { hira: "た", kata: "タ", romaji: "ta", row: "t" },
+        { hira: "ち", kata: "チ", romaji: "chi", row: "t" },
+        { hira: "つ", kata: "ツ", romaji: "tsu", row: "t" },
+        { hira: "て", kata: "テ", romaji: "te", row: "t" },
+        { hira: "と", kata: "ト", romaji: "to", row: "t" },
+        { hira: "な", kata: "ナ", romaji: "na", row: "n" },
+        { hira: "に", kata: "ニ", romaji: "ni", row: "n" },
+        { hira: "ぬ", kata: "ヌ", romaji: "nu", row: "n" },
+        { hira: "ね", kata: "ネ", romaji: "ne", row: "n" },
+        { hira: "の", kata: "ノ", romaji: "no", row: "n" },
+        { hira: "は", kata: "ハ", romaji: "ha", row: "h" },
+        { hira: "ひ", kata: "ヒ", romaji: "hi", row: "h" },
+        { hira: "ふ", kata: "フ", romaji: "fu", row: "h" },
+        { hira: "へ", kata: "ヘ", romaji: "he", row: "h" },
+        { hira: "ほ", kata: "ホ", romaji: "ho", row: "h" },
+        { hira: "ま", kata: "マ", romaji: "ma", row: "m" },
+        { hira: "み", kata: "ミ", romaji: "mi", row: "m" },
+        { hira: "む", kata: "ム", romaji: "mu", row: "m" },
+        { hira: "め", kata: "メ", romaji: "me", row: "m" },
+        { hira: "も", kata: "モ", romaji: "mo", row: "m" },
+        { hira: "や", kata: "ヤ", romaji: "ya", row: "y" },
+        { hira: "ゆ", kata: "ユ", romaji: "yu", row: "y" },
+        { hira: "よ", kata: "ヨ", romaji: "yo", row: "y" },
+        { hira: "ら", kata: "ラ", romaji: "ra", row: "r" },
+        { hira: "り", kata: "リ", romaji: "ri", row: "r" },
+        { hira: "る", kata: "ル", romaji: "ru", row: "r" },
+        { hira: "れ", kata: "レ", romaji: "re", row: "r" },
+        { hira: "ろ", kata: "ロ", romaji: "ro", row: "r" },
+        { hira: "わ", kata: "ワ", romaji: "wa", row: "w" },
+        { hira: "を", kata: "ヲ", romaji: "wo", row: "w" },
+        { hira: "ん", kata: "ン", romaji: "n",  row: "w" },
+        { hira: "が", kata: "ガ", romaji: "ga", row: "dakuten" },
+        { hira: "ぎ", kata: "ギ", romaji: "gi", row: "dakuten" },
+        { hira: "ぐ", kata: "グ", romaji: "gu", row: "dakuten" },
+        { hira: "げ", kata: "ゲ", romaji: "ge", row: "dakuten" },
+        { hira: "ご", kata: "ゴ", romaji: "go", row: "dakuten" },
+        { hira: "ざ", kata: "ザ", romaji: "za", row: "dakuten" },
+        { hira: "じ", kata: "ジ", romaji: "ji", row: "dakuten" },
+        { hira: "ず", kata: "ズ", romaji: "zu", row: "dakuten" },
+        { hira: "ぜ", kata: "ゼ", romaji: "ze", row: "dakuten" },
+        { hira: "ぞ", kata: "ゾ", romaji: "zo", row: "dakuten" },
+        { hira: "だ", kata: "ダ", romaji: "da", row: "dakuten" },
+        { hira: "ぢ", kata: "ヂ", romaji: "ji", row: "dakuten" },
+        { hira: "づ", kata: "ヅ", romaji: "zu", row: "dakuten" },
+        { hira: "で", kata: "デ", romaji: "de", row: "dakuten" },
+        { hira: "ど", kata: "ド", romaji: "do", row: "dakuten" },
+        { hira: "ば", kata: "バ", romaji: "ba", row: "dakuten" },
+        { hira: "び", kata: "ビ", romaji: "bi", row: "dakuten" },
+        { hira: "ぶ", kata: "ブ", romaji: "bu", row: "dakuten" },
+        { hira: "べ", kata: "ベ", romaji: "be", row: "dakuten" },
+        { hira: "ぼ", kata: "ボ", romaji: "bo", row: "dakuten" },
+        { hira: "ぱ", kata: "パ", romaji: "pa", row: "handakuten" },
+        { hira: "ぴ", kata: "ピ", romaji: "pi", row: "handakuten" },
+        { hira: "ぷ", kata: "プ", romaji: "pu", row: "handakuten" },
+        { hira: "ぺ", kata: "ペ", romaji: "pe", row: "handakuten" },
+        { hira: "ぽ", kata: "ポ", romaji: "po", row: "handakuten" },
+        { hira: "っ", kata: "ッ", romaji: "tsu", row: "sokuon" }
+    ];
+
+    function switchView(target) {
+        document.getElementById('view-quiz').style.display = target === 'quiz' ? 'block' : 'none';
+        document.getElementById('view-guide').style.display = target === 'guide' ? 'block' : 'none';
+        document.getElementById('view-review').style.display = target === 'review' ? 'block' : 'none';
+        
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('tab-' + target).classList.add('active');
+        
+        // Reset shutter layout when clicking tabs to ensure menus show up
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter) shutter.classList.remove('collapsed');
+        
+        if (target === 'review') renderReviewList();
+    }
+
+    function applyPanelVisibility() {
+        var readPanel = document.getElementById('panel-read-mode');
+        var writePanel = document.getElementById('panel-write-mode');
+        if (!sessionStarted || sessionComplete) {
+            if (readPanel) readPanel.style.display = 'none';
+            if (writePanel) writePanel.style.display = 'none';
+            return;
+        }
+        var useHonourPanel = (currentQuizDirection === 'write') ||
+                             (currentQuizDirection === 'read' && readProductionMethod === 'honour');
+        if (useHonourPanel) {
+            if (readPanel) readPanel.style.display = 'none';
+            if (writePanel) writePanel.style.display = 'block';
+        } else {
+            if (readPanel) readPanel.style.display = 'block';
+            if (writePanel) writePanel.style.display = 'none';
+        }
+    }
+
+    function updateProductionMethod(method) {
+        readProductionMethod = method;
+        var lblType = document.getElementById('lbl-method-type');
+        var lblHonour = document.getElementById('lbl-method-honour');
+        var chkType = document.getElementById('chk-method-type');
+        var chkHonour = document.getElementById('chk-method-honour');
+        if (lblType) lblType.classList.toggle('selected', method === 'type');
+        if (lblHonour) lblHonour.classList.toggle('selected', method === 'honour');
+        if (chkType) chkType.checked = (method === 'type');
+        if (chkHonour) chkHonour.checked = (method === 'honour');
+        applyPanelVisibility();
+        saveState();
+    }
+
+    function setDirection(dir) {
+        currentQuizDirection = dir;
+        document.getElementById('dir-r').classList.remove('active');
+        document.getElementById('dir-w').classList.remove('active');
+        
+        if (dir === 'read') {
+            document.getElementById('dir-r').classList.add('active');
+        } else {
+            document.getElementById('dir-w').classList.add('active');
+        }
+        initSessionDeck();
+    }
+</script>
+<script>
+    function showStartScreen() {
+        sessionStarted = false;
+        sessionComplete = false;
+
+        var charDisplay = document.getElementById('char-display');
+        charDisplay.innerText = "Ready?";
+        charDisplay.style.fontSize = "2rem";
+        charDisplay.style.color = "var(--accent)";
+
+        document.getElementById('type-sub-display').style.display = "none";
+        document.getElementById('speak-btn').style.display = "none";
+        document.getElementById('panel-read-mode').style.display = "none";
+        document.getElementById('panel-write-mode').style.display = "none";
+        document.getElementById('feedback-container').style.display = "none";
+        document.getElementById('start-btn-container').style.display = "block";
+
+        restoreInputsFromFeedback();
+        applyPanelVisibility();
+
+        document.getElementById('deck-progress').innerText = "0";
+    }
+
+    function startSession() {
+        if (sessionStarted) return;
+        sessionStarted = true;
+        document.getElementById('start-btn-container').style.display = "none";
+        applyPanelVisibility();
+        generateQuestion();
+    }
+
+    function toggleSettingsDrawer() {
+        var drawer = document.getElementById('settings-drawer');
+        var btn = document.getElementById('drawer-toggle-btn');
+        if (drawer.style.display === "block") {
+            drawer.style.display = "none";
+            btn.innerText = "⚙️ Options & Filters ▾";
+        } else {
+            drawer.style.display = "block";
+            btn.innerText = "Close Options ▴";
+        }
+    }
+
+    function openOptionsPanel() {
+        var inp = document.getElementById('user-input');
+        if (inp) inp.blur();
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter) shutter.classList.remove('collapsed');
+        var drawer = document.getElementById('settings-drawer');
+        var btn = document.getElementById('drawer-toggle-btn');
+        if (drawer) drawer.style.display = 'block';
+        if (btn) btn.innerText = "Close Options ▴";
+        setTimeout(function() {
+            if (drawer) drawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+    }
+
+    function hideInputsForFeedback() {
+        var ids = ['panel-read-mode', 'panel-write-mode', 'btn-reveal-container', 'honour-system-controls'];
+        ids.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.add('hidden-during-feedback');
+        });
+    }
+
+    function restoreInputsFromFeedback() {
+        var ids = ['panel-read-mode', 'panel-write-mode', 'btn-reveal-container', 'honour-system-controls'];
+        ids.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.remove('hidden-during-feedback');
+        });
+    }
+
+    function updateRowSelection(rowLetter) {
+        var checkbox = document.getElementById('chk-row-' + rowLetter);
+        var label = document.getElementById('lbl-row-' + rowLetter);
+        if (checkbox.checked) {
+            label.classList.add('selected');
+        } else {
+            label.classList.remove('selected');
+        }
+        
+        var totalChecked = 0;
+        var keys = "a,k,s,t,n,h,m,y,r,w,dakuten,handakuten,sokuon".split(",");
+        for (var i = 0; i < keys.length; i++) {
+            var el = document.getElementById('chk-row-' + keys[i]);
+            if (el && el.checked) totalChecked++;
+        }
+        
+        if (totalChecked === 0) {
+            checkbox.checked = true;
+            label.classList.add('selected');
+            return;
+        }
+        initSessionDeck();
+    }
+
+    function setAlphabet(alpha) {
+        currentAlphabet = alpha;
+        document.getElementById('mode-hiragana').classList.remove('active');
+        document.getElementById('mode-katakana').classList.remove('active');
+        document.getElementById('mode-mixed').classList.remove('active');
+        document.getElementById('mode-' + alpha).classList.add('active');
+        initSessionDeck();
+    }
+
+    function toggleEndlessMode() {
+        var btn = document.getElementById('endless-toggle-btn');
+        isEndlessMode = !isEndlessMode;
+        if (isEndlessMode) {
+            btn.innerText = "ON 🔄";
+            btn.style.color = "var(--accent)";
+            btn.style.fontWeight = "bold";
+        } else {
+            btn.innerText = "OFF ⏸";
+            btn.style.color = "var(--text-muted)";
+            btn.style.fontWeight = "normal";
+        }
+        initSessionDeck();
+    }
+
+    function initSessionDeck() {
+        currentSessionDeck = [];
+        activeCardIndex = 0;
+        userActionHistory = []; 
+
+        sessionCorrect = 0;
+        sessionTotal = 0;
+        sessionBestStreak = 0;
+        sessionCurrentStreak = 0;
+        sessionComplete = false;
+
+        var activeRows = {};
+        var rowKeys = "a,k,s,t,n,h,m,y,r,w,dakuten,handakuten,sokuon".split(",");
+        for (var i = 0; i < rowKeys.length; i++) {
+            var chk = document.getElementById('chk-row-' + rowKeys[i]);
+            if (chk && chk.checked) activeRows[rowKeys[i]] = true;
+        }
+
+        for (let i = 0; i < kanaMasterDeck.length; i++) {
+            let item = kanaMasterDeck[i];
+            if (activeRows[item.row]) {
+                if (currentAlphabet === "hiragana" || currentAlphabet === "mixed") {
+                    currentSessionDeck.push({ char: item.hira, romaji: item.romaji, type: "Hiragana", row: item.row });
+                }
+                if (currentAlphabet === "katakana" || currentAlphabet === "mixed") {
+                    currentSessionDeck.push({ char: item.kata, romaji: item.romaji, type: "Katakana", row: item.row });
+                }
+            }
+        }
+
+        for (let i = currentSessionDeck.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            let temp = currentSessionDeck[i];
+            currentSessionDeck[i] = currentSessionDeck[j];
+            currentSessionDeck[j] = temp;
+        }
+
+        coreDeckOriginalCount = currentSessionDeck.length;
+        document.getElementById('deck-total').innerText = coreDeckOriginalCount;
+        
+        var pBox = document.getElementById('progress-box');
+        if (pBox) pBox.className = "score-item";
+        document.getElementById('review-status-label').innerText = "";
+
+        // Open focus shutter upon starting fresh session
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter) shutter.classList.remove('collapsed');
+
+        saveState();
+        showStartScreen();
+    }
+
+    function generateQuestion() {
+        document.getElementById('user-input').value = "";
+        document.getElementById('user-input').disabled = false;
+        document.getElementById('feedback-container').style.display = "none";
+        document.getElementById('submit-btn').disabled = false;
+
+        document.getElementById('btn-reveal-container').style.display = "block";
+        document.getElementById('honour-system-controls').style.display = "none";
+
+        restoreInputsFromFeedback();
+        applyPanelVisibility();
+
+        document.getElementById('deck-progress').innerText = activeCardIndex;
+
+        var pBox = document.getElementById('progress-box');
+        if (activeCardIndex >= coreDeckOriginalCount && activeCardIndex < currentSessionDeck.length) {
+            if (pBox) pBox.className = "score-item review-phase-text";
+            document.getElementById('review-status-label').innerText = " 🔄 Reviewing Misses";
+        } else if (activeCardIndex === 0) {
+            if (pBox) pBox.className = "score-item";
+            document.getElementById('review-status-label').innerText = "";
+        }
+
+        if (activeCardIndex >= currentSessionDeck.length) {
+            // Restore focus shutter on completion
+            var shutter = document.getElementById('shutter-header-area');
+            if (shutter) shutter.classList.remove('collapsed');
+            
+            if (isEndlessMode) {
+                initSessionDeck();
+                return;
+            } else {
+                triggerCompletionState();
+                return;
+            }
+        }
+
+        currentKanaObj = currentSessionDeck[activeCardIndex];
+
+        var charDisplay = document.getElementById('char-display');
+        charDisplay.style.fontSize = "3.8rem";
+        charDisplay.style.color = "var(--text-main)";
+
+        var subBadge = document.getElementById('type-sub-display');
+        if (currentQuizDirection === 'read') {
+            charDisplay.innerText = currentKanaObj.char;
+            if (readProductionMethod === 'honour') {
+                subBadge.style.display = "block";
+                subBadge.innerText = "Say the Rōmaji Aloud";
+                document.getElementById('speak-btn').style.display = "none";
+            } else {
+                subBadge.style.display = "none";
+                document.getElementById('speak-btn').style.display = (currentKanaObj.row === 'sokuon') ? "none" : "block";
+            }
+        } else {
+            if (currentKanaObj.row === 'sokuon') {
+                document.getElementById('char-display').innerText = "[double consonant]";
+                subBadge.style.display = "block";
+                subBadge.innerText = currentKanaObj.type + " • Small Tsu";
+            } else {
+                document.getElementById('char-display').innerText = currentKanaObj.romaji.toLowerCase();
+                subBadge.style.display = "block";
+                subBadge.innerText = currentKanaObj.type;
+            }
+            document.getElementById('speak-btn').style.display = "none"; 
+        }
+
+        setTimeout(function() { 
+            if (currentQuizDirection === 'read') document.getElementById('user-input').focus(); 
+        }, 50);
+    }
+</script>
+<script>
+    function collapseHeaderShutter() {
+        // Collapses menus dynamically to maximize vertical screen real estate
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter && !shutter.classList.contains('collapsed')) {
+            shutter.classList.add('collapsed');
+        }
+    }
+
+    function checkAnswer() {
+        if (currentQuizDirection !== 'read') return;
+        const inputField = document.getElementById('user-input');
+        const userInput = inputField.value.trim().toLowerCase();
+        if (userInput === "") return;
+
+        collapseHeaderShutter(); // Snap shutter shut for maximum screen focus
+
+        const feedbackContainer = document.getElementById('feedback-container');
+        const feedbackMessage = document.getElementById('feedback-message');
+
+        document.getElementById('submit-btn').disabled = true;
+        inputField.disabled = true;
+        totalQuestions++;
+        sessionTotal++;
+
+        const currentCharacter = currentKanaObj.char;
+        const correctRomaji = currentKanaObj.romaji;
+        const cardType = currentKanaObj.type;
+
+        userActionHistory.push({
+            streakBefore: currentStreak,
+            correctBefore: totalCorrect,
+            questionsBefore: totalQuestions - 1,
+            activeCardIndexBefore: activeCardIndex,
+            wasMistakeLogged: (userInput !== correctRomaji),
+            wasCardPushed: (userInput !== correctRomaji),
+            cardObjectSnapshot: Object.assign({}, currentKanaObj)
+        });
+
+        var isCorrect = (userInput === correctRomaji);
+        if (currentKanaObj.row === 'sokuon' && (userInput === 'xtsu' || userInput === 'ltsu' || userInput === 'xtu' || userInput === 'ltu')) {
+            isCorrect = true;
+        }
+
+        if (isCorrect) {
+            totalCorrect++;
+            currentStreak++;
+            sessionCorrect++;
+            sessionCurrentStreak++;
+            if (sessionCurrentStreak > sessionBestStreak) sessionBestStreak = sessionCurrentStreak;
+            feedbackMessage.className = "feedback correct-box";
+            if (currentKanaObj.row === 'sokuon') {
+                feedbackMessage.innerHTML = "<strong>Correct!</strong> 🎉<br> <strong>" + currentCharacter + "</strong> represents the glottal pause / double consonant modifier.";
+            } else {
+                feedbackMessage.innerHTML = "<strong>Correct!</strong> 🎉<br> <strong>" + currentCharacter + "</strong> is pronounced as '<strong>" + correctRomaji + "</strong>'.";
+            }
+        } else {
+            currentStreak = 0;
+            sessionCurrentStreak = 0;
+            feedbackMessage.className = "feedback incorrect-box";
+            if (currentKanaObj.row === 'sokuon') {
+                feedbackMessage.innerHTML = "<strong>Incorrect.</strong><br>The small tsu (<strong>" + currentCharacter + "</strong>) is typed as '<strong>tsu</strong>' or '<strong>xtsu</strong>' in isolated drills.<br><small>This card has been moved to the end of the session deck to practice again!</small>";
+            } else {
+                feedbackMessage.innerHTML = "<strong>Incorrect.</strong><br>The character <strong>" + currentCharacter + "</strong> is pronounced as '<strong>" + correctRomaji + "</strong>'.<br><small>This card has been moved to the end of the session deck to practice again!</small>";
+            }
+
+            mistakeLog.push({ character: currentCharacter, type: cardType, correct: correctRomaji, yours: userInput });
+            document.getElementById('review-count').innerText = mistakeLog.length;
+
+            currentSessionDeck.push(Object.assign({}, currentKanaObj));
+            document.getElementById('deck-total').innerText = currentSessionDeck.length;
+        }
+
+        activeCardIndex++;
+        document.getElementById('deck-progress').innerText = activeCardIndex;
+        updateScoreboard();
+        feedbackContainer.style.display = "block";
+
+        hideInputsForFeedback();
+
+        setTimeout(function() {
+            var nb = document.getElementById('next-btn');
+            if (nb) nb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+
+        saveState();
+    }
+
+    function getVariantCharsForRomaji(romaji, currentChar, isHira) {
+        var variants = [];
+        for (var i = 0; i < kanaMasterDeck.length; i++) {
+            var entry = kanaMasterDeck[i];
+            if (entry.row === 'sokuon') continue;
+            if (entry.romaji !== romaji) continue;
+            var variantChar = isHira ? entry.hira : entry.kata;
+            if (variantChar === currentChar) continue;
+            variants.push(variantChar);
+        }
+        return variants;
+    }
+
+    function revealWriteAnswer() {
+        if (!currentKanaObj || !sessionStarted || sessionComplete) return;
+        collapseHeaderShutter();
+        document.getElementById('btn-reveal-container').style.display = "none";
+        document.getElementById('honour-system-controls').style.display = "flex";
+        
+        var subDisplay = document.getElementById('type-sub-display');
+        
+        document.getElementById('char-display').innerText = currentKanaObj.char;
+        
+        if (currentQuizDirection === 'write') {
+            // Write mode: show acceptable kana variants
+            if (currentKanaObj.row === 'sokuon') {
+                subDisplay.style.display = "none";
+            } else {
+                var isHira = currentKanaObj.type === 'Hiragana';
+                var variants = getVariantCharsForRomaji(currentKanaObj.romaji, currentKanaObj.char, isHira);
+                if (variants.length > 0) {
+                    subDisplay.style.display = "block";
+                    subDisplay.innerText = "Also acceptable: " + variants.join(" / ");
+                } else {
+                    subDisplay.style.display = "none";
+                }
+            }
+        } else {
+            // Read + honour: reveal the rōmaji answer
+            subDisplay.style.display = "block";
+            subDisplay.innerText = (currentKanaObj.row === 'sokuon') ? "tsu" : currentKanaObj.romaji;
+        }
+        
+        document.getElementById('speak-btn').style.display = (currentKanaObj.row === 'sokuon') ? "none" : "block";
+        setTimeout(speakKanaCharacter, 150);
+    }
+
+    function assessHonour(isCorrect) {
+        totalQuestions++;
+        sessionTotal++;
+        const feedbackContainer = document.getElementById('feedback-container');
+        const feedbackMessage = document.getElementById('feedback-message');
+        
+        document.getElementById('honour-system-controls').style.display = "none";
+        
+        const currentCharacter = currentKanaObj.char;
+        const correctRomaji = currentKanaObj.romaji;
+        const cardType = currentKanaObj.type;
+
+        userActionHistory.push({
+            streakBefore: currentStreak,
+            correctBefore: totalCorrect,
+            questionsBefore: totalQuestions - 1,
+            activeCardIndexBefore: activeCardIndex,
+            wasMistakeLogged: !isCorrect,
+            wasCardPushed: !isCorrect,
+            cardObjectSnapshot: Object.assign({}, currentKanaObj)
+        });
+
+        var isReadMode = (currentQuizDirection === 'read');
+        
+        if (isCorrect) {
+            totalCorrect++;
+            currentStreak++;
+            sessionCorrect++;
+            sessionCurrentStreak++;
+            if (sessionCurrentStreak > sessionBestStreak) sessionBestStreak = sessionCurrentStreak;
+            feedbackMessage.className = "feedback correct-box";
+            if (currentKanaObj.row === 'sokuon') {
+                feedbackMessage.innerHTML = "<strong>Marked Correct!</strong> 👍<br><strong>" + currentCharacter + "</strong> represents the glottal pause / double consonant modifier.";
+            } else if (isReadMode) {
+                feedbackMessage.innerHTML = "<strong>Marked Correct!</strong> 👍<br><strong>" + currentCharacter + "</strong> is pronounced '<strong>" + correctRomaji + "</strong>'.";
+            } else {
+                feedbackMessage.innerHTML = "<strong>Marked Correct!</strong> 👍<br>You drew '<strong>" + correctRomaji + "</strong>' → <strong>" + currentCharacter + "</strong>.";
+            }
+        } else {
+            currentStreak = 0;
+            sessionCurrentStreak = 0;
+            feedbackMessage.className = "feedback incorrect-box";
+            if (currentKanaObj.row === 'sokuon') {
+                feedbackMessage.innerHTML = "<strong>Marked Incorrect.</strong> 📚<br>Small Tsu is written <strong>" + currentCharacter + "</strong> and typed '<strong>tsu</strong>' or '<strong>xtsu</strong>'.<br><small>This card has been moved to the end of the session deck to practice again!</small>";
+            } else if (isReadMode) {
+                feedbackMessage.innerHTML = "<strong>Marked Incorrect.</strong> 📚<br><strong>" + currentCharacter + "</strong> is pronounced '<strong>" + correctRomaji + "</strong>'.<br><small>This card has been moved to the end of the session deck to practice again!</small>";
+            } else {
+                feedbackMessage.innerHTML = "<strong>Marked Incorrect.</strong> 📚<br>'<strong>" + correctRomaji + "</strong>' is drawn as <strong>" + currentCharacter + "</strong>.<br><small>This card has been moved to the end of the session deck to practice again!</small>";
+            }
+            
+            mistakeLog.push({ character: currentCharacter, type: cardType, correct: correctRomaji, yours: "[Self-Assessed Miss]" });
+            document.getElementById('review-count').innerText = mistakeLog.length;
+
+            currentSessionDeck.push(Object.assign({}, currentKanaObj));
+            document.getElementById('deck-total').innerText = currentSessionDeck.length;
+        }
+
+        activeCardIndex++;
+        document.getElementById('deck-progress').innerText = activeCardIndex;
+        updateScoreboard();
+        feedbackContainer.style.display = "block";
+
+        hideInputsForFeedback();
+
+        setTimeout(function() {
+            var nb = document.getElementById('next-btn');
+            if (nb) nb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+
+        saveState();
+    }
+</script>
+<script>
+    function updateScoreboard() {
+        document.getElementById('score-correct').innerText = totalCorrect;
+        document.getElementById('score-total').innerText = totalQuestions;
+        document.getElementById('score-streak').innerText = currentStreak;
+        updateStreakEmoji();
+    }
+
+    // Complete Ctrl+Z History Undo Engine
+    function executeUndoAction() {
+        if (userActionHistory.length === 0) return; // Nothing left to undo
+
+        if (sessionComplete) {
+            sessionComplete = false;
+            sessionStarted = true;
+            var fb = document.getElementById('feedback-container');
+            if (fb) {
+                var bar = fb.querySelector('.completion-actions');
+                if (bar) bar.remove();
+            }
+            var nextBtn = document.getElementById('next-btn');
+            if (nextBtn && nextBtn.parentElement) nextBtn.parentElement.style.display = "";
+        }
+
+        let previousState = userActionHistory.pop();
+
+        // 1. Revert global dashboard tracking numbers
+        currentStreak = previousState.streakBefore;
+        totalCorrect = previousState.correctBefore;
+        totalQuestions = previousState.questionsBefore;
+        activeCardIndex = previousState.activeCardIndexBefore;
+
+        // 2. Reverse arrays if the previous action was a mistake
+        if (previousState.wasMistakeLogged) {
+            mistakeLog.pop();
+            document.getElementById('review-count').innerText = mistakeLog.length;
+        }
+
+        if (previousState.wasCardPushed) {
+            currentSessionDeck.pop();
+            document.getElementById('deck-total').innerText = currentSessionDeck.length;
+        }
+
+        updateScoreboard();
+        generateQuestion();
+        saveState();
+    }
+
+    function triggerCompletionState() {
+        sessionComplete = true;
+        sessionStarted = false;
+
+        var accuracy = sessionTotal > 0 ? Math.round(sessionCorrect / sessionTotal * 100) : 0;
+        var modeLabel = currentAlphabet.charAt(0).toUpperCase() + currentAlphabet.slice(1);
+        if (currentAlphabet === "mixed") modeLabel = "Hiragana & Katakana";
+
+        document.getElementById('char-display').innerHTML = "🎉 Done!";
+        document.getElementById('char-display').style.fontSize = "2.5rem";
+        document.getElementById('char-display').style.color = "var(--success)";
+        document.getElementById('type-sub-display').style.display = "none";
+        document.getElementById('submit-btn').disabled = true;
+        document.getElementById('user-input').disabled = true;
+        document.getElementById('btn-reveal-container').style.display = "none";
+        document.getElementById('honour-system-controls').style.display = "none";
+        document.getElementById('speak-btn').style.display = "none";
+
+        var feedbackContainer = document.getElementById('feedback-container');
+        var feedbackMessage = document.getElementById('feedback-message');
+
+        feedbackMessage.className = "feedback correct-box";
+        feedbackMessage.innerHTML =
+            '<div style="text-align:center;">' +
+                '<div class="completion-stats">' +
+                    '<div><span class="completion-stat-label">Accuracy</span><span class="completion-stat-value">' + accuracy + '%</span></div>' +
+                    '<div><span class="completion-stat-label">Best Streak</span><span class="completion-stat-value">🔥 ' + sessionBestStreak + '</span></div>' +
+                    '<div><span class="completion-stat-label">Checked</span><span class="completion-stat-value">' + sessionTotal + '</span></div>' +
+                '</div>' +
+                '<div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;">' + sessionCorrect + ' / ' + sessionTotal + ' correct this run</div>' +
+                '<div style="font-size:0.75rem; color:var(--text-muted);">' + coreDeckOriginalCount + ' ' + modeLabel + ' cards in deck</div>' +
+            '</div>';
+
+        var nextBtn = document.getElementById('next-btn');
+        if (nextBtn && nextBtn.parentElement) nextBtn.parentElement.style.display = "none";
+
+        var existingBar = feedbackContainer.querySelector('.completion-actions');
+        if (existingBar) existingBar.remove();
+
+        var actionsHtml = '<div class="completion-actions">';
+        actionsHtml += '<button class="completion-btn primary" onclick="startNewSessionFromComplete()">🔄 New Session</button>';
+        actionsHtml += '<button class="completion-btn" onclick="switchView(\'review\')">📝 Reviews</button>';
+        actionsHtml += '</div>';
+        feedbackContainer.insertAdjacentHTML('beforeend', actionsHtml);
+
+        feedbackContainer.style.display = "block";
+
+        setTimeout(function() {
+            if (feedbackContainer) feedbackContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 450);
+    }
+
+    function handleNextWorkflow() {
+        if (sessionComplete) return;
+        if (activeCardIndex >= currentSessionDeck.length) {
+            triggerCompletionState();
+            return;
+        }
+        generateQuestion();
+        setTimeout(function() {
+            if (currentQuizDirection === 'read') {
+                var inputField = document.getElementById('user-input');
+                if (inputField) { inputField.focus(); inputField.select(); }
+            }
+        }, 30);
+    }
+
+    function startNewSessionFromComplete() {
+        var fb = document.getElementById('feedback-container');
+        var bar = fb ? fb.querySelector('.completion-actions') : null;
+        if (bar) bar.remove();
+        var nextBtn = document.getElementById('next-btn');
+        if (nextBtn && nextBtn.parentElement) nextBtn.parentElement.style.display = "";
+
+        sessionComplete = false;
+        initSessionDeck();
+    }
+
+    function updateStreakEmoji() {
+        var emojiSpan = document.getElementById('streak-emoji');
+        if (emojiSpan) {
+            if (currentStreak >= 15) emojiSpan.innerHTML = "👑";
+            else if (currentStreak >= 10) emojiSpan.innerHTML = "🥷";
+            else if (currentStreak >= 6) emojiSpan.innerHTML = "🔥";
+            else if (currentStreak >= 3) emojiSpan.innerHTML = "⚡";
+            else emojiSpan.innerHTML = "🐣";
+        }
+    }
+
+    function speakKanaCharacter() {
+        var targetChar = currentKanaObj.char;
+        if (!targetChar || targetChar === "Loading..." || targetChar === "🎉 Done!") return;
+        if (currentKanaObj.row === 'sokuon') return; 
+
+        var utterance = new SpeechSynthesisUtterance(targetChar);
+        utterance.lang = "ja-JP"; 
+        utterance.rate = 0.85; 
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function toggleReviewDrawer() {
+        var drawer = document.getElementById('review-code-drawer');
+        var btn = document.getElementById('review-drawer-toggle-btn');
+        if (drawer.style.display === "block") {
+            drawer.style.display = "none";
+            btn.innerText = "Export or Paste Recovery Codes ▾";
+        } else {
+            drawer.style.display = "block";
+            btn.innerText = "Hide Recovery Codes ▴";
+        }
+    }
+</script>
+<script>
+    function saveState() {
+        try {
+            var rows = {};
+            var rowKeys = "a,k,s,t,n,h,m,y,r,w,dakuten,handakuten,sokuon".split(",");
+            for (var i = 0; i < rowKeys.length; i++) {
+                var chk = document.getElementById('chk-row-' + rowKeys[i]);
+                if (chk) rows[rowKeys[i]] = chk.checked;
+            }
+
+            var state = {
+                rows: rows,
+                alphabet: currentAlphabet,
+                direction: currentQuizDirection,
+                readProductionMethod: readProductionMethod,
+                endless: isEndlessMode,
+                stats: { correct: totalCorrect, total: totalQuestions, streak: currentStreak },
+                mistakes: mistakeLog
+            };
+            localStorage.setItem('jap_kana_state', JSON.stringify(state));
+        } catch (e) {}
+    }
+
+    function loadState() {
+        try {
+            var raw = localStorage.getItem('jap_kana_state');
+            if (!raw) return;
+            var state = JSON.parse(raw);
+
+            if (state.rows) {
+                var rowKeys = "a,k,s,t,n,h,m,y,r,w,dakuten,handakuten,sokuon".split(",");
+                for (var i = 0; i < rowKeys.length; i++) {
+                    var key = rowKeys[i];
+                    if (typeof state.rows[key] !== 'undefined') {
+                        var chk = document.getElementById('chk-row-' + key);
+                        var lbl = document.getElementById('lbl-row-' + key);
+                        if (chk) chk.checked = state.rows[key];
+                        if (lbl) {
+                            if (state.rows[key]) lbl.classList.add('selected');
+                            else lbl.classList.remove('selected');
+                        }
+                    }
+                }
+            }
+
+            if (state.alphabet) {
+                currentAlphabet = state.alphabet;
+                document.getElementById('mode-hiragana').classList.remove('active');
+                document.getElementById('mode-katakana').classList.remove('active');
+                document.getElementById('mode-mixed').classList.remove('active');
+                document.getElementById('mode-' + state.alphabet).classList.add('active');
+            }
+
+            if (state.direction) {
+                currentQuizDirection = state.direction;
+                document.getElementById('dir-r').classList.remove('active');
+                document.getElementById('dir-w').classList.remove('active');
+                if (state.direction === 'read') {
+                    document.getElementById('dir-r').classList.add('active');
+                    document.getElementById('panel-read-mode').style.display = 'block';
+                    document.getElementById('panel-write-mode').style.display = 'none';
+                } else {
+                    document.getElementById('dir-w').classList.add('active');
+                    document.getElementById('panel-read-mode').style.display = 'none';
+                    document.getElementById('panel-write-mode').style.display = 'block';
+                }
+            }
+
+            if (state.readProductionMethod) {
+                readProductionMethod = state.readProductionMethod;
+                var lblType = document.getElementById('lbl-method-type');
+                var lblHonour = document.getElementById('lbl-method-honour');
+                var chkType = document.getElementById('chk-method-type');
+                var chkHonour = document.getElementById('chk-method-honour');
+                if (lblType) lblType.classList.toggle('selected', readProductionMethod === 'type');
+                if (lblHonour) lblHonour.classList.toggle('selected', readProductionMethod === 'honour');
+                if (chkType) chkType.checked = (readProductionMethod === 'type');
+                if (chkHonour) chkHonour.checked = (readProductionMethod === 'honour');
+            }
+
+            if (state.endless) {
+                isEndlessMode = state.endless;
+                var btn = document.getElementById('endless-toggle-btn');
+                if (btn) {
+                    if (isEndlessMode) {
+                        btn.innerText = "ON 🔄";
+                        btn.style.color = "var(--accent)";
+                        btn.style.fontWeight = "bold";
+                    } else {
+                        btn.innerText = "OFF ⏸";
+                        btn.style.color = "var(--text-muted)";
+                        btn.style.fontWeight = "normal";
+                    }
+                }
+            }
+
+            if (state.stats) {
+                totalCorrect = state.stats.correct || 0;
+                totalQuestions = state.stats.total || 0;
+                currentStreak = state.stats.streak || 0;
+                updateScoreboard();
+            }
+
+            if (Array.isArray(state.mistakes)) {
+                mistakeLog = state.mistakes;
+                document.getElementById('review-count').innerText = mistakeLog.length;
+            }
+        } catch (e) {}
+    }
+
+    function resetAllProgress() {
+        if (!confirm("Clear all progress, scores, and review log?")) return;
+
+        try { localStorage.removeItem('jap_kana_state'); } catch (e) {}
+
+        totalCorrect = 0;
+        totalQuestions = 0;
+        currentStreak = 0;
+        mistakeLog = [];
+        document.getElementById('review-count').innerText = "0";
+
+        var rowKeys = "a,k,s,t,n,h,m,y,r,w,dakuten,handakuten,sokuon".split(",");
+        for (var i = 0; i < rowKeys.length; i++) {
+            var key = rowKeys[i];
+            var chk = document.getElementById('chk-row-' + key);
+            var lbl = document.getElementById('lbl-row-' + key);
+            var defaultOn = ["a", "k", "s", "t", "n", "h", "m", "y", "r", "w"].indexOf(key) !== -1;
+            if (chk) chk.checked = defaultOn;
+            if (lbl) {
+                if (defaultOn) lbl.classList.add('selected');
+                else lbl.classList.remove('selected');
+            }
+        }
+
+        currentAlphabet = "hiragana";
+        document.getElementById('mode-hiragana').classList.add('active');
+        document.getElementById('mode-katakana').classList.remove('active');
+        document.getElementById('mode-mixed').classList.remove('active');
+
+        readProductionMethod = "type";
+        var lblType = document.getElementById('lbl-method-type');
+        var lblHonour = document.getElementById('lbl-method-honour');
+        var chkType = document.getElementById('chk-method-type');
+        var chkHonour = document.getElementById('chk-method-honour');
+        if (lblType) lblType.classList.add('selected');
+        if (lblHonour) lblHonour.classList.remove('selected');
+        if (chkType) chkType.checked = true;
+        if (chkHonour) chkHonour.checked = false;
+
+        currentQuizDirection = "read";
+        document.getElementById('dir-r').classList.add('active');
+        document.getElementById('dir-w').classList.remove('active');
+        document.getElementById('panel-read-mode').style.display = 'block';
+        document.getElementById('panel-write-mode').style.display = 'none';
+
+        isEndlessMode = false;
+        var endlessBtn = document.getElementById('endless-toggle-btn');
+        if (endlessBtn) {
+            endlessBtn.innerText = "OFF ⏸";
+            endlessBtn.style.color = "var(--text-muted)";
+            endlessBtn.style.fontWeight = "normal";
+        }
+
+        var drawer = document.getElementById('settings-drawer');
+        var btn = document.getElementById('drawer-toggle-btn');
+        if (drawer) drawer.style.display = "none";
+        if (btn) btn.innerText = "⚙️ Options & Filters ▾";
+
+        updateScoreboard();
+        initSessionDeck();
+    }
+
+    function renderReviewList() {
+        let container = document.getElementById('review-list-container');
+        let placeholder = document.getElementById('review-placeholder');
+        let drillBtn = document.getElementById('drill-mistakes-btn');
+        let inputCodeBox = document.getElementById('session-code-io');
+        
+        if (mistakeLog.length === 0) {
+            if (placeholder) {
+                placeholder.style.display = "block";
+                placeholder.innerHTML = "🌟 <strong>Absolute Perfection!</strong> You've answered every character correctly. No errors to review!";
+            }
+            if (container) container.innerHTML = "";
+            if (drillBtn) drillBtn.style.display = "none";
+            if (inputCodeBox) inputCodeBox.value = "";
+            return;
+        }
+        
+        if (placeholder) placeholder.style.display = "none";
+        if (drillBtn) drillBtn.style.display = "block";
+
+        let encodedParts = [];
+        for (let i = 0; i < mistakeLog.length; i++) {
+            let prefix = mistakeLog[i].type.toLowerCase() === "hiragana" ? "H" : "K";
+            encodedParts.push(prefix + ":" + mistakeLog[i].correct);
+        }
+        if (inputCodeBox) inputCodeBox.value = encodedParts.join(";");
+        
+        let html = "<table class='ref-table'><tr><th>Kana</th><th>Type</th><th>Correct Rōmaji</th><th>Your Input</th></tr>";
+        for (let i = 0; i < mistakeLog.length; i++) {
+            html += "<tr><td style='font-size:1.5rem; font-weight:bold;'>" + mistakeLog[i].character + "</td><td>" + mistakeLog[i].type + "</td><td style='color:var(--success); font-weight:bold;'>" + mistakeLog[i].correct + "</td><td style='color:var(--error);'>" + mistakeLog[i].yours + "</td></tr>";
+        }
+        html += "</table>";
+        if (container) container.innerHTML = html;
+    }
+
+    function clearReviewLog() {
+        mistakeLog = [];
+        document.getElementById('review-count').innerText = "0";
+        renderReviewList();
+        saveState();
+    }
+
+    function drillMistakesOnly() {
+        if (mistakeLog.length === 0) return;
+        currentSessionDeck = [];
+        activeCardIndex = 0;
+        userActionHistory = [];
+
+        sessionCorrect = 0;
+        sessionTotal = 0;
+        sessionBestStreak = 0;
+        sessionCurrentStreak = 0;
+        sessionComplete = false;
+
+        for (let i = 0; i < mistakeLog.length; i++) {
+            currentSessionDeck.push({
+                char: mistakeLog[i].character,
+                romaji: mistakeLog[i].correct,
+                type: mistakeLog[i].type,
+                row: "custom-review-drill"
+            });
+        }
+
+        for (let i = currentSessionDeck.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            let temp = currentSessionDeck[i];
+            currentSessionDeck[i] = currentSessionDeck[j];
+            currentSessionDeck[j] = temp;
+        }
+
+        coreDeckOriginalCount = currentSessionDeck.length;
+        document.getElementById('deck-total').innerText = coreDeckOriginalCount;
+        
+        var pBox = document.getElementById('progress-box');
+        if (pBox) pBox.className = "score-item";
+        document.getElementById('review-status-label').innerText = "";
+
+        switchView('quiz');
+        showStartScreen();
+    }
+
+    function loadCustomSessionCode() {
+        let codeField = document.getElementById('session-code-io');
+        let alertBox = document.getElementById('code-feedback-alert');
+        if (!codeField || !codeField.value.trim()) return;
+
+        let rawCode = codeField.value.trim();
+        let tokens = rawCode.split(";");
+        let importedDeck = [];
+
+        for (let i = 0; i < tokens.length; i++) {
+            let parts = tokens[i].split(":");
+            if (parts.length !== 2) { continue; }
+            
+            let prefix = parts[0].trim().toUpperCase();
+            let alphaType = prefix === "H" ? "hiragana" : "katakana";
+            let targetRomaji = parts[1].trim().toLowerCase();
+
+            let match = kanaMasterDeck.find(item => item.romaji === targetRomaji);
+            if (match) {
+                let textSymbol = alphaType === "hiragana" ? match.hira : match.kata;
+                let properLabel = alphaType === "hiragana" ? "Hiragana" : "Katakana";
+                importedDeck.push({
+                    char: textSymbol,
+                    romaji: match.romaji,
+                    type: properLabel,
+                    row: match.row
+                });
+            }
+        }
+
+        if (importedDeck.length === 0) {
+            alertBox.style.display = "block";
+            alertBox.style.color = "var(--error)";
+            alertBox.innerText = "❌ Invalid session code format. Could not load deck configuration.";
+            return;
+        }
+
+        currentSessionDeck = importedDeck;
+        activeCardIndex = 0;
+        userActionHistory = [];
+        coreDeckOriginalCount = currentSessionDeck.length;
+        document.getElementById('deck-total').innerText = coreDeckOriginalCount;
+
+        alertBox.style.display = "block";
+        alertBox.style.color = "var(--success)";
+        alertBox.innerText = "📥 Successfully loaded " + importedDeck.length + " characters! Starting quiz session now...";
+
+        setTimeout(function() {
+            alertBox.style.display = "none";
+            switchView('quiz');
+            generateQuestion();
+        }, 1200);
+    }
+
+    // Global Key Event Handlers (Space Input Mapping, Triple-Space & Undo Hooks)
+    // Repaired Key Event Handlers (Dual Enter/Space Mappings & Shutter releases)
+    document.addEventListener('keydown', function(event) {
+        var isFeedbackOpen = document.getElementById('feedback-container').style.display === 'block';
+        var isHonourOpen = document.getElementById('honour-system-controls').style.display === 'flex';
+        
+        // 1. Ctrl+Z History Rewind
+        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') {
+            event.preventDefault();
+            executeUndoAction();
+            return;
+        }
+
+        // 1a. Completion gate
+        if (sessionComplete) {
+            if (event.key === ' ' || event.code === 'Space' || event.key === 'Enter') {
+                event.preventDefault();
+                startNewSessionFromComplete();
+            }
+            return;
+        }
+
+        // 1b. Session start gate
+        if (!sessionStarted) {
+            if (event.key === ' ' || event.code === 'Space' || event.key === 'Enter') {
+                event.preventDefault();
+                startSession();
+            }
+            return;
+        }
+
+        var isHonourMode = (currentQuizDirection === 'write') ||
+                           (currentQuizDirection === 'read' && readProductionMethod === 'honour');
+
+        // 2. Dual Action Router: Triggers if user hits EITHER Spacebar OR Enter
+        if (event.key === ' ' || event.code === 'Space' || event.key === 'Enter') {
+            
+            // Context A: Feedback panel is active -> Progress to next card
+            if (isFeedbackOpen) {
+                event.preventDefault(); 
+                handleNextWorkflow();
+                return;
+            }
+            
+            // Context B: Read mode + typing input -> Verify text string answer
+            if (currentQuizDirection === 'read' && readProductionMethod === 'type' && !isFeedbackOpen) {
+                if (event.key === ' ' || event.code === 'Space') {
+                    event.preventDefault();
+                    checkAnswer();
+                }
+                return;
+            }
+            
+            // Context C: Honour mode active, not yet revealed -> Reveal answer
+            if (isHonourMode && !isHonourOpen && !isFeedbackOpen) {
+                event.preventDefault();
+                revealWriteAnswer();
+                return;
+            }
+
+            // Context D: Honour mode revealed -> Default value logs as CORRECT
+            if (isHonourMode && isHonourOpen && !isFeedbackOpen) {
+                event.preventDefault();
+                assessHonour(true);
+                return;
+            }
+        }
+
+        // 3. Manual score overrides for Honour mode (both directions)
+        if (isHonourOpen && isHonourMode) {
+            if (event.key === '1' || event.key.toLowerCase() === 'x') { event.preventDefault(); assessHonour(false); }
+            if (event.key === '2') { event.preventDefault(); assessHonour(true); }
+        }
+    });
+
+    window.onload = function() { 
+        loadState();
+        initSessionDeck(); 
+    };
+</script>
+<!-- polyglot-copyright -->
+<footer style="text-align:center; margin:1rem auto 0 auto; padding:1rem 20px 0 20px;
+               font-size:0.7rem; color:#64748b; letter-spacing:0.3px; line-height:1.5;">
+    Copyright The Polyglot Gym 2026 · Simon Reynolds · All rights reserved.
+</footer>
+<!-- /polyglot-copyright -->
+</body>
+</html>

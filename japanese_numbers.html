@@ -1,0 +1,1739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Japanese Numbers</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --error: #f43f5e;
+            --warning: #f59e0b;
+            --border: #334155;
+        }
+        :root { font-size: 17px; }
+        html { scrollbar-gutter: stable; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 1rem;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-x: hidden;
+            overflow-anchor: none;
+        }
+        .container {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 550px;
+            border: 1px solid var(--border);
+            position: relative;
+            min-width: 0;
+        }
+        #shutter-header-area {
+            max-height: 200px;
+            opacity: 1;
+            overflow: hidden;
+            transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.4s ease;
+        }
+        #shutter-header-area.collapsed {
+            max-height: 0px;
+            opacity: 0;
+            margin-bottom: 0px !important;
+            pointer-events: none;
+        }
+        h1 {
+            font-size: 1.4rem;
+            margin-top: 0;
+            text-align: center;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            background-color: rgba(0,0,0,0.15);
+            padding: 0.75rem;
+            border-radius: 0.5rem 0.5rem 0 0;
+            margin-top: 1rem;
+            margin-bottom: 0;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            font-size: 0.85rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .score-board-progress-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0,0,0,0.15);
+            padding: 0.6rem 0.75rem;
+            border-radius: 0 0 0.5rem 0.5rem;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.85rem;
+            position: relative;
+        }
+        .score-board-progress-row .score-item { margin: 0 auto; }
+        .score-board-gear-btn {
+            font-size: 1rem;
+            background: none;
+            color: var(--text-main);
+            padding: 0.2rem 0.5rem;
+            cursor: pointer;
+            border: none;
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            line-height: 1;
+        }
+        .score-item span {
+            font-weight: bold;
+            color: var(--accent);
+        }
+        .review-phase-text {
+            color: var(--warning) !important;
+            transition: color 0.3s ease;
+        }
+        .nav-tabs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+        .nav-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.5rem 0.75rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border-radius: 0.25rem;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover { color: var(--text-main); }
+        .nav-btn.active {
+            background-color: var(--border);
+            color: var(--accent);
+            font-weight: bold;
+        }
+        .mode-selector {
+            display: flex;
+            flex-wrap: wrap;
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 0.4rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+            gap: 0.4rem;
+        }
+        .mode-btn {
+            flex: 1 1 calc(50% - 0.4rem);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.6rem 0.5rem;
+            font-size: 0.85rem;
+            font-weight: normal;
+            border-radius: 0.35rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .mode-btn:hover { color: var(--text-main); opacity: 1; }
+        .mode-btn.active {
+            background-color: var(--accent);
+            color: #0f172a;
+            font-weight: bold;
+        }
+        .mode-selector.compact-3 { flex-wrap: nowrap; }
+        .mode-selector.compact-3 .mode-btn {
+            flex: 1 1 0;
+            min-width: 0;
+            padding: 0.6rem 0.3rem;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+        .question-box {
+            background-color: rgba(0,0,0,0.3);
+            padding: 2.2rem 1.5rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+            min-height: 6rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .number-display {
+            font-size: 3.8rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            line-height: 1.15;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+        .type-sub-badge {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 0.5rem;
+            overflow-wrap: break-word;
+        }
+        .input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        input.text-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+            background-color: rgba(0,0,0,0.2);
+            color: var(--text-main);
+            font-size: 1.1rem;
+            outline: none;
+            text-align: center;
+        }
+        input.text-input:focus { border-color: var(--accent); }
+        .feedback {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+        .correct-box {
+            background-color: rgba(16, 185, 129, 0.15);
+            border: 1px solid var(--success);
+            color: #34d399;
+        }
+        .incorrect-box {
+            background-color: rgba(244, 63, 94, 0.15);
+            border: 1px solid var(--error);
+            color: #fb7185;
+        }
+        .next-btn {
+            width: 100%;
+            background-color: var(--border);
+            color: var(--text-main);
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .speech-hint {
+            font-size: 0.95rem;
+            color: var(--warning);
+            font-style: italic;
+            background-color: rgba(245, 158, 11, 0.1);
+            border: 1px dashed var(--warning);
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            margin-bottom: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .ref-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+        }
+        .ref-table th, .ref-table td {
+            border: 1px solid var(--border);
+            padding: 0.5rem;
+            text-align: center;
+        }
+        .ref-table th { background-color: rgba(0,0,0,0.2); color: var(--accent); }
+        .drawer-toggle {
+            background: none;
+            border: none;
+            color: var(--accent);
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: block;
+            margin: -0.75rem auto 1rem auto;
+            padding: 0.25rem 0.5rem;
+            text-decoration: none;
+        }
+        .drawer-toggle:hover { opacity: 0.8; }
+        .portal-shortcut-bar { width: 100%; max-width: 550px; margin: 1.5rem auto 0 auto; padding: 0.75rem 1rem; background-color: rgba(0, 0, 0, 0.25); border: 1px solid var(--border); border-radius: 0.5rem; display: flex; align-items: center; box-sizing: border-box; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); }
+        .portal-shortcut-bar a { color: var(--accent); text-decoration: none; font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; gap: 0.4rem; transition: opacity 0.2s; }
+        .portal-shortcut-bar a:hover { opacity: 0.8; }
+        .portal-shortcut-bar .terminal-label { margin-left: auto; font-size: 0.75rem; color: var(--text-muted); font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase; }
+
+        /* Drawer + row-label (matching suite) */
+        .settings-drawer {
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px dashed var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        .grid-header-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+        .row-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.4rem;
+            margin-top: 0.3rem;
+            margin-bottom: 0.8rem;
+        }
+        .row-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255,255,255,0.01);
+            border: 1px solid var(--border);
+            border-radius: 0.35rem;
+            padding: 0.45rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-align: center;
+            user-select: none;
+        }
+        .row-label input { display: none; }
+        .row-label.selected {
+            background-color: rgba(6, 182, 212, 0.15);
+            border-color: var(--accent);
+            color: var(--text-main);
+            font-weight: bold;
+        }
+        .mode-hint {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin: 0.25rem 0 0.5rem 0;
+            line-height: 1.4;
+        }
+
+        /* === MOBILE FIXES === */
+        @media (max-width: 550px) {
+            .container { padding: 1rem; }
+            .score-board {
+                flex-wrap: wrap !important;
+                justify-content: center !important;
+                font-size: 0.9rem !important;
+                padding: 0.5rem 0.75rem !important;
+                gap: 0.4rem 0.75rem !important;
+                line-height: 1.4 !important;
+            }
+            .score-item {
+                font-size: 0 !important;
+                white-space: nowrap !important;
+            }
+            .score-item span, .score-item a {
+                font-size: 0.9rem !important;
+            }
+            .score-board-progress-row {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                background-color: rgba(0,0,0,0.15);
+                padding: 0.6rem 0.75rem;
+                border-radius: 0 0 0.5rem 0.5rem;
+                margin-top: 0;
+                margin-bottom: 1rem;
+                border: 1px solid var(--border);
+                border-top: 1px solid rgba(255,255,255,0.05);
+                font-size: 0.85rem;
+                position: relative;
+            }
+            .score-board-progress-row .score-item {
+                font-size: 0.9rem !important;
+                text-align: center;
+            }
+            .score-board-gear-btn {
+                font-size: 1rem;
+                background: none;
+                color: var(--text-main);
+                padding: 0.2rem 0.5rem;
+                cursor: pointer;
+                border: none;
+                position: absolute;
+                right: 0.75rem;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+            #review-status-label {
+                display: block !important;
+                width: 100% !important;
+                text-align: center !important;
+                font-size: 0.75rem !important;
+                color: var(--warning) !important;
+                margin-top: 0.25rem !important;
+                font-style: italic !important;
+            }
+            .question-box {
+                padding: 1.25rem 1rem !important;
+                min-height: auto !important;
+                justify-content: flex-start !important;
+                padding-top: 1.5rem !important;
+            }
+            .number-display { font-size: 2.2rem !important; }
+            .type-sub-badge { font-size: 0.8rem !important; }
+        }
+
+        .hidden-during-feedback { display: none !important; }
+    </style>
+    <meta name="copyright" content="© 2026 Simon Reynolds · The Polyglot Gym · All rights reserved.">
+</head>
+<body>
+<div class="container">
+    <h1>Japanese Numbers</h1>
+
+    <div class="nav-tabs">
+        <button class="nav-btn active" id="tab-quiz" onclick="switchView('quiz')">🎯 Drills</button>
+        <button class="nav-btn" id="tab-guide" onclick="switchView('guide')">📚 Guide</button>
+        <button class="nav-btn" id="tab-review" onclick="switchView('review')">📝 Reviews (<span id="review-count">0</span>)</button>
+    </div>
+
+    <div id="view-quiz">
+        <div id="shutter-header-area">
+            <div class="mode-selector compact-3">
+                <button class="mode-btn active" id="dir-r" onclick="setDirection('read')">Read</button>
+                <button class="mode-btn" id="dir-w" onclick="setDirection('write')">Write</button>
+                <button class="mode-btn" id="dir-l" onclick="setDirection('listen')">Listen 🔊</button>
+            </div>
+        </div>
+
+        <div class="score-board">
+            <div class="score-item">Correct: <span id="score-correct">0</span></div>
+            <div class="score-item">Checked: <span id="score-total">0</span></div>
+            <div class="score-item">Streak: <span id="score-streak">0</span> <span id="streak-emoji">🐣</span></div>
+        </div>
+        <div class="score-board-progress-row">
+            <div class="score-item" id="progress-box">Progress: <span id="deck-progress">0</span> / <span id="deck-total">15</span><span id="review-status-label"></span></div>
+            <button onclick="openOptionsPanel();" class="score-board-gear-btn">⚙️</button>
+        </div>
+
+        <div class="question-box">
+            <div class="number-display" id="num-display">Loading...</div>
+            <div class="type-sub-badge" id="type-sub-display" style="display: none;"></div>
+            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                <button id="speak-btn" style="background-color: #334155; color: var(--text-main); font-size: 0.85rem; padding: 0.4rem 0.8rem; border-radius: 0.25rem; border: none; cursor: pointer;" onclick="speakCurrentNumber();">Listen 🔊</button>
+                <button id="hint-btn" style="background-color: #334155; color: var(--text-main); font-size: 0.85rem; padding: 0.4rem 0.8rem; border-radius: 0.25rem; border: none; cursor: pointer;" onclick="toggleSpeechHint();">Show Speech Hint 💡</button>
+            </div>
+            <div class="speech-hint" id="hint-container" style="display: none; margin-top: 0.75rem;"></div>
+        </div>
+
+        <div id="start-btn-container" style="display: none;">
+            <div class="input-group">
+                <button id="start-btn" style="width: 100%; height: 2.8rem; background-color: var(--accent); color: #0f172a; font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 1rem;" onclick="startSession();">▶ Start Session</button>
+            </div>
+        </div>
+
+        <div class="input-group" id="input-container">
+            <input type="text" class="text-input" id="user-input" placeholder="Type answer..." autocomplete="off" oninput="if(currentQuizDirection === 'read' || currentQuizDirection === 'listen') { let val = this.value.replace(/\D/g, ''); this.value = val ? parseInt(val, 10).toLocaleString() : ''; }" onkeydown="if(event.key === 'Enter') { event.preventDefault(); event.stopPropagation(); checkAnswer(); }">
+            <button id="submit-btn" style="background-color: var(--accent); color: #0f172a; font-weight: bold; border: none; border-radius: 0.5rem; padding: 0 1.5rem; cursor: pointer;" onclick="checkAnswer();">Check</button>
+        </div>
+
+        <div class="input-group" id="honour-reveal-container" style="display: none;">
+            <button id="honour-reveal-btn" style="width: 100%; height: 2.8rem; background-color: var(--accent); color: #0f172a; font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 0.95rem;" onclick="revealAnswer();">Reveal Answer</button>
+        </div>
+
+        <div id="honour-system-controls" style="display: none; gap: 0.75rem; margin-bottom: 1rem;">
+            <button style="flex: 1; padding: 0.75rem; background-color: var(--error); color: #fff; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 0.95rem;" onclick="assessHonour(false);">Wrong ✖</button>
+            <button style="flex: 1; padding: 0.75rem; background-color: var(--success); color: #0f172a; font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 0.95rem;" onclick="assessHonour(true);">Correct ✔</button>
+        </div>
+
+        <div id="feedback-container" style="display: none;">
+            <div id="feedback-message" class="feedback"></div>
+            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                <button class="next-btn" id="next-btn" onclick="handleNextWorkflow();" style="flex: 2;">Next Number →</button>
+                <button class="next-btn" id="undo-btn" onclick="executeUndoAction();" style="flex: 1; background-color: var(--warning); color: #0f172a;">↩ Undo</button>
+            </div>
+        </div>
+
+        <button class="drawer-toggle" id="drawer-toggle-btn" onclick="toggleSettingsDrawer();" style="width: 100%; padding: 0.75rem; margin-top: 1rem; font-size: 0.95rem; background: none; border: 1px solid var(--border); border-radius: 0.5rem; color: var(--text-muted); cursor: pointer; text-align: center;">⚙️ Options & Filters ▾</button>
+        <div id="filter-status-line" style="text-align:center; font-size:0.72rem; color:var(--text-muted); margin:-0.5rem 0 1rem 0; letter-spacing:0.3px;"></div>
+
+        <div class="settings-drawer" id="settings-drawer">
+            <div class="grid-header-label">Production Input Method:</div>
+            <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <label class="row-label selected" id="lbl-method-type"><input type="radio" name="rad-method" id="chk-method-type" checked onchange="setProductionMethod('type')">Type Answer</label>
+                <label class="row-label" id="lbl-method-honour"><input type="radio" name="rad-method" id="chk-method-honour" onchange="setProductionMethod('honour')">Honour (Self-Assess)</label>
+            </div>
+
+            <div class="grid-header-label" id="style-label">Text Style:</div>
+            <div class="row-grid" id="style-row" style="grid-template-columns: repeat(3, 1fr);">
+                <label class="row-label" id="lbl-style-romaji"><input type="radio" name="rad-style" id="chk-style-romaji" onchange="setTextStyle('romaji')">Rōmaji</label>
+                <label class="row-label selected" id="lbl-style-kanji"><input type="radio" name="rad-style" id="chk-style-kanji" checked onchange="setTextStyle('kanji')">Pure Kanji</label>
+                <label class="row-label" id="lbl-style-mixed"><input type="radio" name="rad-style" id="chk-style-mixed" onchange="setTextStyle('mixed')">Mixed</label>
+            </div>
+            <p class="mode-hint">Text style is ignored in Listen mode. Mixed is only available in Write mode.</p>
+
+            <div class="grid-header-label">Number Range:</div>
+            <select id="range-selector" onchange="setRange(this.value)" style="width: 100%; padding: 0.45rem; background-color: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border); border-radius: 0.35rem; font-size: 0.85rem; outline: none; margin-top: 0.25rem; margin-bottom: 0.8rem;">
+                <option value="basics">Basics (1–10)</option>
+                <option value="hundreds">Tens &amp; Hundreds (1–999)</option>
+                <option value="thousands" selected>Thousands (1–9,999)</option>
+                <option value="man">万 Scale (1–99,999,999)</option>
+                <option value="oku">億 &amp; 兆 (1–999,999,999,999)</option>
+            </select>
+
+            <div class="grid-header-label">Session Deck Size:</div>
+            <select id="deck-size-selector" onchange="initQuizSession()" style="width: 100%; padding: 0.45rem; background-color: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border); border-radius: 0.35rem; font-size: 0.85rem; outline: none; margin-top: 0.25rem; margin-bottom: 0.8rem;">
+                <option value="15" selected>15 cards (short drill)</option>
+                <option value="25">25 cards</option>
+                <option value="50">50 cards</option>
+                <option value="100">100 cards</option>
+                <option value="9999">Full set (no cap)</option>
+            </select>
+
+            <div class="grid-header-label">Card Behaviour:</div>
+            <div class="row-grid" style="grid-template-columns: repeat(1, 1fr);">
+                <label class="row-label" id="lbl-endless"><input type="checkbox" id="chk-endless" onchange="updateEndlessMode()">Endless Loop Mode (Continuous drill)</label>
+            </div>
+
+            <div class="grid-header-label">Progress:</div>
+            <button onclick="resetAllProgress();" style="width: 100%; padding: 0.45rem; background-color: rgba(244, 63, 94, 0.15); color: var(--error); border: 1px solid var(--error); border-radius: 0.35rem; font-size: 0.8rem; cursor: pointer; font-weight: bold; margin-top: 0.25rem;">Reset all progress</button>
+        </div>
+    </div>
+
+    <div id="view-guide" style="display: none; max-height: 60vh; overflow-y: auto; padding-right: 0.5rem;">
+        <h3 style="color: var(--accent); margin-top: 0; text-align: center;">How to Use This App</h3>
+        <p style="font-size: 0.85rem; line-height: 1.6;">A drill for <strong>reading, writing, and hearing Japanese numbers</strong> from 1 up to the 兆 scale (999,999,999,999). Not a course — a fast recall drill, in the same spirit as the rest of the suite.</p>
+
+        <div style="font-size: 0.9rem; color: var(--accent); font-weight: bold; margin: 1.25rem 0 0.5rem 0;">The three directions</div>
+        <ul style="margin: 0.5rem 0 0.75rem 0; padding-left: 1.2rem; font-size: 0.85rem; line-height: 1.6;">
+            <li><strong>Read</strong> — you see a Japanese number, you type the English numeral.</li>
+            <li><strong>Write</strong> — you see an English numeral, you produce the Japanese form.</li>
+            <li><strong>Listen 🔊</strong> — you hear the number, you type the English numeral. Ear training.</li>
+        </ul>
+
+        <div style="font-size: 0.9rem; color: var(--accent); font-weight: bold; margin: 1.25rem 0 0.5rem 0;">Range and deck size</div>
+        <p style="font-size: 0.85rem; line-height: 1.6;">The range selector (in Options) sets which numbers the deck can contain — from <em>Basics (1–10)</em> up to the <em>億 &amp; 兆</em> scale. The deck-size selector caps how many appear in one session (default 15). Changing direction, range, style, or deck size starts a fresh session — worth knowing if you're mid-drill.</p>
+
+        <div style="font-size: 0.9rem; color: var(--accent); font-weight: bold; margin: 1.25rem 0 0.5rem 0;">Production method and text style</div>
+        <p style="font-size: 0.85rem; line-height: 1.6;"><strong>Type</strong> (default) — you type the answer. <strong>Honour</strong> — you say it aloud, press Space to reveal, then self-mark. <strong>Text style</strong> only applies in Write mode: <em>Rōmaji</em> (<em>sanju go</em>), <em>Kanji</em> (三十五), or <em>Mixed</em> (Arabic digits + kanji unit markers, e.g. <em>3千5百4十1</em> for 3,541).</p>
+
+        <div style="font-size: 0.9rem; color: var(--accent); font-weight: bold; margin: 1.25rem 0 0.5rem 0;">The session model</div>
+        <p style="font-size: 0.85rem; line-height: 1.6;">Each session is a fresh random deck. Wrong answers get pushed to the end so you see them again before the session ends. When the deck runs out, you can loop (Endless mode) or finish.</p>
+        <p style="font-size: 0.85rem; line-height: 1.6;">Unlike the verb and clitic apps in the suite, there is <strong>no graduated "known" pile</strong> here. Every session draws a fresh sample from the selected range. Your lifetime correct / total stats and your mistake log do persist, but individual cards aren't tracked between sessions. If you want to carry a specific set forward, use <em>Recovery Codes</em> in the Review tab.</p>
+
+        <div style="font-size: 0.9rem; color: var(--accent); font-weight: bold; margin: 1.25rem 0 0.5rem 0;">Recovery codes</div>
+        <p style="font-size: 0.85rem; line-height: 1.6;">The Review tab has an export/import box. After a session, your mistakes are encoded as a compact string (e.g. <em>1234;5678;90</em>). Copy that string, save it wherever you like, and later paste it back to drill that exact set again. Or press <strong>🎯 Drill These Saved Errors Only</strong> to jump straight into a session with just those numbers.</p>
+
+        <div style="font-size: 0.9rem; color: var(--accent); font-weight: bold; margin: 1.25rem 0 0.5rem 0;">Hotkeys</div>
+        <p style="font-size: 0.85rem; line-height: 1.6;"><strong>Space</strong> or <strong>Enter</strong> — start session, submit answer, or advance. <strong>1</strong> / <strong>X</strong> and <strong>2</strong> — mark wrong / correct in Honour mode. <strong>Ctrl+Z</strong> — undo the last answer.</p>
+
+        <h3 style="color: var(--accent); margin-top: 2rem; text-align: center;">Japanese Numbers — the 4-Digit Hurdle</h3>
+        <p style="font-size: 0.85rem; line-height: 1.6;">English groups numbers in threes — thousands, millions, billions. Japanese groups in <strong>fours</strong>: <em>man</em> (万, 10,000), <em>oku</em> (億, 100,000,000), <em>chō</em> (兆, 10<sup>12</sup>).</p>
+        <p style="font-size: 0.85rem; line-height: 1.6;">This is the biggest single hurdle for English speakers. <strong>100,000</strong> is not "hundred thousand" — it's <em>jū-man</em> (十万), literally "ten man". <strong>10,000,000</strong> is <em>issen-man</em> (一千万), "one thousand man". Every number above 10,000 needs to be re-framed mentally as (how many man?) + (remainder under 10,000).</p>
+        <p style="font-size: 0.85rem; line-height: 1.6;">Drill this specifically. If you consistently miscount above 10,000, it's the 4-digit grouping not being automatic yet — worth its own focused session before pushing into larger ranges.</p>
+
+        <h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">Basic Numbers Reference</h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-bottom: 0.5rem;">This app drills <em>yon</em> (not <em>shi</em>) for 4, <em>nana</em> (not <em>shichi</em>) for 7, and <em>kyū</em> (not <em>ku</em>) for 9 — the common standalone counting forms.</p>
+        <table class="ref-table">
+            <tr><th>Num</th><th>Kanji</th><th>Rōmaji</th><th>Num</th><th>Kanji</th><th>Rōmaji</th></tr>
+            <tr><td>1</td><td>一</td><td>ichi</td><td>6</td><td>六</td><td>roku</td></tr>
+            <tr><td>2</td><td>二</td><td>ni</td><td>7</td><td>七</td><td>nana / shichi</td></tr>
+            <tr><td>3</td><td>三</td><td>san</td><td>8</td><td>八</td><td>hachi</td></tr>
+            <tr><td>4</td><td>四</td><td>yon / shi</td><td>9</td><td>九</td><td>kyū / ku</td></tr>
+            <tr><td>5</td><td>五</td><td>go</td><td>10</td><td>十</td><td>jū</td></tr>
+        </table>
+
+        <h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">Higher Scales</h3>
+        <table class="ref-table">
+            <tr><th>Scale Value</th><th>Kanji</th><th>Rōmaji</th><th>English Meaning</th></tr>
+            <tr><td>100</td><td>百</td><td>hyaku</td><td>Hundred</td></tr>
+            <tr><td>1,000</td><td>千</td><td>sen</td><td>Thousand</td></tr>
+            <tr><td>10,000</td><td>万</td><td>man</td><td>Ten Thousand (Base Scale)</td></tr>
+            <tr><td>100,000,000</td><td>億</td><td>oku</td><td>Hundred Million (Base Scale)</td></tr>
+            <tr><td>1,000,000,000,000</td><td>兆</td><td>chō</td><td>One Trillion (Base Scale)</td></tr>
+        </table>
+
+        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin-top: 1rem;">
+            <strong>⚠ Irregular Euphony Blends:</strong><br>
+            • <strong>300:</strong> san-byaku | <strong>600:</strong> rop-pyaku | <strong>800:</strong> hap-pyaku<br>
+            • <strong>3,000:</strong> san-zen | <strong>8,000:</strong> has-sen
+        </p>
+        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin-top: 1rem;">
+            <strong>Large numbers:</strong> 100,000 is 十万 (jū-man, "ten man"), not "hundred thousand". 1,000,000 is 百万 (hyaku-man, "hundred man"). See "The 4-Digit Hurdle" above — this catches everyone.
+        </p>
+        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin-top: 1rem;">
+            <strong>Zero:</strong> 零 (rei) or 〇 (zero). In practice "ゼロ" (katakana, from English) is most common. Rare in this deck (range starts at 1) but worth knowing.
+        </p>
+        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin-top: 1rem;">
+            <strong>Typing tip:</strong> Macrons (ū, ō) are optional. Type <em>sanju</em>, <em>sanjū</em>, or <em>sanjuu</em> — all are accepted. Commas in English numerals are ignored (12,345 = 12345).
+        </p>
+    </div>
+
+    <div id="view-review" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="color: var(--accent); margin: 0;">Numbers to Review</h3>
+            <button onclick="clearReviewLog();" style="background-color: #334155; color: var(--text-main); font-size: 0.85rem; padding: 0.4rem 0.8rem; border-radius: 0.25rem; border: none; cursor: pointer;">Clear List 🗑</button>
+        </div>
+
+        <button class="drawer-toggle" id="review-drawer-toggle-btn" style="margin-top: 0; margin-bottom: 1.5rem;" onclick="toggleReviewDrawer();">Export or Paste Recovery Codes ▾</button>
+
+        <div style="background-color: rgba(0,0,0,0.2); border: 1px dashed var(--border); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem; display: none;" id="review-code-drawer">
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: bold; margin-bottom: 0.5rem;">Session Recovery Code:</div>
+            <div style="display: flex; gap: 0.5rem;">
+                <input type="text" id="session-code-io" placeholder="Finish cards to export codes or paste code lines here..." style="flex: 1; font-size: 0.85rem; padding: 0.5rem; text-align: left;" autocomplete="off">
+                <button onclick="loadCustomSessionCode()" style="font-size: 0.85rem; padding: 0.5rem 1rem;">Load Code 📥</button>
+            </div>
+            <div id="code-feedback-alert" style="font-size: 0.75rem; margin-top: 0.4rem; font-weight: bold; display: none;"></div>
+        </div>
+
+        <button id="drill-mistakes-btn" style="width: 100%; background-color: var(--warning); color: #0f172a; margin-bottom: 1.5rem; display: none; margin-top: -0.5rem;" onclick="drillMistakesOnly()">🎯 Drill These Saved Errors Only</button>
+
+        <div id="review-placeholder" style="color: var(--text-muted); text-align: center; padding: 2rem 0;">No saved errors yet. Keep practicing!</div>
+        <div id="review-list-container" style="max-height: 45vh; overflow-y: auto;"></div>
+    </div>
+</div>
+
+<div class="portal-shortcut-bar">
+    <a href="index.html">Return to Hub</a>
+    <div class="terminal-label">J-App 03</div>
+</div>
+
+<script>
+    let currentNumber = 0;
+    let currentStringTarget = "";
+    let currentKanaPronunciation = "";
+    let sessionStarted = false;
+    let currentQuizDirection = "read";
+    let productionMethod = "type";
+    let currentRange = "thousands";
+    let currentTextStyle = "kanji";
+    let totalCorrect = 0;
+    let totalQuestions = 0;
+    let currentStreak = 0;
+    let mistakeLog = [];
+    let userActionHistory = [];
+
+    let currentSessionDeck = [];
+    let activeCardIndex = 0;
+    let coreDeckOriginalCount = 0;
+    let isEndlessMode = false;
+
+    const kanjiDigits = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
+    const hiraganaDigits = ["", "いち", "に", "さん", "よん", "ご", "ろく", "なな", "はち", "きゅう"];
+    const romajiDigits = ["", "ichi", "ni", "san", "yon", "go", "roku", "nana", "hachi", "kyū"];
+
+    const RANGE_LABELS = {
+        basics: "Basics (1–10)",
+        hundreds: "Tens & Hundreds (1–999)",
+        thousands: "Thousands (1–9,999)",
+        man: "万 Scale (1–99,999,999)",
+        oku: "億 & 兆 (1–999,999,999,999)"
+    };
+
+    function updateFilterStatusLine() {
+        var el = document.getElementById('filter-status-line');
+        if (!el) return;
+        var rangeLabel = RANGE_LABELS[currentRange] || currentRange;
+        var sizeSel = document.getElementById('deck-size-selector');
+        var deckSize = sizeSel ? (sizeSel.value === "9999" ? "All" : sizeSel.value) : "15";
+        el.innerText = "Range: " + rangeLabel + " · Deck: " + deckSize;
+    }
+
+    function refreshTextStyleSection() {
+        var showStyle = (currentQuizDirection !== 'listen');
+        var showMixed = (currentQuizDirection === 'write' && rangeSupportsMixed(currentRange));
+
+        var styleLabel = document.getElementById('style-label');
+        var styleRow = document.getElementById('style-row');
+        var mixedLbl = document.getElementById('lbl-style-mixed');
+
+        if (styleLabel) styleLabel.style.display = showStyle ? 'block' : 'none';
+        if (styleRow) {
+            styleRow.style.display = showStyle ? 'grid' : 'none';
+            styleRow.style.gridTemplateColumns = showMixed ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)';
+        }
+        if (mixedLbl) mixedLbl.style.display = showMixed ? 'flex' : 'none';
+    }
+
+    function rangeSupportsMixed(range) {
+        return range !== 'basics';
+    }
+
+    function applyTextStyleDom() {
+        document.getElementById('chk-style-romaji').checked = (currentTextStyle === 'romaji');
+        document.getElementById('chk-style-kanji').checked = (currentTextStyle === 'kanji');
+        document.getElementById('chk-style-mixed').checked = (currentTextStyle === 'mixed');
+        document.getElementById('lbl-style-romaji').classList.toggle('selected', currentTextStyle === 'romaji');
+        document.getElementById('lbl-style-kanji').classList.toggle('selected', currentTextStyle === 'kanji');
+        document.getElementById('lbl-style-mixed').classList.toggle('selected', currentTextStyle === 'mixed');
+    }
+
+    function showStartScreen() {
+        sessionStarted = false;
+
+        var displayBox = document.getElementById('num-display');
+        var subBadge = document.getElementById('type-sub-display');
+        var hintContainer = document.getElementById('hint-container');
+
+        displayBox.innerText = "Ready?";
+        displayBox.style.color = "var(--accent)";
+        subBadge.style.display = "none";
+        hintContainer.style.display = "none";
+
+        document.getElementById('input-container').style.display = "none";
+        document.getElementById('honour-reveal-container').style.display = "none";
+        document.getElementById('honour-system-controls').style.display = "none";
+        document.getElementById('feedback-container').style.display = "none";
+        document.getElementById('start-btn-container').style.display = "block";
+        document.getElementById('hint-btn').style.display = "none";
+        document.getElementById('speak-btn').style.display = "none";
+
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter) shutter.classList.remove('collapsed');
+    }
+
+    function startSession() {
+        if (sessionStarted) return;
+        sessionStarted = true;
+        document.getElementById('start-btn-container').style.display = "none";
+        generateQuestion();
+    }
+
+    function switchView(target) {
+        document.getElementById('view-quiz').style.display = target === 'quiz' ? 'block' : 'none';
+        document.getElementById('view-guide').style.display = target === 'guide' ? 'block' : 'none';
+        document.getElementById('view-review').style.display = target === 'review' ? 'block' : 'none';
+
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('tab-' + target).classList.add('active');
+
+        var drawer = document.getElementById('settings-drawer');
+        var btn = document.getElementById('drawer-toggle-btn');
+        if (drawer) drawer.style.display = "none";
+        if (btn) btn.innerText = "⚙️ Options & Filters ▾";
+
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter) shutter.classList.remove('collapsed');
+
+        if (target === 'review') renderReviewList();
+    }
+
+    function setDirection(dir) {
+        currentQuizDirection = dir;
+        document.getElementById('dir-r').classList.remove('active');
+        document.getElementById('dir-w').classList.remove('active');
+        document.getElementById('dir-l').classList.remove('active');
+        var btnId = dir === 'read' ? 'dir-r' : (dir === 'write' ? 'dir-w' : 'dir-l');
+        document.getElementById(btnId).classList.add('active');
+
+        var showMixed = (dir === 'write' && rangeSupportsMixed(currentRange));
+        if (currentTextStyle === 'mixed' && !showMixed) {
+            currentTextStyle = (dir === 'write') ? 'romaji' : 'kanji';
+        }
+        if (dir === 'write' && currentTextStyle !== 'mixed' && currentTextStyle !== 'romaji') {
+            currentTextStyle = 'romaji';
+        }
+
+        applyTextStyleDom();
+        refreshTextStyleSection();
+        initQuizSession();
+    }
+
+    function setRange(range) {
+        currentRange = range;
+
+        var showMixed = (currentQuizDirection === 'write' && rangeSupportsMixed(range));
+        if (currentTextStyle === 'mixed' && !showMixed) {
+            currentTextStyle = (currentQuizDirection === 'write') ? 'romaji' : 'kanji';
+            applyTextStyleDom();
+        }
+
+        refreshTextStyleSection();
+        initQuizSession();
+    }
+
+    function setTextStyle(style) {
+        currentTextStyle = style;
+        applyTextStyleDom();
+        initQuizSession();
+    }
+
+    function applyPanelVisibility() {
+        var inputContainer = document.getElementById('input-container');
+        var revealContainer = document.getElementById('honour-reveal-container');
+        var honourControls = document.getElementById('honour-system-controls');
+        var revealBtn = document.getElementById('honour-reveal-btn');
+
+        if (honourControls) honourControls.style.display = 'none';
+
+        if (productionMethod === 'honour') {
+            if (inputContainer) inputContainer.style.display = 'none';
+            if (revealContainer) revealContainer.style.display = 'flex';
+            if (revealBtn) {
+                if (currentQuizDirection === 'read') {
+                    revealBtn.innerText = 'Reveal the Number';
+                } else if (currentQuizDirection === 'write') {
+                    revealBtn.innerText = 'Reveal Japanese Form';
+                } else {
+                    revealBtn.innerText = 'Reveal Answer';
+                }
+            }
+        } else {
+            if (inputContainer) inputContainer.style.display = 'flex';
+            if (revealContainer) revealContainer.style.display = 'none';
+        }
+    }
+
+    function hideInputsForFeedback() {
+        var ids = ['input-container', 'honour-reveal-container', 'honour-system-controls', 'hint-container', 'hint-btn'];
+        ids.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.add('hidden-during-feedback');
+        });
+    }
+
+    function restoreInputsFromFeedback() {
+        var ids = ['input-container', 'honour-reveal-container', 'honour-system-controls', 'hint-container', 'hint-btn'];
+        ids.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.remove('hidden-during-feedback');
+        });
+    }
+
+    function setProductionMethod(method) {
+        productionMethod = method;
+        document.getElementById('chk-method-type').checked = (method === 'type');
+        document.getElementById('chk-method-honour').checked = (method === 'honour');
+        document.getElementById('lbl-method-type').classList.toggle('selected', method === 'type');
+        document.getElementById('lbl-method-honour').classList.toggle('selected', method === 'honour');
+        initQuizSession();
+    }
+
+    function updateEndlessMode() {
+        var chk = document.getElementById('chk-endless');
+        var lbl = document.getElementById('lbl-endless');
+        isEndlessMode = chk.checked;
+        if (lbl) lbl.classList.toggle('selected', isEndlessMode);
+        saveState();
+        initQuizSession();
+    }
+
+    function initQuizSession() {
+        currentSessionDeck = [];
+        activeCardIndex = 0;
+        userActionHistory = [];
+
+        var sizeSel = document.getElementById('deck-size-selector');
+        var maxDeckSize = sizeSel ? parseInt(sizeSel.value, 10) : 15;
+        var bounds = { basics: [1,10], hundreds: [1,999], thousands: [1,9999], man: [1,99999999], oku: [1,999999999999] }[currentRange] || [1, 9999];
+        var min = bounds[0], max = bounds[1];
+        var rangeSize = max - min + 1;
+
+        if (rangeSize <= maxDeckSize) {
+            for (var n = min; n <= max; n++) currentSessionDeck.push(n);
+        } else {
+            var seen = new Set();
+            while (seen.size < maxDeckSize) {
+                var pick = min + Math.floor(Math.random() * rangeSize);
+                if (!seen.has(pick)) { seen.add(pick); currentSessionDeck.push(pick); }
+            }
+        }
+
+        for (var i = currentSessionDeck.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var t = currentSessionDeck[i]; currentSessionDeck[i] = currentSessionDeck[j]; currentSessionDeck[j] = t;
+        }
+
+        coreDeckOriginalCount = currentSessionDeck.length;
+        var deckTotalEl = document.getElementById('deck-total');
+        if (deckTotalEl) deckTotalEl.innerText = coreDeckOriginalCount;
+
+        var pBox = document.getElementById('progress-box');
+        if (pBox) pBox.className = "score-item";
+        var rsl = document.getElementById('review-status-label');
+        if (rsl) rsl.innerText = "";
+
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter) shutter.classList.remove('collapsed');
+
+        updateFilterStatusLine();
+        saveState();
+        showStartScreen();
+    }
+
+    function updateButtonVisibility() {
+        var speakBtn = document.getElementById('speak-btn');
+        var hintBtn = document.getElementById('hint-btn');
+        if (speakBtn) speakBtn.style.display = (currentQuizDirection === 'write') ? 'none' : 'inline-block';
+        if (hintBtn) hintBtn.style.display = (currentQuizDirection === 'read' && currentTextStyle !== 'romaji' && productionMethod !== 'honour') ? 'inline-block' : 'none';
+    }
+
+    function generateQuestion() {
+        document.getElementById('user-input').value = "";
+        document.getElementById('user-input').disabled = false;
+        document.getElementById('feedback-container').style.display = "none";
+        document.getElementById('submit-btn').disabled = false;
+        document.getElementById('hint-container').style.display = "none";
+        document.getElementById('hint-container').innerText = "";
+
+        restoreInputsFromFeedback();
+        applyPanelVisibility();
+        updateButtonVisibility();
+
+        var deckProgressEl = document.getElementById('deck-progress');
+        if (deckProgressEl) deckProgressEl.innerText = activeCardIndex;
+
+        var pBox = document.getElementById('progress-box');
+        if (pBox) {
+            if (activeCardIndex >= coreDeckOriginalCount && activeCardIndex < currentSessionDeck.length) {
+                pBox.className = "score-item review-phase-text";
+                var rsl = document.getElementById('review-status-label');
+                if (rsl) rsl.innerText = " 🔄 Reviewing Misses";
+            } else if (activeCardIndex === 0) {
+                pBox.className = "score-item";
+                var rsl2 = document.getElementById('review-status-label');
+                if (rsl2) rsl2.innerText = "";
+            }
+        }
+
+        if (activeCardIndex >= currentSessionDeck.length) {
+            var shutterEl = document.getElementById('shutter-header-area');
+            if (shutterEl) shutterEl.classList.remove('collapsed');
+            if (isEndlessMode) { initQuizSession(); startSession(); return; }
+            triggerCompletionState();
+            return;
+        }
+
+        currentNumber = currentSessionDeck[activeCardIndex];
+
+        currentStringTarget = convertNumberToJapaneseString(currentNumber, currentTextStyle);
+        currentKanaPronunciation = convertNumberToJapaneseString(currentNumber, "kana");
+
+        let displayBox = document.getElementById('num-display');
+        let subBadge = document.getElementById('type-sub-display');
+
+        if (currentQuizDirection === "listen") {
+            displayBox.innerText = "🔊 Listening...";
+            displayBox.style.color = "var(--accent)";
+            subBadge.style.display = "block";
+            subBadge.innerText = "Type the number you hear";
+            setTimeout(speakCurrentNumber, 300);
+        } else if (currentQuizDirection === "read") {
+            displayBox.innerText = currentStringTarget;
+            displayBox.style.color = "var(--text-main)";
+            subBadge.style.display = "block";
+            subBadge.innerText = "Translate to English Numbers";
+        } else {
+            displayBox.innerText = currentNumber.toLocaleString();
+            displayBox.style.color = "var(--text-main)";
+            subBadge.style.display = "block";
+            subBadge.innerText = "Translate to " + currentTextStyle.toUpperCase() + " Japanese";
+        }
+
+        setTimeout(function() { document.getElementById('user-input').focus(); }, 50);
+    }
+
+    function convertNumberToJapaneseString(num, style) {
+        if (num === 0) return style === "romaji" || style === "kana" ? "zero" : "〇";
+
+        let units;
+        if (style === "kana") units = ["", "まん", "おく", "ちょう"];
+        else if (style === "romaji") units = ["", "man ", "oku ", "chō "];
+        else units = ["", "万", "億", "兆"];
+
+        if (style === "mixed" && num < 10000) return convertFourDigitsMixed(num);
+
+        let resultParts = [];
+        let tempNum = num;
+        let unitIdx = 0;
+
+        while (tempNum > 0) {
+            let part = tempNum % 10000;
+            if (part > 0) {
+                if (style === "mixed") resultParts.unshift(part.toString() + units[unitIdx]);
+                else resultParts.unshift(convertFourDigits(part, style) + units[unitIdx]);
+            }
+            tempNum = Math.floor(tempNum / 10000);
+            unitIdx++;
+        }
+
+        if (style === "romaji") return resultParts.join(" ");
+        return resultParts.join("");
+    }
+
+    function convertFourDigitsMixed(num) {
+        let result = "";
+        let thousands = Math.floor(num / 1000);
+        let hundreds = Math.floor((num % 1000) / 100);
+        let tens = Math.floor((num % 100) / 10);
+        let ones = num % 10;
+        if (thousands > 0) result += (thousands === 1 ? "" : thousands) + "千";
+        if (hundreds > 0) result += (hundreds === 1 ? "" : hundreds) + "百";
+        if (tens > 0) result += (tens === 1 ? "" : tens) + "十";
+        if (ones > 0) result += ones;
+        return result;
+    }
+
+    function convertFourDigits(num, style) {
+        let result = "";
+        let thousands = Math.floor(num / 1000);
+        let hundreds = Math.floor((num % 1000) / 100);
+        let tens = Math.floor((num % 100) / 10);
+        let ones = num % 10;
+
+        if (thousands > 0) {
+            if (style === "kanji") result += (thousands === 1 ? "" : kanjiDigits[thousands]) + "千";
+            else if (style === "kana") {
+                if (thousands === 1) result += "せん";
+                else if (thousands === 3) result += "さんぜん";
+                else if (thousands === 8) result += "はっせん";
+                else result += hiraganaDigits[thousands] + "せん";
+            } else if (style === "romaji" || style === "mixed") {
+                if (thousands === 1) result += "sen ";
+                else if (thousands === 3) result += "sanzen ";
+                else if (thousands === 8) result += "hassen ";
+                else result += romajiDigits[thousands] + "sen ";
+            }
+        }
+
+        if (hundreds > 0) {
+            if (style === "kanji") {
+                if (hundreds === 3) result += "三百";
+                else if (hundreds === 6) result += "六百";
+                else if (hundreds === 8) result += "八百";
+                else result += kanjiDigits[hundreds] + "百";
+            } else if (style === "kana") {
+                if (hundreds === 1) result += "ひゃく";
+                else if (hundreds === 3) result += "さんびゃく";
+                else if (hundreds === 6) result += "ろっぴゃく";
+                else if (hundreds === 8) result += "はっぴゃく";
+                else result += hiraganaDigits[hundreds] + "ひゃく";
+            } else if (style === "romaji" || style === "mixed") {
+                if (hundreds === 3) result += "sambyaku ";
+                else if (hundreds === 6) result += "roppyaku ";
+                else if (hundreds === 8) result += "happyaku ";
+                else result += (hundreds === 1 ? "" : romajiDigits[hundreds]) + "hyaku ";
+            }
+        }
+
+        if (tens > 0) {
+            if (style === "kanji") result += (tens === 1 ? "" : kanjiDigits[tens]) + "十";
+            else if (style === "kana") result += (tens === 1 ? "" : hiraganaDigits[tens]) + "じゅう";
+            else if (style === "romaji" || style === "mixed") result += (tens === 1 ? "" : romajiDigits[tens]) + "jū ";
+        }
+
+        if (ones > 0) {
+            if (style === "kanji") result += kanjiDigits[ones];
+            else if (style === "kana") result += hiraganaDigits[ones];
+            else if (style === "romaji" || style === "mixed") result += romajiDigits[ones];
+        }
+
+        return result.trim();
+    }
+
+    function collapseHeaderShutter() {
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter && !shutter.classList.contains('collapsed')) shutter.classList.add('collapsed');
+    }
+
+    function revealAnswer() {
+        if (productionMethod !== 'honour') return;
+        if (!sessionStarted) return;
+
+        collapseHeaderShutter();
+        document.getElementById('honour-reveal-container').style.display = 'none';
+        document.getElementById('honour-system-controls').style.display = 'flex';
+
+        var displayBox = document.getElementById('num-display');
+        var subBadge = document.getElementById('type-sub-display');
+
+        var kanjiForm = convertNumberToJapaneseString(currentNumber, 'kanji');
+        var romajiForm = convertNumberToJapaneseString(currentNumber, 'romaji');
+        var numberForm = currentNumber.toLocaleString();
+
+        if (currentQuizDirection === 'write') {
+            displayBox.innerText = currentStringTarget;
+            subBadge.style.display = 'block';
+            subBadge.innerText = numberForm + ' (' + romajiForm + ')';
+        } else {
+            displayBox.innerText = numberForm;
+            subBadge.style.display = 'block';
+            subBadge.innerText = kanjiForm + ' (' + romajiForm + ')';
+        }
+        displayBox.style.color = 'var(--accent)';
+
+        var speakBtn = document.getElementById('speak-btn');
+        if (speakBtn) speakBtn.style.display = 'inline-block';
+
+        setTimeout(speakCurrentNumber, 150);
+    }
+
+    function assessHonour(isCorrect) {
+        if (productionMethod !== 'honour') return;
+
+        document.getElementById('honour-system-controls').style.display = 'none';
+
+        totalQuestions++;
+        var feedbackContainer = document.getElementById('feedback-container');
+        var feedbackMessage = document.getElementById('feedback-message');
+
+        userActionHistory.push({
+            streakBefore: currentStreak,
+            correctBefore: totalCorrect,
+            questionsBefore: totalQuestions - 1,
+            activeCardIndexBefore: activeCardIndex,
+            numberBefore: currentNumber,
+            stringTargetBefore: currentStringTarget,
+            kanaBefore: currentKanaPronunciation,
+            wasMistakeLogged: false,
+            wasCardPushed: false
+        });
+
+        var answerDisplay = (currentQuizDirection === 'write') ? currentStringTarget : currentNumber.toLocaleString();
+
+        if (isCorrect) {
+            totalCorrect++;
+            currentStreak++;
+            feedbackMessage.className = 'feedback correct-box';
+            feedbackMessage.innerHTML = '<strong>Marked Correct!</strong> 👍<br>Answer was <strong>' + answerDisplay + '</strong>.';
+        } else {
+            currentStreak = 0;
+            feedbackMessage.className = 'feedback incorrect-box';
+            feedbackMessage.innerHTML = '<strong>Marked Incorrect.</strong> 📚<br>Answer was <strong>' + answerDisplay + '</strong>.';
+
+            var promptText, correctText;
+            if (currentQuizDirection === 'write') {
+                promptText = currentNumber.toLocaleString();
+                correctText = currentStringTarget;
+            } else if (currentQuizDirection === 'listen') {
+                promptText = '[Audio number]';
+                correctText = currentNumber.toLocaleString();
+            } else {
+                promptText = currentStringTarget;
+                correctText = currentNumber.toLocaleString();
+            }
+            mistakeLog.push({ prompt: promptText, correct: correctText, yours: '[Honour System Miss]' });
+            document.getElementById('review-count').innerText = mistakeLog.length;
+
+            currentSessionDeck.push(currentNumber);
+            document.getElementById('deck-total').innerText = currentSessionDeck.length;
+
+            var snap = userActionHistory[userActionHistory.length - 1];
+            snap.wasMistakeLogged = true;
+            snap.wasCardPushed = true;
+        }
+
+        activeCardIndex++;
+        document.getElementById('deck-progress').innerText = activeCardIndex;
+        document.getElementById('score-correct').innerText = totalCorrect;
+        document.getElementById('score-total').innerText = totalQuestions;
+        document.getElementById('score-streak').innerText = currentStreak;
+        updateStreakEmoji();
+
+        feedbackContainer.style.display = 'block';
+
+        hideInputsForFeedback();
+
+        setTimeout(function() {
+            var nb = document.getElementById('next-btn');
+            if (nb) nb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+
+        saveState();
+    }
+
+    function checkAnswer() {
+        const inputField = document.getElementById('user-input');
+        let userInput = inputField.value.trim().toLowerCase();
+        if (userInput === "") return;
+
+        collapseHeaderShutter();
+
+        const feedbackContainer = document.getElementById('feedback-container');
+        const feedbackMessage = document.getElementById('feedback-message');
+
+        document.getElementById('submit-btn').disabled = true;
+        inputField.disabled = true;
+        totalQuestions++;
+
+        let isCorrect = false;
+        let cleanTarget = currentStringTarget.toLowerCase().replace(/\s+/g, "");
+        let cleanInput = userInput.replace(/\s+/g, "").replace(/,/g, "");
+
+        userActionHistory.push({
+            streakBefore: currentStreak,
+            correctBefore: totalCorrect,
+            questionsBefore: totalQuestions - 1,
+            activeCardIndexBefore: activeCardIndex,
+            numberBefore: currentNumber,
+            stringTargetBefore: currentStringTarget,
+            kanaBefore: currentKanaPronunciation,
+            wasMistakeLogged: false,
+            wasCardPushed: false
+        });
+
+        if (currentQuizDirection === "read" || currentQuizDirection === "listen") {
+            let parsedInput = parseInt(cleanInput, 10);
+            if (parsedInput === currentNumber) isCorrect = true;
+        } else {
+            let commaStrippedTarget = cleanTarget.replace(/,/g, "");
+            let normalizedInput = cleanInput.replace(/uu/g, "u").replace(/jyu/g, "ju").replace(/ou/g, "o").replace(/ō/g, "o").replace(/ū/g, "u");
+            let normalizedTarget = commaStrippedTarget.replace(/ū/g, "u").replace(/ō/g, "o").replace(/jū/g, "ju");
+            if (cleanInput === commaStrippedTarget || normalizedInput === normalizedTarget) isCorrect = true;
+        }
+
+        if (isCorrect) {
+            totalCorrect++;
+            currentStreak++;
+            feedbackMessage.className = "feedback correct-box";
+            var answerDisplay = (currentQuizDirection === "write") ? currentStringTarget : currentNumber.toLocaleString();
+            feedbackMessage.innerHTML = "<strong>Correct!</strong> 🎉<br>The answer is exactly '<strong>" + answerDisplay + "</strong>'.";
+        } else {
+            currentStreak = 0;
+            feedbackMessage.className = "feedback incorrect-box";
+            var answerDisplay = (currentQuizDirection === "write") ? currentStringTarget : currentNumber.toLocaleString();
+            feedbackMessage.innerHTML = "<strong>Incorrect.</strong><br>Correct answer was: <strong>" + answerDisplay + "</strong>.";
+
+            var promptText, correctText;
+            if (currentQuizDirection === "write") {
+                promptText = currentNumber.toLocaleString();
+                correctText = currentStringTarget;
+            } else if (currentQuizDirection === "listen") {
+                promptText = "[Audio number]";
+                correctText = currentNumber.toLocaleString();
+            } else {
+                promptText = currentStringTarget;
+                correctText = currentNumber.toLocaleString();
+            }
+            mistakeLog.push({ prompt: promptText, correct: correctText, yours: inputField.value.trim() });
+            document.getElementById('review-count').innerText = mistakeLog.length;
+
+            currentSessionDeck.push(currentNumber);
+            document.getElementById('deck-total').innerText = currentSessionDeck.length;
+
+            var snap = userActionHistory[userActionHistory.length - 1];
+            snap.wasMistakeLogged = true;
+            snap.wasCardPushed = true;
+        }
+
+        activeCardIndex++;
+        document.getElementById('deck-progress').innerText = activeCardIndex;
+        document.getElementById('score-correct').innerText = totalCorrect;
+        document.getElementById('score-total').innerText = totalQuestions;
+        document.getElementById('score-streak').innerText = currentStreak;
+        updateStreakEmoji();
+
+        feedbackContainer.style.display = "block";
+
+        var speakBtn = document.getElementById('speak-btn');
+        if (speakBtn) speakBtn.style.display = 'inline-block';
+        if (currentQuizDirection === 'write') setTimeout(speakCurrentNumber, 200);
+
+        hideInputsForFeedback();
+
+        setTimeout(function() {
+            var nb = document.getElementById('next-btn');
+            if (nb) nb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+
+        saveState();
+    }
+
+    function executeUndoAction() {
+        if (userActionHistory.length === 0) return;
+
+        let previousState = userActionHistory.pop();
+
+        currentStreak = previousState.streakBefore;
+        totalCorrect = previousState.correctBefore;
+        totalQuestions = previousState.questionsBefore;
+        activeCardIndex = previousState.activeCardIndexBefore;
+
+        if (previousState.wasMistakeLogged) {
+            mistakeLog.pop();
+            document.getElementById('review-count').innerText = mistakeLog.length;
+        }
+        if (previousState.wasCardPushed) {
+            currentSessionDeck.pop();
+            document.getElementById('deck-total').innerText = currentSessionDeck.length;
+        }
+
+        currentNumber = previousState.numberBefore;
+        currentStringTarget = previousState.stringTargetBefore;
+        currentKanaPronunciation = previousState.kanaBefore;
+
+        document.getElementById('deck-progress').innerText = activeCardIndex;
+        document.getElementById('score-correct').innerText = totalCorrect;
+        document.getElementById('score-total').innerText = totalQuestions;
+        document.getElementById('score-streak').innerText = currentStreak;
+        updateStreakEmoji();
+
+        let displayBox = document.getElementById('num-display');
+        let subBadge = document.getElementById('type-sub-display');
+        if (currentQuizDirection === "read") {
+            displayBox.innerText = currentStringTarget;
+            displayBox.style.color = "var(--text-main)";
+            subBadge.style.display = "block";
+            subBadge.innerText = "Translate to English Numbers";
+        } else if (currentQuizDirection === "write") {
+            displayBox.innerText = currentNumber.toLocaleString();
+            displayBox.style.color = "var(--text-main)";
+            subBadge.style.display = "block";
+            subBadge.innerText = "Translate to " + currentTextStyle.toUpperCase() + " Japanese";
+        } else {
+            displayBox.innerText = "🔊 Listening...";
+            displayBox.style.color = "var(--accent)";
+            subBadge.style.display = "block";
+            subBadge.innerText = "Type the number you hear";
+            setTimeout(speakCurrentNumber, 100);
+        }
+
+        document.getElementById('user-input').value = "";
+        document.getElementById('user-input').disabled = false;
+        document.getElementById('feedback-container').style.display = "none";
+        document.getElementById('submit-btn').disabled = false;
+        document.getElementById('hint-container').style.display = "none";
+
+        restoreInputsFromFeedback();
+        applyPanelVisibility();
+        updateButtonVisibility();
+
+        setTimeout(function() { document.getElementById('user-input').focus(); }, 50);
+        saveState();
+    }
+
+    function handleNextWorkflow() {
+        if (activeCardIndex >= currentSessionDeck.length) {
+            initQuizSession();
+            startSession();
+            return;
+        }
+        generateQuestion();
+    }
+
+    function toggleSpeechHint() {
+        let container = document.getElementById('hint-container');
+        if (container.style.display === "block") {
+            container.style.display = "none";
+        } else {
+            container.style.display = "block";
+            let romajiForm = convertNumberToJapaneseString(currentNumber, "romaji");
+            container.innerHTML = "🗣️ <strong>Pronunciation:</strong> " + romajiForm;
+        }
+    }
+
+    function speakCurrentNumber() {
+        let textToSpeak = convertNumberToJapaneseString(currentNumber, "kana");
+        if (textToSpeak === "zero" || textToSpeak === "〇") textToSpeak = "ゼロ";
+
+        window.speechSynthesis.cancel();
+
+        var utterance = new SpeechSynthesisUtterance(textToSpeak);
+        utterance.lang = "ja-JP";
+        utterance.rate = 0.85;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function updateStreakEmoji() {
+        var emojiSpan = document.getElementById('streak-emoji');
+        if (emojiSpan) {
+            if (currentStreak >= 15) emojiSpan.innerHTML = "👑";
+            else if (currentStreak >= 10) emojiSpan.innerHTML = "🥷";
+            else if (currentStreak >= 6) emojiSpan.innerHTML = "🔥";
+            else if (currentStreak >= 3) emojiSpan.innerHTML = "⚡";
+            else emojiSpan.innerHTML = "🐣";
+        }
+    }
+
+    function renderReviewList() {
+        let container = document.getElementById('review-list-container');
+        let placeholder = document.getElementById('review-placeholder');
+        let drillBtn = document.getElementById('drill-mistakes-btn');
+        let inputCodeBox = document.getElementById('session-code-io');
+
+        if (mistakeLog.length === 0) {
+            if (placeholder) placeholder.style.display = "block";
+            if (container) container.innerHTML = "";
+            if (drillBtn) drillBtn.style.display = "none";
+            if (inputCodeBox) inputCodeBox.value = "";
+            return;
+        }
+
+        if (placeholder) placeholder.style.display = "none";
+        if (drillBtn) drillBtn.style.display = "block";
+
+        var codes = [];
+        for (var i = 0; i < mistakeLog.length; i++) {
+            var candidate = parseInt(mistakeLog[i].correct.replace(/,/g, ""), 10);
+            if (!isNaN(candidate) && candidate > 0) codes.push(candidate);
+        }
+        if (inputCodeBox) inputCodeBox.value = codes.join(";");
+
+        let html = "<table class='ref-table'><tr><th>Prompt</th><th>Correct Answer</th><th>Your Input</th></tr>";
+        for (let i = 0; i < mistakeLog.length; i++) {
+            html += "<tr><td style='font-weight:bold;'>" + mistakeLog[i].prompt + "</td><td style='color:var(--success); font-weight:bold;'>" + mistakeLog[i].correct + "</td><td style='color:var(--error);'>" + mistakeLog[i].yours + "</td></tr>";
+        }
+        html += "</table>";
+        if (container) container.innerHTML = html;
+    }
+
+    function clearReviewLog() {
+        mistakeLog = [];
+        document.getElementById('review-count').innerText = "0";
+        renderReviewList();
+        saveState();
+    }
+
+    function toggleReviewDrawer() {
+        var drawer = document.getElementById('review-code-drawer');
+        var btn = document.getElementById('review-drawer-toggle-btn');
+        if (drawer.style.display === "block") {
+            drawer.style.display = "none";
+            btn.innerText = "Export or Paste Recovery Codes ▾";
+        } else {
+            drawer.style.display = "block";
+            btn.innerText = "Hide Recovery Codes ▴";
+        }
+    }
+
+    function loadCustomSessionCode() {
+        var codeField = document.getElementById('session-code-io');
+        var alertBox = document.getElementById('code-feedback-alert');
+        if (!codeField || !codeField.value.trim()) return;
+
+        var tokens = codeField.value.trim().split(";");
+        var importedDeck = [];
+        for (var i = 0; i < tokens.length; i++) {
+            var n = parseInt(tokens[i].trim(), 10);
+            if (!isNaN(n) && n > 0 && n <= 999999999999) importedDeck.push(n);
+        }
+
+        if (importedDeck.length === 0) {
+            alertBox.style.display = "block";
+            alertBox.style.color = "var(--error)";
+            alertBox.innerText = "❌ Invalid session code format.";
+            return;
+        }
+
+        currentSessionDeck = importedDeck;
+        activeCardIndex = 0;
+        userActionHistory = [];
+        coreDeckOriginalCount = currentSessionDeck.length;
+        document.getElementById('deck-total').innerText = coreDeckOriginalCount;
+
+        var pBox = document.getElementById('progress-box');
+        if (pBox) pBox.className = "score-item";
+        document.getElementById('review-status-label').innerText = "";
+
+        alertBox.style.display = "block";
+        alertBox.style.color = "var(--success)";
+        alertBox.innerText = "📥 Loaded " + importedDeck.length + " numbers!";
+
+        setTimeout(function() {
+            alertBox.style.display = "none";
+            switchView('quiz');
+            showStartScreen();
+        }, 1200);
+    }
+
+    function drillMistakesOnly() {
+        if (mistakeLog.length === 0) return;
+        var numbers = [];
+        for (var i = 0; i < mistakeLog.length; i++) {
+            var candidate = parseInt(mistakeLog[i].correct.replace(/,/g, ""), 10);
+            if (!isNaN(candidate) && candidate > 0) numbers.push(candidate);
+        }
+        if (numbers.length === 0) return;
+
+        currentSessionDeck = numbers;
+        activeCardIndex = 0;
+        userActionHistory = [];
+        coreDeckOriginalCount = numbers.length;
+        document.getElementById('deck-total').innerText = coreDeckOriginalCount;
+
+        var pBox = document.getElementById('progress-box');
+        if (pBox) pBox.className = "score-item";
+        document.getElementById('review-status-label').innerText = "";
+
+        switchView('quiz');
+        showStartScreen();
+    }
+
+    function triggerCompletionState() {
+        var displayBox = document.getElementById('num-display');
+        displayBox.innerText = "🎉 Done!";
+        displayBox.style.color = "var(--success)";
+        var subBadge = document.getElementById('type-sub-display');
+        subBadge.style.display = "none";
+        var hintContainer = document.getElementById('hint-container');
+        hintContainer.style.display = "none";
+
+        document.getElementById('input-container').style.display = "none";
+        document.getElementById('honour-reveal-container').style.display = "none";
+        document.getElementById('honour-system-controls').style.display = "none";
+        var hintBtn = document.getElementById('hint-btn');
+        if (hintBtn) hintBtn.style.display = "none";
+        var speakBtn = document.getElementById('speak-btn');
+        if (speakBtn) speakBtn.style.display = "none";
+
+        var feedbackContainer = document.getElementById('feedback-container');
+        var feedbackMessage = document.getElementById('feedback-message');
+        feedbackMessage.className = "feedback correct-box";
+        feedbackMessage.innerHTML = "<strong>Congratulations!</strong> 🏆<br>All " + coreDeckOriginalCount + " numbers cleared!<br><small>Reshuffle a fresh deck to keep drilling.</small>";
+        feedbackContainer.style.display = "block";
+    }
+
+    function saveState() {
+        try {
+            var sizeSel = document.getElementById('deck-size-selector');
+            var state = {
+                direction: currentQuizDirection,
+                productionMethod: productionMethod,
+                range: currentRange,
+                textStyle: currentTextStyle,
+                deckSize: sizeSel ? sizeSel.value : "15",
+                endless: isEndlessMode,
+                stats: { correct: totalCorrect, total: totalQuestions, streak: currentStreak },
+                mistakes: mistakeLog
+            };
+            localStorage.setItem('jap_numbers_state', JSON.stringify(state));
+        } catch (e) {}
+    }
+
+    function loadState() {
+        try {
+            var raw = localStorage.getItem('jap_numbers_state');
+            if (!raw) return;
+            var state = JSON.parse(raw);
+
+            if (state.direction) {
+                currentQuizDirection = state.direction;
+                document.getElementById('dir-r').classList.remove('active');
+                document.getElementById('dir-w').classList.remove('active');
+                document.getElementById('dir-l').classList.remove('active');
+                var dirMap = { read: 'dir-r', write: 'dir-w', listen: 'dir-l' };
+                if (dirMap[state.direction]) document.getElementById(dirMap[state.direction]).classList.add('active');
+            }
+
+            if (state.productionMethod) {
+                productionMethod = state.productionMethod;
+                document.getElementById('chk-method-type').checked = (productionMethod === 'type');
+                document.getElementById('chk-method-honour').checked = (productionMethod === 'honour');
+                document.getElementById('lbl-method-type').classList.toggle('selected', productionMethod === 'type');
+                document.getElementById('lbl-method-honour').classList.toggle('selected', productionMethod === 'honour');
+            }
+
+            if (state.range) currentRange = state.range;
+            else if (state.scale) currentRange = (state.scale === 'pro') ? 'oku' : 'thousands';
+            var rangeSel = document.getElementById('range-selector');
+            if (rangeSel) rangeSel.value = currentRange;
+
+            if (state.textStyle) {
+                currentTextStyle = state.textStyle;
+                var allowMixed = (currentQuizDirection === 'write' && rangeSupportsMixed(currentRange));
+                if (currentTextStyle === 'mixed' && !allowMixed) {
+                    currentTextStyle = (currentQuizDirection === 'write') ? 'romaji' : 'kanji';
+                }
+                applyTextStyleDom();
+            }
+
+            if (state.deckSize) {
+                var deckSel = document.getElementById('deck-size-selector');
+                if (deckSel) deckSel.value = state.deckSize;
+            }
+
+            if (typeof state.endless !== 'undefined') {
+                isEndlessMode = state.endless;
+                var chkEndless = document.getElementById('chk-endless');
+                var lblEndless = document.getElementById('lbl-endless');
+                if (chkEndless) chkEndless.checked = isEndlessMode;
+                if (lblEndless) lblEndless.classList.toggle('selected', isEndlessMode);
+            }
+
+            if (state.stats) {
+                totalCorrect = state.stats.correct || 0;
+                totalQuestions = state.stats.total || 0;
+                currentStreak = state.stats.streak || 0;
+                document.getElementById('score-correct').innerText = totalCorrect;
+                document.getElementById('score-total').innerText = totalQuestions;
+                document.getElementById('score-streak').innerText = currentStreak;
+                updateStreakEmoji();
+            }
+
+            if (Array.isArray(state.mistakes)) {
+                mistakeLog = state.mistakes;
+                document.getElementById('review-count').innerText = mistakeLog.length;
+            }
+
+            refreshTextStyleSection();
+        } catch (e) {}
+    }
+
+    function openOptionsPanel() {
+        var inp = document.getElementById('user-input');
+        if (inp) inp.blur();
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter) shutter.classList.remove('collapsed');
+        var drawer = document.getElementById('settings-drawer');
+        var btn = document.getElementById('drawer-toggle-btn');
+        if (drawer) drawer.style.display = "block";
+        if (btn) btn.innerText = "Close Options ▴";
+
+        setTimeout(function() {
+            var drawer = document.getElementById('settings-drawer');
+            if (drawer) {
+                drawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }, 100);
+    }
+
+    function toggleSettingsDrawer() {
+        var drawer = document.getElementById('settings-drawer');
+        var btn = document.getElementById('drawer-toggle-btn');
+        if (drawer.style.display === "block") {
+            drawer.style.display = "none";
+            btn.innerText = "⚙️ Options & Filters ▾";
+        } else {
+            drawer.style.display = "block";
+            btn.innerText = "Close Options ▴";
+        }
+    }
+
+    function resetAllProgress() {
+        if (!confirm("Clear all progress, scores, and review log?")) return;
+
+        try { localStorage.removeItem('jap_numbers_state'); } catch (e) {}
+
+        totalCorrect = 0;
+        totalQuestions = 0;
+        currentStreak = 0;
+        mistakeLog = [];
+        document.getElementById('review-count').innerText = "0";
+        document.getElementById('score-correct').innerText = "0";
+        document.getElementById('score-total').innerText = "0";
+        document.getElementById('score-streak').innerText = "0";
+        updateStreakEmoji();
+
+        productionMethod = "type";
+        document.getElementById('chk-method-type').checked = true;
+        document.getElementById('chk-method-honour').checked = false;
+        document.getElementById('lbl-method-type').classList.add('selected');
+        document.getElementById('lbl-method-honour').classList.remove('selected');
+
+        currentQuizDirection = "read";
+        document.getElementById('dir-r').classList.add('active');
+        document.getElementById('dir-w').classList.remove('active');
+        document.getElementById('dir-l').classList.remove('active');
+
+        currentRange = "thousands";
+        var rangeSel = document.getElementById('range-selector');
+        if (rangeSel) rangeSel.value = "thousands";
+
+        currentTextStyle = "kanji";
+        applyTextStyleDom();
+
+        isEndlessMode = false;
+        var chkEndless = document.getElementById('chk-endless');
+        var lblEndless = document.getElementById('lbl-endless');
+        if (chkEndless) chkEndless.checked = false;
+        if (lblEndless) lblEndless.classList.remove('selected');
+
+        var deckSel = document.getElementById('deck-size-selector');
+        if (deckSel) deckSel.value = "15";
+
+        userActionHistory = [];
+        refreshTextStyleSection();
+        initQuizSession();
+    }
+
+    document.addEventListener('keydown', function(event) {
+        var isFeedbackOpen = document.getElementById('feedback-container').style.display === 'block';
+        var isHonourRevealed = document.getElementById('honour-system-controls').style.display === 'flex';
+
+        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') {
+            event.preventDefault();
+            executeUndoAction();
+            return;
+        }
+
+        var isTyping = (event.target && event.target.tagName === 'INPUT');
+        if (isTyping && (event.key === ' ' || event.code === 'Space')) return;
+
+        if (!sessionStarted) {
+            if (event.key === ' ' || event.code === 'Space' || event.key === 'Enter') {
+                event.preventDefault();
+                startSession();
+            }
+            return;
+        }
+
+        if (event.key === ' ' || event.code === 'Space' || event.key === 'Enter') {
+            if (isFeedbackOpen) {
+                event.preventDefault();
+                handleNextWorkflow();
+                return;
+            }
+
+            if (productionMethod === 'honour') {
+                event.preventDefault();
+                if (isHonourRevealed) assessHonour(true);
+                else revealAnswer();
+                return;
+            }
+
+            if (event.key === ' ' || event.code === 'Space') {
+                event.preventDefault();
+                checkAnswer();
+            }
+        }
+
+        if (isHonourRevealed && productionMethod === 'honour' && !isFeedbackOpen) {
+            if (event.key === '1') { event.preventDefault(); assessHonour(false); }
+            if (event.key === '2') { event.preventDefault(); assessHonour(true); }
+        }
+    });
+
+    window.onload = function() {
+        loadState();
+        initQuizSession();
+    };
+</script>
+<!-- polyglot-copyright -->
+<footer style="text-align:center; margin:1rem auto 0 auto; padding:1rem 20px 0 20px;
+               font-size:0.7rem; color:#64748b; letter-spacing:0.3px; line-height:1.5;">
+    Copyright The Polyglot Gym 2026 · Simon Reynolds · All rights reserved.
+</footer>
+<!-- /polyglot-copyright -->
+</body>
+</html>

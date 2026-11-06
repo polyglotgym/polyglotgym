@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyrillic Script</title>
+    <style>
+        :root {
+            --bg-color: #090d16;
+            --card-bg: #131b2e;
+            --text-main: #f8fafc;
+            --text-muted: #64748b;
+            --accent: #ef4444;
+            --success: #10b981;
+            --error: #f43f5e;
+            --warning: #f59e0b;
+            --border: #243354;
+            --shadow: rgba(0, 0, 0, 0.5);
+        }
+        :root { font-size: 17px; }
+        html { scrollbar-gutter: stable; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 1rem;
+            background-color: var(--bg-color); color: var(--text-main);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; overflow-x: hidden;
+            overflow-anchor: none;
+        }
+        .container {
+            background-color: var(--card-bg); padding: 2rem; border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px var(--shadow); width: 100%; max-width: 550px;
+            border: 1px solid var(--border); position: relative;
+            min-width: 0;
+        }
+        #shutter-header-area { max-height: 200px; opacity: 1; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.4s ease; }
+        #shutter-header-area.collapsed { max-height: 0px; opacity: 0; margin-bottom: 0px !important; pointer-events: none; }
+        h1 { font-size: 1.4rem; margin-top: 0; text-align: center; color: var(--accent); margin-bottom: 0.5rem; letter-spacing: 0.5px; text-transform: uppercase; }
+        .score-board {
+            display: flex; justify-content: space-around;
+            background-color: rgba(0,0,0,0.25);
+            padding: 0.75rem;
+            border-radius: 0.5rem 0.5rem 0 0;
+            margin-top: 1rem; margin-bottom: 0;
+            border: 1px solid var(--border); border-bottom: none;
+            font-size: 0.85rem;
+            flex-wrap: wrap; gap: 0.5rem; align-items: center;
+        }
+        .score-board-progress-row {
+            display: flex; justify-content: center; align-items: center;
+            background-color: rgba(0,0,0,0.25);
+            padding: 0.6rem 0.75rem;
+            border-radius: 0 0 0.5rem 0.5rem;
+            margin-top: 0; margin-bottom: 1rem;
+            border: 1px solid var(--border);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.85rem;
+            position: relative;
+        }
+        .score-board-progress-row .score-item { margin: 0 auto; }
+        .score-board-gear-btn {
+            font-size: 1rem; background: none; color: var(--text-main);
+            padding: 0.2rem 0.5rem; cursor: pointer; border: none;
+            position: absolute; right: 0.75rem; top: 50%;
+            transform: translateY(-50%); line-height: 1;
+        }
+        .score-item span { font-weight: bold; color: var(--accent); }
+        .review-phase-text { color: var(--warning) !important; transition: color 0.3s ease; }
+        .nav-tabs {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;
+        }
+        .nav-btn { background: none; border: none; color: var(--text-muted); padding: 0.5rem 0.75rem; cursor: pointer; font-size: 0.9rem; border-radius: 0.25rem; transition: all 0.2s; }
+        .nav-btn:hover { color: var(--text-main); }
+        .nav-btn.active { background-color: var(--border); color: var(--accent); font-weight: bold; }
+        .mode-selector { display: flex; flex-wrap: nowrap; background-color: rgba(0, 0, 0, 0.3); padding: 0.4rem; border-radius: 0.5rem; margin-bottom: 1rem; border: 1px solid var(--border); gap: 0.4rem; }
+        .mode-btn { flex: 1 1 0; min-width: 0; white-space: nowrap; background: none; border: none; color: var(--text-muted); padding: 0.6rem 0.5rem; font-size: 0.85rem; border-radius: 0.35rem; cursor: pointer; text-align: center; transition: all 0.2s; }
+        .mode-btn:hover { color: var(--text-main); }
+        .mode-btn.active { background-color: var(--accent); color: var(--bg-color); font-weight: bold; }
+        .drawer-toggle {
+            background: none; border: 1px solid var(--border);
+            color: var(--text-muted); font-size: 0.95rem; cursor: pointer;
+            display: block; width: 100%;
+            padding: 0.75rem; margin-top: 1rem; margin-bottom: 1rem;
+            border-radius: 0.5rem; text-align: center;
+        }
+        .drawer-toggle:hover { color: var(--text-main); }
+        .settings-drawer { background-color: rgba(0, 0, 0, 0.2); border: 1px dashed var(--border); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.5rem; display: none; }
+        .grid-header-label { font-size: 0.8rem; color: var(--text-muted); font-weight: bold; margin-top: 0.5rem; }
+        .row-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin-top: 0.3rem; margin-bottom: 0.8rem; }
+        .row-label { display: flex; align-items: center; justify-content: center; background-color: rgba(255,255,255,0.01); border: 1px solid var(--border); border-radius: 0.35rem; padding: 0.45rem; font-size: 0.8rem; cursor: pointer; text-align: center; user-select: none; }
+        .row-label input { display: none; }
+        .row-label.selected { background-color: rgba(239, 68, 68, 0.15); border-color: var(--accent); color: var(--text-main); font-weight: bold; }
+        .toggle-switch-container { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 0.75rem; margin-top: 0.25rem; }
+        .question-box {
+            background-color: rgba(0,0,0,0.4);
+            padding: 2rem 1.5rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+            min-height: 8.5rem;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            gap: 0.25rem;
+        }
+        .script-display { font-size: 4.5rem; font-weight: bold; color: var(--text-main); line-height: 1.1; font-family: Georgia, serif; overflow-wrap: break-word; word-break: break-word; }
+        .script-display.cyr-italic { font-style: italic; }
+        .context-display { font-size: 1.05rem; font-weight: 500; color: var(--accent); margin-top: 0.5rem; letter-spacing: 0.5px; min-height: 1.5rem; overflow-wrap: break-word; word-break: break-word; }
+        .sub-badge { font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 0.5rem; }
+        .input-group { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+        input.text-input { flex: 1; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid var(--border); background-color: rgba(0,0,0,0.3); color: var(--text-main); font-size: 1.1rem; outline: none; text-align: center; }
+        input.text-input:focus { border-color: var(--accent); }
+        .feedback { padding: 1rem; border-radius: 0.5rem; margin-top: 1rem; font-size: 0.95rem; line-height: 1.5; overflow-wrap: break-word; word-break: break-word; }
+        .correct-box { background-color: rgba(16, 185, 129, 0.15); border: 1px solid var(--success); color: #34d399; }
+        .incorrect-box { background-color: rgba(244, 63, 94, 0.15); border: 1px solid var(--error); color: #fb7185; }
+        .honour-group { display: flex; gap: 0.75rem; width: 100%; }
+        .honour-btn { flex: 1; font-size: 0.95rem; padding: 0.75rem; border: none; border-radius: 0.5rem; color: #fff; cursor: pointer; }
+        .next-btn { width: 100%; background-color: var(--border); color: var(--text-main); border: none; border-radius: 0.5rem; padding: 0.75rem; font-weight: bold; cursor: pointer; }
+        .ref-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; font-size: 0.85rem; }
+        .ref-table th, .ref-table td { border: 1px solid var(--border); padding: 0.4rem; text-align: center; }
+        .ref-table th { background-color: rgba(0,0,0,0.3); color: var(--accent); }
+        .portal-shortcut-bar {
+            width: 100%; max-width: 550px; margin: 1.5rem auto 0 auto;
+            padding: 0.75rem 1rem; background-color: rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--border); border-radius: 0.5rem;
+            display: flex; align-items: center; box-sizing: border-box;
+            box-shadow: 0 4px 15px var(--shadow);
+        }
+        .portal-shortcut-bar a { color: var(--accent); text-decoration: none; font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; gap: 0.4rem; transition: opacity 0.2s; }
+        .portal-shortcut-bar a:hover { opacity: 0.8; }
+        .portal-shortcut-bar .terminal-label { margin-left: auto; font-size: 0.75rem; color: var(--text-muted); font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase; }
+
+        /* Completion screen */
+        .completion-actions { display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
+        .completion-btn { flex: 1; min-width: 120px; padding: 0.65rem; border: none; border-radius: 0.5rem; font-weight: bold; cursor: pointer; font-size: 0.85rem; background-color: var(--border); color: var(--text-main); }
+        .completion-btn.primary { background-color: var(--accent); color: var(--bg-color); }
+        .completion-stats { display: flex; justify-content: center; gap: 1.5rem; margin: 1rem 0 0.5rem 0; flex-wrap: wrap; }
+        .completion-stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; }
+        .completion-stat-value { font-size: 1.6rem; font-weight: bold; color: var(--text-main); }
+
+        .hidden-during-feedback { display: none !important; }
+
+        /* === MOBILE FIXES === */
+        @media (max-width: 550px) {
+            .container { padding: 1rem; }
+            .score-board {
+                flex-wrap: wrap !important;
+                justify-content: center !important;
+                font-size: 0.9rem !important;
+                padding: 0.5rem 0.75rem !important;
+                gap: 0.4rem 0.75rem !important;
+                line-height: 1.4 !important;
+            }
+            .score-item { font-size: 0 !important; white-space: nowrap !important; }
+            .score-item span, .score-item a { font-size: 0.9rem !important; }
+            .score-board-progress-row .score-item { font-size: 0.9rem !important; text-align: center; }
+            .score-board-gear-btn {
+                position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%);
+            }
+            #review-status-label {
+                display: block !important; width: 100% !important;
+                text-align: center !important;
+                font-size: 0.75rem !important;
+                color: var(--warning) !important;
+                margin-top: 0.25rem !important;
+                font-style: italic !important;
+            }
+            .question-box {
+                padding: 1.25rem 1rem !important;
+                min-height: auto !important;
+                justify-content: flex-start !important;
+                padding-top: 1.5rem !important;
+            }
+            .script-display { font-size: 3.5rem !important; }
+            .context-display { font-size: 0.95rem !important; }
+            .mode-btn { font-size: 0.8rem !important; padding: 0.55rem 0.3rem !important; }
+        }
+        @media (max-width: 380px) {
+            .mode-btn { font-size: 0.72rem !important; }
+            .score-item span, .score-item a { font-size: 0.82rem !important; }
+        }
+    </style>
+    <meta name="copyright" content="© 2026 Simon Reynolds · The Polyglot Gym · All rights reserved.">
+</head>
+<body>
+<div class="container">
+    <h1>Cyrillic Script</h1>
+
+    <div class="nav-tabs">
+        <button class="nav-btn active" id="tab-quiz" onclick="switchView('quiz')">🎯 Drills</button>
+        <button class="nav-btn" id="tab-guide" onclick="switchView('guide')">📚 Guide</button>
+        <button class="nav-btn" id="tab-review" onclick="switchView('review')">📝 Reviews (<span id="review-count">0</span>)</button>
+    </div>
+
+    <div id="view-quiz">
+        <div id="shutter-header-area">
+            <div class="mode-selector">
+                <button class="mode-btn active" id="dir-r" onclick="setDirection('read')">Read</button>
+                <button class="mode-btn" id="dir-w" onclick="setDirection('write')">Write</button>
+            </div>
+        </div>
+
+        <div class="score-board">
+            <div class="score-item">Correct: <span id="score-correct">0</span></div>
+            <div class="score-item">Checked: <span id="score-total">0</span></div>
+            <div class="score-item">Streak: <span id="score-streak">0</span> <span id="streak-emoji">🐣</span></div>
+        </div>
+        <div class="score-board-progress-row">
+            <div class="score-item" id="progress-box">Progress: <span id="deck-progress">0</span> / <span id="deck-total">--</span><span id="review-status-label"></span></div>
+            <button onclick="openOptionsPanel();" class="score-board-gear-btn">⚙️</button>
+        </div>
+
+        <div class="question-box">
+            <div class="script-display" id="char-prompt-display">А</div>
+            <div class="context-display" id="char-context-display" style="color: var(--text-muted); font-size: 0.9rem;"></div>
+            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem; margin-bottom: 0.25rem;">
+                <button id="speak-btn" style="background-color: var(--border); color: var(--text-main); font-size: 0.8rem; padding: 0.35rem 0.75rem; border-radius: 0.25rem; border: none; cursor: pointer;" onclick="speakRussianPrompt();">Listen 🔊</button>
+                <button id="tip-btn" style="background-color: rgba(255,255,255,0.03); border: 1px solid var(--border); color: var(--accent); font-size: 0.8rem; padding: 0.35rem 0.75rem; border-radius: 0.25rem; cursor: pointer;" onclick="revealHiddenTip();">Show Hint 💡</button>
+            </div>
+            <div class="sub-badge" id="char-track-badge">Type English Transliteration</div>
+        </div>
+
+        <div id="panel-read-mode">
+            <div class="input-group">
+                <input type="text" class="text-input" id="user-input" placeholder="e.g. a, v, shch..." autocomplete="off" onkeydown="if(event.key === 'Enter') { event.preventDefault(); event.stopPropagation(); checkAnswer(); }">
+                <button id="submit-btn" style="background-color: var(--accent); color: var(--bg-color); font-weight: bold; border: none; border-radius: 0.5rem; padding: 0 1.5rem; cursor: pointer;" onclick="checkAnswer();">Check</button>
+            </div>
+        </div>
+
+        <div id="panel-write-mode" style="display: none;">
+            <div class="input-group" id="btn-reveal-container">
+                <button id="reveal-btn" style="width: 100%; height: 2.8rem; background-color: var(--accent); color: var(--bg-color); font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer;" onclick="revealCyrillicAnswer()">Reveal Answer</button>
+            </div>
+            <div class="honour-group" id="honour-system-controls" style="display: none; margin-bottom: 1rem;">
+                <button class="honour-btn" style="background-color: var(--error);" onclick="assessHonour(false)">Wrong ✖</button>
+                <button class="honour-btn" style="background-color: var(--success); color: var(--bg-color); font-weight: bold;" onclick="assessHonour(true)">Correct ✔</button>
+            </div>
+        </div>
+
+        <div id="start-btn-container" style="display: none;">
+            <div class="input-group">
+                <button id="start-btn" style="width: 100%; height: 2.8rem; background-color: var(--accent); color: var(--bg-color); font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 1rem;" onclick="startSession();">▶ Start Session</button>
+            </div>
+        </div>
+
+        <div id="feedback-container" style="display: none;">
+            <div id="feedback-message" class="feedback"></div>
+            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                <button class="next-btn" id="next-btn" onclick="handleNextWorkflow();" style="flex: 2;">Next Prompt →</button>
+                <button class="next-btn" id="undo-btn" onclick="executeUndoAction();" style="flex: 1; background-color: var(--warning); color: #0f172a;">↩ Undo</button>
+            </div>
+        </div>
+
+        <button class="drawer-toggle" id="drawer-toggle-btn" onclick="toggleSettingsDrawer();">⚙️ Options & Filters ▾</button>
+
+        <div class="settings-drawer" id="settings-drawer">
+            <div class="grid-header-label">Active Training Modules:</div>
+            <div class="row-grid">
+                <label class="row-label selected" id="lbl-opt-friends"><input type="checkbox" id="chk-opt-friends" checked onchange="updateIntervalSelection('friends')">True Friends</label>
+                <label class="row-label selected" id="lbl-opt-false"><input type="checkbox" id="chk-opt-false" checked onchange="updateIntervalSelection('false')">False Friends</label>
+                <label class="row-label selected" id="lbl-opt-new"><input type="checkbox" id="chk-opt-new" checked onchange="updateIntervalSelection('new')">New Sounds</label>
+                <label class="row-label selected" id="lbl-opt-hard"><input type="checkbox" id="chk-opt-hard" checked onchange="updateIntervalSelection('hard')">Sibilants &amp; Hard</label>
+                <label class="row-label selected" id="lbl-opt-signs"><input type="checkbox" id="chk-opt-signs" checked onchange="updateIntervalSelection('signs')">Silent Signs</label>
+                <label class="row-label selected" id="lbl-opt-morphemes"><input type="checkbox" id="chk-opt-morphemes" checked onchange="updateIntervalSelection('morphemes')">Common Combos</label>
+            </div>
+
+            <div class="grid-header-label">Read Mode Input Method:</div>
+            <div class="row-grid">
+                <label class="row-label selected" id="lbl-method-type"><input type="radio" name="rad-method" id="chk-method-type" checked onchange="updateProductionMethod('type')">Type Answer</label>
+                <label class="row-label" id="lbl-method-honour"><input type="radio" name="rad-method" id="chk-method-honour" onchange="updateProductionMethod('honour')">Self-Assess</label>
+            </div>
+
+            <div class="grid-header-label">Visual Rendering:</div>
+            <div class="row-grid">
+                <label class="row-label selected" id="lbl-style-standard"><input type="radio" name="rad-style" id="chk-style-standard" checked onchange="updateStyleSelection('standard')">Standard Print</label>
+                <label class="row-label" id="lbl-style-italic"><input type="radio" name="rad-style" id="chk-style-italic" onchange="updateStyleSelection('italic')">Deceptive Italics</label>
+            </div>
+
+            <div class="grid-header-label">Session Deck Size:</div>
+            <select id="deck-size-selector" onchange="initSessionDeck()" style="width: 100%; padding: 0.45rem; background-color: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border); border-radius: 0.35rem; font-size: 0.85rem; outline: none; margin-top: 0.25rem; margin-bottom: 0.8rem;">
+                <option value="15" selected>15 cards (short drill)</option>
+                <option value="25">25 cards</option>
+                <option value="40">40 cards (full set)</option>
+                <option value="9999">Full set (no cap)</option>
+            </select>
+
+            <div class="toggle-switch-container">
+                <div>Endless Loop Mode</div>
+                <button id="endless-toggle-btn" style="font-size: 0.75rem; padding: 0.3rem 0.6rem; background-color: var(--border); color: var(--text-muted); border:none; border-radius:0.25rem; cursor:pointer;" onclick="toggleEndlessMode();">OFF ⏸</button>
+            </div>
+
+            <div class="grid-header-label" style="margin-top: 0.75rem;">Progress:</div>
+            <button onclick="resetAllProgress();" style="width: 100%; padding: 0.45rem; background-color: rgba(244, 63, 94, 0.15); color: var(--error); border: 1px solid var(--error); border-radius: 0.35rem; font-size: 0.8rem; cursor: pointer; font-weight: bold; margin-top: 0.25rem;">Reset all progress</button>
+        </div>
+    </div>
+
+    <div id="view-guide" style="display: none; max-height: 60vh; overflow-y: auto; padding-right: 0.5rem;">
+        <h3 style="color: var(--accent); margin-top: 0; text-align: center;">True &amp; False Friends</h3>
+        <table class="ref-table">
+            <tr><th>Glyph</th><th>Italic</th><th>Sound</th><th>Notes</th></tr>
+            <tr><td>А а</td><td><i>А а</i></td><td>a</td><td>True Friend: 'a' in father.</td></tr>
+            <tr><td>К к</td><td><i>К к</i></td><td>k</td><td>True Friend: crisp K.</td></tr>
+            <tr style="background-color: rgba(244, 63, 94, 0.08);"><td>В в</td><td><i>В в</i></td><td>v</td><td><strong>False Friend: looks like B, sounds like 'v'!</strong></td></tr>
+            <tr style="background-color: rgba(244, 63, 94, 0.08);"><td>Н н</td><td><i>Н н</i></td><td>n</td><td><strong>False Friend: looks like H, sounds like 'n'!</strong></td></tr>
+            <tr style="background-color: rgba(244, 63, 94, 0.08);"><td>Р р</td><td><i>Р р</i></td><td>r</td><td><strong>False Friend: looks like P, sounds like rolled R!</strong></td></tr>
+            <tr style="background-color: rgba(244, 63, 94, 0.08);"><td>С с</td><td><i>С с</i></td><td>s</td><td><strong>False Friend: looks like C, sounds like 's'!</strong></td></tr>
+            <tr style="background-color: rgba(244, 63, 94, 0.08);"><td>Х х</td><td><i>Х х</i></td><td>h</td><td><strong>False Friend: looks like X, raspy H.</strong></td></tr>
+        </table>
+
+        <h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">Deceptive Italics</h3>
+        <table class="ref-table">
+            <tr><th>Print</th><th>Italic</th><th>Sound</th><th>Alert</th></tr>
+            <tr style="background-color: rgba(245, 158, 11, 0.08);"><td>Т т</td><td><i>Т т</i></td><td>t</td><td><strong>Italic lower-case looks like Latin 'm'!</strong></td></tr>
+            <tr style="background-color: rgba(245, 158, 11, 0.08);"><td>Д д</td><td><i>Д д</i></td><td>d</td><td><strong>Italic lower-case looks like Latin 'g'!</strong></td></tr>
+            <tr style="background-color: rgba(245, 158, 11, 0.08);"><td>И и</td><td><i>И и</i></td><td>i</td><td>Italic lower-case = inverted Latin 'u'.</td></tr>
+            <tr style="background-color: rgba(245, 158, 11, 0.08);"><td>П п</td><td><i>П п</i></td><td>p</td><td>Italic lower-case resembles 'n'.</td></tr>
+        </table>
+    </div>
+
+    <div id="view-review" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="color: var(--accent); margin: 0;">Morphemes to Review</h3>
+            <button onclick="clearReviewLog();" style="background-color: var(--border); color: var(--text-main); font-size: 0.85rem; padding: 0.4rem 0.8rem; border-radius: 0.25rem; border: none; cursor: pointer;">Clear 🗑️</button>
+        </div>
+        <button onclick="drillMistakesOnly()" id="drill-mistakes-btn" style="width: 100%; background-color: var(--warning); color: #0f172a; margin-bottom: 1rem; padding: 0.6rem; border: none; border-radius: 0.5rem; font-weight: bold; cursor: pointer; font-size: 0.9rem; display: none;">🎯 Drill Saved Errors</button>
+        <div id="review-placeholder" style="color: var(--text-muted); text-align: center; padding: 2rem 0;">🌟 <strong>No errors logged.</strong> Keep drilling!</div>
+        <div id="review-list-container" style="max-height: 40vh; overflow-y: auto;"></div>
+    </div>
+</div>
+
+<div class="portal-shortcut-bar">
+    <a href="index.html">Return to Hub</a>
+    <div class="terminal-label">R-App 02</div>
+</div>
+
+<script>
+    var sessionStarted = false;
+    var currentClockObj = null;
+    var currentQuizDirection = "read";
+    var totalCorrect = 0;
+    var totalQuestions = 0;
+    var currentStreak = 0;
+    var mistakeLog = [];
+    var currentSessionDeck = [];
+    var activeCardIndex = 0;
+    var isEndlessMode = false;
+    var coreDeckOriginalCount = 0;
+    var userActionHistory = [];
+
+    var sessionCorrect = 0;
+    var sessionTotal = 0;
+    var sessionBestStreak = 0;
+    var sessionCurrentStreak = 0;
+    var sessionComplete = false;
+
+    var selectedIntervals = { friends: true, "false": true, "new": true, hard: true, signs: true, morphemes: true };
+    var currentStylePreference = "standard";
+    var readProductionMethod = "type";
+
+    var masterCyrillicData = {
+        friends: {
+            "А": { sound: "a", tip: "True Friend", desc: "pronounced like the 'a' in father" },
+            "К": { sound: "k", tip: "True Friend", desc: "pronounced like the 'k' in kite" },
+            "М": { sound: "m", tip: "True Friend", desc: "pronounced like the 'm' in meet" },
+            "О": { sound: "o", tip: "True Friend", desc: "pronounced like the 'o' in more" },
+            "Т": { sound: "t", tip: "True Friend", desc: "pronounced like the 't' in top" }
+        },
+        "false": {
+            "В": { sound: "v", tip: "False Friend Trap", desc: "pronounced like the 'v' in vat" },
+            "Е": { sound: "e", tip: "False Friend Trap", desc: "pronounced like the 'ye' in yes" },
+            "Н": { sound: "n", tip: "False Friend Trap", desc: "pronounced like the 'n' in net" },
+            "Р": { sound: "r", tip: "False Friend Trap", desc: "pronounced like a rolled 'r' (like Spanish 'pero')" },
+            "С": { sound: "s", tip: "False Friend Trap", desc: "pronounced like the 's' in set" },
+            "У": { sound: "u", tip: "False Friend Trap", desc: "pronounced like the 'oo' in boot" },
+            "Х": { sound: "h", tip: "False Friend Trap", desc: "pronounced like a raspy, throat-clearing 'h' (like Scottish 'loch')" }
+        },
+        "new": {
+            "Б": { sound: "b", tip: "New Glyphs", desc: "pronounced like the 'b' in boot" },
+            "Г": { sound: "g", tip: "New Glyphs", desc: "pronounced like the 'g' in go" },
+            "Д": { sound: "d", tip: "New Glyphs", desc: "pronounced like the 'd' in door" },
+            "З": { sound: "z", tip: "New Glyphs", desc: "pronounced like the 'z' in zoo" },
+            "И": { sound: "i", tip: "New Glyphs", desc: "pronounced like the 'ee' in meet" },
+            "Л": { sound: "l", tip: "New Glyphs", desc: "pronounced like the 'l' in love" },
+            "П": { sound: "p", tip: "New Glyphs", desc: "pronounced like the 'p' in pet" },
+            "Ф": { sound: "f", tip: "New Glyphs", desc: "pronounced like the 'f' in face" },
+            "Э": { sound: "e", tip: "New Glyphs", desc: "pronounced like the 'e' in met" },
+            "Ю": { sound: "yu", tip: "New Glyphs", desc: "pronounced like the 'yu' in universe" },
+            "Я": { sound: "ya", tip: "New Glyphs", desc: "pronounced like the 'ya' in yard" }
+        },
+        hard: {
+            "Ж": { sound: "zh", tip: "Sibilants & Advanced", desc: "pronounced like the 's' in measure or leisure" },
+            "Й": { sound: "y", tip: "Sibilants & Advanced", desc: "pronounced like the short 'y' in toy" },
+            "Ц": { sound: "ts", tip: "Sibilants & Advanced", desc: "pronounced like the 'ts' in cats" },
+            "Ч": { sound: "ch", tip: "Sibilants & Advanced", desc: "pronounced like the 'ch' in chip" },
+            "Ш": { sound: "sh", tip: "Sibilants & Advanced", desc: "pronounced like a hard 'sh' in shut" },
+            "Щ": { sound: "shch", tip: "Sibilants & Advanced", desc: "pronounced like the 'sh-ch' in fre-sh ch-eese" },
+            "Ы": { sound: "y", tip: "Sibilants & Advanced", desc: "pronounced like a guttural 'i' (make an 'ee' sound while pulling your tongue back)" }
+        },
+        signs: {
+            "Ь": { sound: "soft sign", tip: "Silent Modifier Sign", desc: "makes the preceding consonant sound short and 'soft' (palatalized)" },
+            "Ъ": { sound: "hard sign", tip: "Silent Modifier Sign", desc: "forces a sharp separation pause between a consonant and the following vowel" }
+        },
+        morphemes: {
+            "-ов": { sound: "ov", tip: "Common Combo", desc: "pronounced like 'ov' (high-frequency masculine plural genitive noun ending)" },
+            "-ия": { sound: "iya", tip: "Common Combo", desc: "pronounced like 'ee-ya' (standard feminine noun ending)" },
+            "-ый": { sound: "yy", tip: "Common Combo", desc: "pronounced like a guttural adjective modifier ending" },
+            "-ая": { sound: "aya", tip: "Common Combo", desc: "pronounced like 'ah-ya' (standard feminine adjective modifier ending)" },
+            "вы-": { sound: "vy", tip: "Common Combo", desc: "pronounced like 'vy' (common directional verb prefix meaning 'out')" },
+            "при-": { sound: "pri", tip: "Common Combo", desc: "pronounced like 'pree' (common verb prefix indicating arrival or proximity)" },
+            "-ому": { sound: "omu", tip: "Common Combo", desc: "pronounced like 'oh-moo' (masculine/neuter dative adjective ending)" },
+            "-ами": { sound: "ami", tip: "Common Combo", desc: "pronounced like 'ah-mee' (plural instrumental noun ending)" }
+        }
+    };
+
+    var contextLabelsMap = {
+        friends: "True Friend Category",
+        "false": "False Friend Trap Category",
+        "new": "New Glyphs Category",
+        hard: "Sibilants & Advanced Phonetic Clusters",
+        signs: "Silent Modifier Sign Category",
+        morphemes: "Common Russian Combination"
+    };
+
+    // ============ VIEW / DIRECTION ============
+    function showStartScreen() {
+        sessionStarted = false;
+        sessionComplete = false;
+
+        var promptDisplay = document.getElementById('char-prompt-display');
+        var contextDisplay = document.getElementById('char-context-display');
+        var trackBadge = document.getElementById('char-track-badge');
+
+        promptDisplay.innerText = "Ready?";
+        promptDisplay.style.fontSize = "2rem";
+        promptDisplay.style.color = "var(--accent)";
+        contextDisplay.innerText = "Click Start to begin";
+        contextDisplay.style.color = "var(--text-muted)";
+        trackBadge.innerText = "";
+
+        document.getElementById('tip-btn').style.display = "none";
+        document.getElementById('speak-btn').style.display = "none";
+        document.getElementById('panel-read-mode').style.display = "none";
+        document.getElementById('panel-write-mode').style.display = "none";
+        document.getElementById('feedback-container').style.display = "none";
+        document.getElementById('start-btn-container').style.display = "block";
+
+        // restore any hidden inputs
+        restoreInputsFromFeedback();
+
+        document.getElementById('deck-progress').innerText = "0";
+    }
+
+    function startSession() {
+        if (sessionStarted) return;
+        sessionStarted = true;
+        document.getElementById('start-btn-container').style.display = "none";
+        applyPanelVisibility();
+        generateQuestion();
+    }
+
+    function switchView(target) {
+        document.getElementById('view-quiz').style.display = target === 'quiz' ? 'block' : 'none';
+        document.getElementById('view-guide').style.display = target === 'guide' ? 'block' : 'none';
+        document.getElementById('view-review').style.display = target === 'review' ? 'block' : 'none';
+
+        var btns = document.getElementsByClassName('nav-btn');
+        for (var i = 0; i < btns.length; i++) { btns[i].classList.remove('active'); }
+        document.getElementById('tab-' + target).classList.add('active');
+
+        var drawer = document.getElementById('settings-drawer');
+        var btn = document.getElementById('drawer-toggle-btn');
+        if (drawer) drawer.style.display = "none";
+        if (btn) btn.innerText = "⚙️ Options & Filters ▾";
+
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter) shutter.classList.remove('collapsed');
+
+        if (target === 'review') renderReviewList();
+    }
+
+    function setDirection(dir) {
+        currentQuizDirection = dir;
+        document.getElementById('dir-r').classList.remove('active');
+        document.getElementById('dir-w').classList.remove('active');
+        document.getElementById('dir-' + (dir === 'read' ? 'r' : 'w')).classList.add('active');
+
+        var readPanel = document.getElementById('panel-read-mode');
+        var writePanel = document.getElementById('panel-write-mode');
+        if (dir === 'read') {
+            if(readPanel) readPanel.style.display = 'block';
+            if(writePanel) writePanel.style.display = 'none';
+        } else {
+            if(readPanel) readPanel.style.display = 'none';
+            if(writePanel) writePanel.style.display = 'block';
+        }
+        initSessionDeck();
+    }
+
+    // ============ OPTIONS DRAWER ============
+    function openOptionsPanel() {
+        var inp = document.getElementById('user-input');
+        if (inp) inp.blur();
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter) shutter.classList.remove('collapsed');
+        var drawer = document.getElementById('settings-drawer');
+        var btn = document.getElementById('drawer-toggle-btn');
+        if (drawer) drawer.style.display = 'block';
+        if (btn) btn.innerText = "Close Options ▴";
+
+        setTimeout(function() {
+            var drawer = document.getElementById('settings-drawer');
+            if (drawer) drawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+    }
+
+    function toggleSettingsDrawer() {
+        var drawer = document.getElementById('settings-drawer');
+        var btn = document.getElementById('drawer-toggle-btn');
+        if (drawer.style.display === "block") {
+            drawer.style.display = "none";
+            btn.innerText = "⚙️ Options & Filters ▾";
+        } else {
+            drawer.style.display = "block";
+            btn.innerText = "Close Options ▴";
+        }
+    }
+
+    function updateIntervalSelection(optKey) {
+        var chk = document.getElementById('chk-opt-' + optKey);
+        var lbl = document.getElementById('lbl-opt-' + optKey);
+        if (chk) {
+            selectedIntervals[optKey] = chk.checked;
+            if (chk.checked) lbl.classList.add('selected');
+            else lbl.classList.remove('selected');
+        }
+        verifyAndReloadDeck();
+    }
+
+    function applyPanelVisibility() {
+        var readPanel = document.getElementById('panel-read-mode');
+        var writePanel = document.getElementById('panel-write-mode');
+        if (!sessionStarted || sessionComplete) {
+            if (readPanel) readPanel.style.display = 'none';
+            if (writePanel) writePanel.style.display = 'none';
+            return;
+        }
+        var useHonourPanel = (currentQuizDirection === 'write') ||
+                             (currentQuizDirection === 'read' && readProductionMethod === 'honour');
+        if (useHonourPanel) {
+            if (readPanel) readPanel.style.display = 'none';
+            if (writePanel) writePanel.style.display = 'block';
+        } else {
+            if (readPanel) readPanel.style.display = 'block';
+            if (writePanel) writePanel.style.display = 'none';
+        }
+    }
+
+    function updateProductionMethod(method) {
+        readProductionMethod = method;
+        var lblType = document.getElementById('lbl-method-type');
+        var lblHonour = document.getElementById('lbl-method-honour');
+        var chkType = document.getElementById('chk-method-type');
+        var chkHonour = document.getElementById('chk-method-honour');
+        if (lblType) lblType.classList.toggle('selected', method === 'type');
+        if (lblHonour) lblHonour.classList.toggle('selected', method === 'honour');
+        if (chkType) chkType.checked = (method === 'type');
+        if (chkHonour) chkHonour.checked = (method === 'honour');
+
+        applyPanelVisibility();
+
+        // Update the track badge mid-session if the question is live (not in feedback)
+        if (sessionStarted && !sessionComplete && currentClockObj && currentQuizDirection === 'read'
+            && document.getElementById('feedback-container').style.display !== 'block') {
+            var trackBadge = document.getElementById('char-track-badge');
+            if (trackBadge) {
+                trackBadge.innerText = (method === 'honour')
+                    ? "Self-Assess — Say the Transliteration Aloud"
+                    : "Type English Transliteration";
+            }
+        }
+        saveState();
+    }
+
+
+    function updateStyleSelection(styleKey) {
+        currentStylePreference = styleKey;
+        document.getElementById('lbl-style-standard').classList.remove('selected');
+        document.getElementById('lbl-style-italic').classList.remove('selected');
+        document.getElementById('lbl-style-' + styleKey).classList.add('selected');
+
+        var displayBox = document.getElementById('char-prompt-display');
+        if (displayBox) {
+            if (styleKey === 'italic') displayBox.classList.add('cyr-italic');
+            else displayBox.classList.remove('cyr-italic');
+        }
+        saveState();
+    }
+
+    function toggleEndlessMode() {
+        var btn = document.getElementById('endless-toggle-btn');
+        isEndlessMode = !isEndlessMode;
+        if (isEndlessMode) {
+            btn.innerText = "ON 🔄";
+            btn.style.color = "var(--accent)";
+            btn.style.fontWeight = "bold";
+        } else {
+            btn.innerText = "OFF ⏸";
+            btn.style.color = "var(--text-muted)";
+            btn.style.fontWeight = "normal";
+        }
+        initSessionDeck();
+    }
+
+    function verifyAndReloadDeck() {
+        var anyChecked = false;
+        var keys = Object.keys(selectedIntervals);
+        for (var i = 0; i < keys.length; i++) { if (selectedIntervals[keys[i]]) anyChecked = true; }
+        if (!anyChecked) {
+            document.getElementById('chk-opt-friends').checked = true;
+            document.getElementById('lbl-opt-friends').classList.add('selected');
+            selectedIntervals.friends = true;
+        }
+        initSessionDeck();
+    }
+
+    // ============ SESSION BUILD ============
+    function initSessionDeck() {
+        currentSessionDeck = [];
+        activeCardIndex = 0;
+        userActionHistory = [];
+        sessionCorrect = 0;
+        sessionTotal = 0;
+        sessionBestStreak = 0;
+        sessionCurrentStreak = 0;
+        sessionComplete = false;
+
+        var moduleKeys = Object.keys(selectedIntervals);
+        for (var i = 0; i < moduleKeys.length; i++) {
+            var mod = moduleKeys[i];
+            if (selectedIntervals[mod] && masterCyrillicData[mod]) {
+                var charKeys = Object.keys(masterCyrillicData[mod]);
+                for (var j = 0; j < charKeys.length; j++) {
+                    var glyph = charKeys[j];
+                    var item = masterCyrillicData[mod][glyph];
+                    currentSessionDeck.push({
+                        char: glyph,
+                        translit: item.sound,
+                        tip: item.tip,
+                        desc: item.desc,
+                        category: mod,
+                        context: contextLabelsMap[mod]
+                    });
+                }
+            }
+        }
+
+        for (var i = currentSessionDeck.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = currentSessionDeck[i];
+            currentSessionDeck[i] = currentSessionDeck[j];
+            currentSessionDeck[j] = temp;
+        }
+
+        var sizeSel = document.getElementById('deck-size-selector');
+        var maxDeckSize = sizeSel ? parseInt(sizeSel.value, 10) : 15;
+        if (currentSessionDeck.length > maxDeckSize) currentSessionDeck = currentSessionDeck.slice(0, maxDeckSize);
+
+        coreDeckOriginalCount = currentSessionDeck.length;
+        document.getElementById('deck-total').innerText = coreDeckOriginalCount;
+
+        var pBox = document.getElementById('progress-box');
+        if (pBox) pBox.className = "score-item";
+        document.getElementById('review-status-label').innerText = "";
+
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter) shutter.classList.remove('collapsed');
+
+        saveState();
+        showStartScreen();
+    }
+
+    // ============ QUESTION LOOP ============
+    function hideInputsForFeedback() {
+        var ids = ['panel-read-mode', 'panel-write-mode', 'btn-reveal-container', 'honour-system-controls'];
+        ids.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.add('hidden-during-feedback');
+        });
+    }
+
+    function restoreInputsFromFeedback() {
+        var ids = ['panel-read-mode', 'panel-write-mode', 'btn-reveal-container', 'honour-system-controls'];
+        ids.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.remove('hidden-during-feedback');
+        });
+    }
+
+    function generateQuestion() {
+        document.getElementById('user-input').value = "";
+        document.getElementById('user-input').disabled = false;
+        document.getElementById('feedback-container').style.display = "none";
+        document.getElementById('submit-btn').disabled = false;
+        document.getElementById('btn-reveal-container').style.display = "block";
+        document.getElementById('honour-system-controls').style.display = "none";
+        document.getElementById('deck-progress').innerText = activeCardIndex;
+
+        restoreInputsFromFeedback();
+        applyPanelVisibility();
+
+        document.getElementById('char-context-display').innerText = "";
+        document.getElementById('char-context-display').style.color = "var(--text-muted)";
+        document.getElementById('tip-btn').style.display = "block";
+
+        var pBox = document.getElementById('progress-box');
+        if (activeCardIndex >= coreDeckOriginalCount && activeCardIndex < currentSessionDeck.length) {
+            if (pBox) pBox.className = "score-item review-phase-text";
+            document.getElementById('review-status-label').innerText = " 🔄 Reviewing Misses";
+        } else if (activeCardIndex === 0) {
+            if (pBox) pBox.className = "score-item";
+            document.getElementById('review-status-label').innerText = "";
+        }
+
+        if (activeCardIndex >= currentSessionDeck.length) {
+            var shutter = document.getElementById('shutter-header-area');
+            if (shutter) shutter.classList.remove('collapsed');
+            if (isEndlessMode) { initSessionDeck(); startSession(); return; }
+            triggerCompletionState();
+            return;
+        }
+
+        currentClockObj = currentSessionDeck[activeCardIndex];
+        var promptDisplay = document.getElementById('char-prompt-display');
+        var trackBadge = document.getElementById('char-track-badge');
+
+        if (currentQuizDirection === 'read') {
+            promptDisplay.innerText = currentClockObj.char;
+            promptDisplay.style.fontSize = "5rem";
+            promptDisplay.style.color = "var(--text-main)";
+            if (readProductionMethod === 'honour') {
+                trackBadge.innerText = "Self-Assess — Say the Transliteration Aloud";
+            } else {
+                trackBadge.innerText = "Type English Transliteration";
+            }
+            document.getElementById('tip-btn').style.display = "block";
+            document.getElementById('speak-btn').style.display = "block";
+        } else {
+            promptDisplay.innerText = currentClockObj.translit;
+            promptDisplay.style.fontSize = "3.5rem";
+            promptDisplay.style.color = "var(--accent)";
+            trackBadge.innerText = "Self-Assess — Recall the Cyrillic";
+            document.getElementById('tip-btn').style.display = "none";
+            document.getElementById('speak-btn').style.display = "none";
+        }
+
+        setTimeout(function() {
+            var inputField = document.getElementById('user-input');
+            if (inputField && currentQuizDirection === 'read' && readProductionMethod === 'type') inputField.focus();
+        }, 50);
+    }
+
+    function revealHiddenTip() {
+        if (!currentClockObj) return;
+        var tipBox = document.getElementById('char-context-display');
+        tipBox.innerText = currentClockObj.tip + " • " + currentClockObj.context;
+        tipBox.style.color = "var(--warning)";
+        document.getElementById('tip-btn').style.display = "none";
+    }
+
+    function speakRussianPrompt() {
+        if (!currentClockObj) return;
+        var rawText = currentClockObj.char.replace(/-/g, "");
+        var utterance = new SpeechSynthesisUtterance(rawText);
+        utterance.lang = "ru-RU";
+        utterance.rate = 0.8;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    // ============ ANSWER CHECK (READ MODE) ============
+    function checkAnswer() {
+        if (currentQuizDirection !== 'read') return;
+        var inputField = document.getElementById('user-input');
+        var userInput = inputField.value.trim().toLowerCase().replace(/\s+/g, "");
+        if (userInput === "") return;
+
+        collapseHeaderShutter();
+        var feedbackContainer = document.getElementById('feedback-container');
+        var feedbackMessage = document.getElementById('feedback-message');
+
+        document.getElementById('submit-btn').disabled = true;
+        inputField.disabled = true;
+        totalQuestions++;
+        sessionTotal++;
+
+        var targetClean = currentClockObj.translit.toLowerCase().replace(/\s+/g, "");
+        var isCorrect = (userInput === targetClean);
+
+        userActionHistory.push({
+            streakBefore: currentStreak, correctBefore: totalCorrect, questionsBefore: totalQuestions - 1,
+            activeCardIndexBefore: activeCardIndex, wasMistakeLogged: !isCorrect,
+            wasCardPushed: !isCorrect, cardObjectSnapshot: Object.assign({}, currentClockObj)
+        });
+
+        if (isCorrect) {
+            totalCorrect++; currentStreak++;
+            sessionCorrect++;
+            sessionCurrentStreak++;
+            if (sessionCurrentStreak > sessionBestStreak) sessionBestStreak = sessionCurrentStreak;
+            feedbackMessage.className = "feedback correct-box";
+            feedbackMessage.innerHTML = "<strong>Correct!</strong> 🎉<br>The character '<strong>" + currentClockObj.char + "</strong>' is " + currentClockObj.desc + ".";
+            setTimeout(speakRussianPrompt, 200);
+        } else {
+            currentStreak = 0;
+            sessionCurrentStreak = 0;
+            feedbackMessage.className = "feedback incorrect-box";
+            feedbackMessage.innerHTML = "<strong>Incorrect.</strong><br>Target match was '<strong>" + currentClockObj.translit + "</strong>' (" + currentClockObj.desc + ").<br><small>Profile: " + currentClockObj.tip + "</small>";
+
+             mistakeLog.push({ prompt: currentClockObj.char, correct: currentClockObj.translit, yours: inputField.value.trim(), card: Object.assign({}, currentClockObj) });
+            document.getElementById('review-count').innerText = mistakeLog.length;
+            currentSessionDeck.push(Object.assign({}, currentClockObj));
+            document.getElementById('deck-total').innerText = currentSessionDeck.length;
+        }
+
+        activeCardIndex++;
+        document.getElementById('deck-progress').innerText = activeCardIndex;
+        updateScoreboard();
+        feedbackContainer.style.display = "block";
+
+        hideInputsForFeedback();
+
+        setTimeout(function() {
+            var nb = document.getElementById('next-btn');
+            if (nb) nb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+
+        saveState();
+    }
+
+    function collapseHeaderShutter() {
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter && !shutter.classList.contains('collapsed')) {
+            shutter.classList.add('collapsed');
+        }
+    }
+
+    // ============ HONOUR MODE (WRITE) ============
+    function revealCyrillicAnswer() {
+        if (!currentClockObj || !sessionStarted || sessionComplete) return;
+        collapseHeaderShutter();
+        document.getElementById('btn-reveal-container').style.display = "none";
+        document.getElementById('honour-system-controls').style.display = "flex";
+
+        var promptDisplay = document.getElementById('char-prompt-display');
+        promptDisplay.innerText = currentClockObj.char;
+        promptDisplay.style.fontSize = "5rem";
+        promptDisplay.style.color = "var(--text-main)";
+
+        var answerLabel = (currentQuizDirection === 'write') ? "Target match" : "Transliteration";
+        document.getElementById('char-context-display').innerText = answerLabel + ": " + currentClockObj.translit + " (" + currentClockObj.desc + ")";
+        setTimeout(speakRussianPrompt, 150);
+    }
+
+    function assessHonour(isCorrect) {
+        totalQuestions++;
+        sessionTotal++;
+
+        var feedbackContainer = document.getElementById('feedback-container');
+        var feedbackMessage = document.getElementById('feedback-message');
+        document.getElementById('honour-system-controls').style.display = "none";
+
+        userActionHistory.push({
+            streakBefore: currentStreak, correctBefore: totalCorrect, questionsBefore: totalQuestions - 1,
+            activeCardIndexBefore: activeCardIndex, wasMistakeLogged: !isCorrect, wasCardPushed: !isCorrect,
+            cardObjectSnapshot: Object.assign({}, currentClockObj)
+        });
+
+        if (isCorrect) {
+            totalCorrect++; currentStreak++;
+            sessionCorrect++;
+            sessionCurrentStreak++;
+            if (sessionCurrentStreak > sessionBestStreak) sessionBestStreak = sessionCurrentStreak;
+            feedbackMessage.className = "feedback correct-box";
+            feedbackMessage.innerHTML = "<strong>Marked Correct!</strong> 👍<br>Verified <strong>" + currentClockObj.char + "</strong> → " + currentClockObj.desc + ".";
+        } else {
+            currentStreak = 0;
+            sessionCurrentStreak = 0;
+            feedbackMessage.className = "feedback incorrect-box";
+            feedbackMessage.innerHTML = "<strong>Marked Incorrect.</strong> 📚<br><strong>" + currentClockObj.char + "</strong> parses as <strong>" + currentClockObj.translit + "</strong>.";
+
+            mistakeLog.push({ prompt: currentClockObj.translit, correct: currentClockObj.char, yours: "[Self-Assessed Miss]", card: Object.assign({}, currentClockObj) });
+            document.getElementById('review-count').innerText = mistakeLog.length;
+            currentSessionDeck.push(Object.assign({}, currentClockObj));
+            document.getElementById('deck-total').innerText = currentSessionDeck.length;
+        }
+
+        activeCardIndex++;
+        document.getElementById('deck-progress').innerText = activeCardIndex;
+        updateScoreboard();
+        feedbackContainer.style.display = "block";
+
+        hideInputsForFeedback();
+
+        setTimeout(function() {
+            var nb = document.getElementById('next-btn');
+            if (nb) nb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+
+        saveState();
+    }
+
+    function updateScoreboard() {
+        document.getElementById('score-correct').innerText = totalCorrect;
+        document.getElementById('score-total').innerText = totalQuestions;
+        document.getElementById('score-streak').innerText = currentStreak;
+        updateStreakEmoji();
+    }
+
+    function executeUndoAction() {
+        if (userActionHistory.length === 0) return;
+
+        if (sessionComplete) {
+            sessionComplete = false;
+            sessionStarted = true;
+            var fb = document.getElementById('feedback-container');
+            if (fb) {
+                var bar = fb.querySelector('.completion-actions');
+                if (bar) bar.remove();
+            }
+            var nb = document.getElementById('next-btn');
+            if (nb && nb.parentElement) nb.parentElement.style.display = "";
+        }
+
+        var previousState = userActionHistory.pop();
+        currentStreak = previousState.streakBefore;
+        totalCorrect = previousState.correctBefore;
+        totalQuestions = previousState.questionsBefore;
+        activeCardIndex = previousState.activeCardIndexBefore;
+
+        if (previousState.wasMistakeLogged) {
+            mistakeLog.pop(); document.getElementById('review-count').innerText = mistakeLog.length;
+        }
+        if (previousState.wasCardPushed) {
+            currentSessionDeck.pop(); document.getElementById('deck-total').innerText = currentSessionDeck.length;
+        }
+        updateScoreboard();
+        generateQuestion();
+        saveState();
+    }
+
+    // ============ COMPLETION ============
+    function triggerCompletionState() {
+        sessionComplete = true;
+        sessionStarted = false;
+
+        var accuracy = sessionTotal > 0 ? Math.round(sessionCorrect / sessionTotal * 100) : 0;
+
+        var promptDisplay = document.getElementById('char-prompt-display');
+        promptDisplay.innerHTML = "🎉 Отлично!";
+        promptDisplay.style.color = "var(--success)";
+        promptDisplay.style.fontSize = "3rem";
+        document.getElementById('char-context-display').innerText = "Session cleared.";
+        document.getElementById('char-context-display').style.color = "var(--text-muted)";
+
+        document.getElementById('submit-btn').disabled = true;
+        document.getElementById('user-input').disabled = true;
+        document.getElementById('btn-reveal-container').style.display = "none";
+        document.getElementById('honour-system-controls').style.display = "none";
+        document.getElementById('tip-btn').style.display = "none";
+        document.getElementById('speak-btn').style.display = "none";
+
+        var feedbackContainer = document.getElementById('feedback-container');
+        var feedbackMessage = document.getElementById('feedback-message');
+        feedbackMessage.className = "feedback correct-box";
+        feedbackMessage.innerHTML =
+            '<div style="text-align:center;">' +
+                '<div class="completion-stats">' +
+                    '<div><span class="completion-stat-label">Accuracy</span><span class="completion-stat-value">' + accuracy + '%</span></div>' +
+                    '<div><span class="completion-stat-label">Best Streak</span><span class="completion-stat-value">🔥 ' + sessionBestStreak + '</span></div>' +
+                    '<div><span class="completion-stat-label">Checked</span><span class="completion-stat-value">' + sessionTotal + '</span></div>' +
+                '</div>' +
+                '<div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;">' + sessionCorrect + ' / ' + sessionTotal + ' correct this run</div>' +
+                '<div style="font-size:0.75rem; color:var(--text-muted);">' + coreDeckOriginalCount + ' cards in deck</div>' +
+            '</div>';
+
+        var nextBtn = document.getElementById('next-btn');
+        if (nextBtn) nextBtn.parentElement.style.display = "none";
+
+        var existingBar = feedbackContainer.querySelector('.completion-actions');
+        if (existingBar) existingBar.remove();
+
+        var actionsHtml = '<div class="completion-actions">';
+        actionsHtml += '<button class="completion-btn primary" onclick="startNewSessionFromComplete()">🔄 New Session</button>';
+        actionsHtml += '<button class="completion-btn" onclick="switchView(\'review\')">📝 Reviews</button>';
+        actionsHtml += '</div>';
+        feedbackContainer.insertAdjacentHTML('beforeend', actionsHtml);
+
+        feedbackContainer.style.display = "block";
+
+        setTimeout(function() {
+            if (feedbackContainer) feedbackContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 450);
+    }
+
+    function startNewSessionFromComplete() {
+        var fb = document.getElementById('feedback-container');
+        var bar = fb ? fb.querySelector('.completion-actions') : null;
+        if (bar) bar.remove();
+        var nb = document.getElementById('next-btn');
+        if (nb && nb.parentElement) nb.parentElement.style.display = "";
+
+        sessionComplete = false;
+        initSessionDeck();
+    }
+
+    function handleNextWorkflow() {
+        if (sessionComplete) return;
+        if (activeCardIndex >= currentSessionDeck.length) {
+            triggerCompletionState();
+            return;
+        }
+        generateQuestion();
+        setTimeout(function() {
+            var inputField = document.getElementById('user-input');
+            if (inputField && currentQuizDirection === 'read') {
+                inputField.focus();
+                inputField.select();
+            }
+        }, 30);
+    }
+
+    function updateStreakEmoji() {
+        var emojiSpan = document.getElementById('streak-emoji');
+        if (emojiSpan) {
+            if (currentStreak >= 15) emojiSpan.innerHTML = "👑";
+            else if (currentStreak >= 10) emojiSpan.innerHTML = "🥷";
+            else if (currentStreak >= 6) emojiSpan.innerHTML = "🔥";
+            else if (currentStreak >= 3) emojiSpan.innerHTML = "⚡";
+            else emojiSpan.innerHTML = "🐣";
+        }
+    }
+
+    // ============ REVIEWS ============
+    function renderReviewList() {
+        var container = document.getElementById('review-list-container');
+        var placeholder = document.getElementById('review-placeholder');
+        var drillBtn = document.getElementById('drill-mistakes-btn');
+
+        if (!mistakeLog || mistakeLog.length === 0) {
+            if (placeholder) placeholder.style.display = "block";
+            if (container) container.innerHTML = "";
+            if (drillBtn) drillBtn.style.display = "none";
+            return;
+        }
+        if (placeholder) placeholder.style.display = "none";
+        if (drillBtn) {
+            drillBtn.style.display = "block";
+            drillBtn.innerText = "🎯 Drill These " + mistakeLog.length + " Saved Errors";
+        }
+
+        var html = "<table class='ref-table'><tr><th>Prompt</th><th>Correct</th><th>Your Attempt</th></tr>";
+        for (var i = 0; i < mistakeLog.length; i++) {
+            var item = mistakeLog[i];
+            html += "<tr>";
+            html += "<td style='font-weight:bold; color:var(--warning);'>" + item.prompt + "</td>";
+            html += "<td style='font-size:1.1rem; font-weight:bold; color:var(--success);'>" + item.correct + "</td>";
+            html += "<td style='color:var(--error); font-style:italic;'>" + item.yours + "</td>";
+            html += "</tr>";
+        }
+        html += "</table>";
+        if (container) container.innerHTML = html;
+    }
+
+    function clearReviewLog() { mistakeLog = []; document.getElementById('review-count').innerText = "0"; renderReviewList(); saveState(); }
+
+    function buildCardFromLogEntry(entry) {
+        if (entry.card && entry.card.char) return Object.assign({}, entry.card);
+        var candidates = [entry.prompt, entry.correct];
+        for (var c = 0; c < candidates.length; c++) {
+            var targetChar = candidates[c];
+            if (!targetChar) continue;
+            for (var mod in masterCyrillicData) {
+                if (masterCyrillicData.hasOwnProperty(mod) && masterCyrillicData[mod][targetChar]) {
+                    var item = masterCyrillicData[mod][targetChar];
+                    return { char: targetChar, translit: item.sound, tip: item.tip, desc: item.desc, category: mod, context: contextLabelsMap[mod] };
+                }
+            }
+        }
+        return null;
+    }
+
+    function drillMistakesOnly() {
+        if (mistakeLog.length === 0) return;
+        var cards = [];
+        for (var i = 0; i < mistakeLog.length; i++) {
+            var c = buildCardFromLogEntry(mistakeLog[i]);
+            if (c) cards.push(c);
+        }
+        if (cards.length === 0) return;
+
+        currentSessionDeck = cards;
+        activeCardIndex = 0;
+        userActionHistory = [];
+        sessionCorrect = 0;
+        sessionTotal = 0;
+        sessionBestStreak = 0;
+        sessionCurrentStreak = 0;
+        sessionComplete = false;
+        coreDeckOriginalCount = currentSessionDeck.length;
+        document.getElementById('deck-total').innerText = coreDeckOriginalCount;
+
+        var pBox = document.getElementById('progress-box');
+        if (pBox) pBox.className = "score-item";
+        document.getElementById('review-status-label').innerText = "";
+
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter) shutter.classList.remove('collapsed');
+
+        saveState();
+        switchView('quiz');
+        showStartScreen();
+    }
+
+    // ============ PERSISTENCE ============
+    function saveState() {
+        try {
+            var sizeSel = document.getElementById('deck-size-selector');
+            var state = {
+                filters: selectedIntervals,
+                direction: currentQuizDirection,
+                stylePreference: currentStylePreference,
+                readProductionMethod: readProductionMethod,
+                endless: isEndlessMode,
+                deckSize: sizeSel ? sizeSel.value : "15",
+                stats: { correct: totalCorrect, total: totalQuestions, streak: currentStreak },
+                mistakes: mistakeLog
+            };
+            localStorage.setItem('rus_cyrillic_state', JSON.stringify(state));
+        } catch (e) {}
+    }
+
+    function loadState() {
+        try {
+            var raw = localStorage.getItem('rus_cyrillic_state');
+            if (!raw) {
+                var oldRaw = localStorage.getItem('cyr_trainer_state');
+                if (oldRaw) {
+                    localStorage.setItem('rus_cyrillic_state', oldRaw);
+                    localStorage.removeItem('cyr_trainer_state');
+                    raw = oldRaw;
+                }
+            }
+            if (!raw) return;
+            var state = JSON.parse(raw);
+
+            if (state.filters) {
+                for (var k in state.filters) {
+                    if (state.filters.hasOwnProperty(k) && typeof selectedIntervals[k] !== 'undefined') {
+                        selectedIntervals[k] = state.filters[k];
+                    }
+                }
+                applyFilterCheckboxes();
+            }
+
+            if (state.direction) {
+                currentQuizDirection = state.direction;
+                document.getElementById('dir-r').classList.remove('active');
+                document.getElementById('dir-w').classList.remove('active');
+                document.getElementById('dir-' + (state.direction === 'read' ? 'r' : 'w')).classList.add('active');
+                var readPanel = document.getElementById('panel-read-mode');
+                var writePanel = document.getElementById('panel-write-mode');
+                if (state.direction === 'read') {
+                    if (readPanel) readPanel.style.display = 'block';
+                    if (writePanel) writePanel.style.display = 'none';
+                } else {
+                    if (readPanel) readPanel.style.display = 'none';
+                    if (writePanel) writePanel.style.display = 'block';
+                }
+            }
+
+            if (state.readProductionMethod) {
+                readProductionMethod = state.readProductionMethod;
+                var lblType = document.getElementById('lbl-method-type');
+                var lblHonour = document.getElementById('lbl-method-honour');
+                var chkType = document.getElementById('chk-method-type');
+                var chkHonour = document.getElementById('chk-method-honour');
+                if (lblType) lblType.classList.toggle('selected', readProductionMethod === 'type');
+                if (lblHonour) lblHonour.classList.toggle('selected', readProductionMethod === 'honour');
+                if (chkType) chkType.checked = (readProductionMethod === 'type');
+                if (chkHonour) chkHonour.checked = (readProductionMethod === 'honour');
+            }
+
+            if (state.stylePreference) {
+                currentStylePreference = state.stylePreference;
+                document.getElementById('lbl-style-standard').classList.remove('selected');
+                document.getElementById('lbl-style-italic').classList.remove('selected');
+                document.getElementById('lbl-style-' + state.stylePreference).classList.add('selected');
+                var chkStd = document.getElementById('chk-style-standard');
+                var chkIta = document.getElementById('chk-style-italic');
+                if (chkStd) chkStd.checked = (state.stylePreference === 'standard');
+                if (chkIta) chkIta.checked = (state.stylePreference === 'italic');
+                var displayBox = document.getElementById('char-prompt-display');
+                if (displayBox) {
+                    if (state.stylePreference === 'italic') displayBox.classList.add('cyr-italic');
+                    else displayBox.classList.remove('cyr-italic');
+                }
+            }
+
+            if (typeof state.endless !== 'undefined') {
+                isEndlessMode = state.endless;
+                var btn = document.getElementById('endless-toggle-btn');
+                if (btn) {
+                    if (isEndlessMode) {
+                        btn.innerText = "ON 🔄";
+                        btn.style.color = "var(--accent)";
+                        btn.style.fontWeight = "bold";
+                    } else {
+                        btn.innerText = "OFF ⏸";
+                        btn.style.color = "var(--text-muted)";
+                        btn.style.fontWeight = "normal";
+                    }
+                }
+            }
+
+            if (state.deckSize) {
+                var sizeSel = document.getElementById('deck-size-selector');
+                if (sizeSel) sizeSel.value = state.deckSize;
+            }
+
+            if (state.stats) {
+                totalCorrect = state.stats.correct || 0;
+                totalQuestions = state.stats.total || 0;
+                currentStreak = state.stats.streak || 0;
+                updateScoreboard();
+            }
+
+            if (Array.isArray(state.mistakes)) {
+                mistakeLog = state.mistakes;
+                document.getElementById('review-count').innerText = mistakeLog.length;
+            }
+        } catch (e) {}
+    }
+
+    function applyFilterCheckboxes() {
+        var keys = Object.keys(selectedIntervals);
+        for (var i = 0; i < keys.length; i++) {
+            var key = keys[i];
+            var chk = document.getElementById('chk-opt-' + key);
+            var lbl = document.getElementById('lbl-opt-' + key);
+            if (chk) chk.checked = selectedIntervals[key];
+            if (lbl) {
+                if (selectedIntervals[key]) lbl.classList.add('selected');
+                else lbl.classList.remove('selected');
+            }
+        }
+    }
+
+    function resetAllProgress() {
+        if (!confirm("Clear all progress, scores, and review log?")) return;
+
+        try { localStorage.removeItem('rus_cyrillic_state'); } catch (e) {}
+
+        totalCorrect = 0;
+        totalQuestions = 0;
+        currentStreak = 0;
+        mistakeLog = [];
+        document.getElementById('review-count').innerText = "0";
+
+        selectedIntervals = { friends: true, "false": true, "new": true, hard: true, signs: true, morphemes: true };
+        applyFilterCheckboxes();
+
+        readProductionMethod = "type";
+        var lblType = document.getElementById('lbl-method-type');
+        var lblHonour = document.getElementById('lbl-method-honour');
+        var chkType = document.getElementById('chk-method-type');
+        var chkHonour = document.getElementById('chk-method-honour');
+        if (lblType) lblType.classList.add('selected');
+        if (lblHonour) lblHonour.classList.remove('selected');
+        if (chkType) chkType.checked = true;
+        if (chkHonour) chkHonour.checked = false;
+
+        currentStylePreference = "standard";
+        document.getElementById('lbl-style-standard').classList.add('selected');
+        document.getElementById('lbl-style-italic').classList.remove('selected');
+        var chkStd = document.getElementById('chk-style-standard');
+        var chkIta = document.getElementById('chk-style-italic');
+        if (chkStd) chkStd.checked = true;
+        if (chkIta) chkIta.checked = false;
+        var displayBox = document.getElementById('char-prompt-display');
+        if (displayBox) displayBox.classList.remove('cyr-italic');
+
+        var sizeSel = document.getElementById('deck-size-selector');
+        if (sizeSel) sizeSel.value = "15";
+
+        isEndlessMode = false;
+        var endlessBtn = document.getElementById('endless-toggle-btn');
+        if (endlessBtn) {
+            endlessBtn.innerText = "OFF ⏸";
+            endlessBtn.style.color = "var(--text-muted)";
+            endlessBtn.style.fontWeight = "normal";
+        }
+
+        currentQuizDirection = "read";
+        document.getElementById('dir-r').classList.add('active');
+        document.getElementById('dir-w').classList.remove('active');
+        document.getElementById('panel-read-mode').style.display = 'block';
+        document.getElementById('panel-write-mode').style.display = 'none';
+
+        var drawer = document.getElementById('settings-drawer');
+        var btn = document.getElementById('drawer-toggle-btn');
+        if (drawer) drawer.style.display = "none";
+        if (btn) btn.innerText = "⚙️ Options & Filters ▾";
+
+        updateScoreboard();
+        initSessionDeck();
+    }
+
+    // ============ KEYBOARD ============
+    document.addEventListener('keydown', function(event) {
+        var isFeedbackOpen = document.getElementById('feedback-container').style.display === 'block';
+        var isHonourOpen = document.getElementById('honour-system-controls').style.display === 'flex';
+        var isTyping = (document.activeElement && document.activeElement.tagName === "INPUT");
+
+        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') {
+            event.preventDefault();
+            executeUndoAction();
+            return;
+        }
+
+        if (sessionComplete) {
+            if (event.key === ' ' || event.code === 'Space' || event.key === 'Enter') {
+                event.preventDefault();
+                startNewSessionFromComplete();
+            }
+            return;
+        }
+
+        if (!sessionStarted) {
+            if (event.key === ' ' || event.code === 'Space' || event.key === 'Enter') {
+                event.preventDefault();
+                startSession();
+            }
+            return;
+        }
+
+        if (event.key === ' ' || event.code === 'Space') {
+            if (isTyping && !isFeedbackOpen && currentQuizDirection === 'read' && readProductionMethod === 'type') {
+                return;
+            }
+            event.preventDefault();
+            if (isFeedbackOpen) { handleNextWorkflow(); return; }
+            if (currentQuizDirection === 'read' && readProductionMethod === 'type') { checkAnswer(); return; }
+            if (!isHonourOpen) { revealCyrillicAnswer(); return; }
+            if (isHonourOpen) { assessHonour(true); return; }
+        }
+
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            if (isFeedbackOpen) { handleNextWorkflow(); return; }
+            if (currentQuizDirection === 'read' && readProductionMethod === 'type') { checkAnswer(); return; }
+            if (!isHonourOpen) { revealCyrillicAnswer(); return; }
+            if (isHonourOpen) { assessHonour(true); return; }
+        }
+        if (isHonourOpen) {
+            if (event.key === '1' || event.key.toLowerCase() === 'x') { event.preventDefault(); assessHonour(false); }
+            if (event.key === '2') { event.preventDefault(); assessHonour(true); }
+        }
+    });
+
+    window.onload = function() { loadState(); initSessionDeck(); };
+</script>
+<!-- polyglot-copyright -->
+<footer style="text-align:center; margin:1rem auto 0 auto; padding:1rem 20px 0 20px;
+               font-size:0.7rem; color:#64748b; letter-spacing:0.3px; line-height:1.5;">
+    Copyright The Polyglot Gym 2026 · Simon Reynolds · All rights reserved.
+</footer>
+<!-- /polyglot-copyright -->
+</body>
+</html>
