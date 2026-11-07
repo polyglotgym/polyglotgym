@@ -35,7 +35,7 @@
         #shutter-header-area { max-height: 2600px; opacity: 1; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.4s ease; }
         #shutter-header-area.collapsed { max-height: 0px; opacity: 0; margin-bottom: 0px !important; pointer-events: none; }
         h1 { font-size: 1.4rem; margin-top: 0; text-align: center; color: var(--accent); margin-bottom: 0.5rem; letter-spacing: 0.5px; text-transform: uppercase; }
-        .score-board { display: flex; justify-content: space-around; background-color: rgba(0,0,0,0.4); padding: 0.75rem; border-radius: 0.5rem 0.5rem 0 0; margin-top: 1rem; margin-bottom: 0; border: 1px solid var(--border); border-bottom: none; font-size: 0.85rem; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+        .score-board { display: flex; justify-content: space-around; background-color: rgba(0,0,0,0.4); padding: 0.75rem; border-radius: 0.5rem 0.5rem 0 0; margin-top: 0rem; margin-bottom: 0; border: 1px solid var(--border); border-bottom: none; font-size: 0.85rem; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
         .score-board-progress-row { display: flex; justify-content: center; align-items: center; box-sizing: border-box; background-color: rgba(0,0,0,0.4); padding: 0.6rem 0.75rem; border-radius: 0 0 0.5rem 0.5rem; margin-top: 0; margin-bottom: 1rem; border: 1px solid var(--border); border-top: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; position: relative; }
         .score-board-progress-row .score-item { margin: 0 auto; }
         .score-board-gear-btn { font-size: 1rem; background: none; color: var(--text-main); padding: 0.2rem 0.5rem; cursor: pointer; border: none; position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); line-height: 1; }
@@ -44,7 +44,7 @@
         .nav-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
         .nav-btn { background: none; border: none; color: var(--text-muted); padding: 0.5rem 0.75rem; cursor: pointer; font-size: 0.9rem; border-radius: 0.25rem; transition: all 0.2s; }
         .nav-btn.active { background-color: var(--border); color: var(--accent); font-weight: bold; }
-        .mode-selector { display: flex; flex-wrap: wrap; background-color: rgba(0, 0, 0, 0.4); padding: 0.4rem; border-radius: 0.5rem; margin-bottom: 1rem; border: 1px solid var(--border); gap: 0.4rem; }
+        .mode-selector { display: flex; flex-wrap: wrap; background-color: rgba(0, 0, 0, 0.4); padding: 0.4rem; border-radius: 0.5rem; margin-bottom: 0.5rem; border: 1px solid var(--border); gap: 0.4rem; }
         .mode-btn { flex: 1 1 calc(50% - 0.4rem); background: none; border: none; color: var(--text-muted); padding: 0.6rem 0.5rem; font-size: 0.85rem; border-radius: 0.35rem; cursor: pointer; text-align: center; }
         .mode-btn.active { background-color: var(--accent); color: #0d0c10; font-weight: bold; }
         .drawer-toggle { background: none; border: none; color: var(--accent); font-size: 0.85rem; cursor: pointer; display: block; margin: -0.75rem auto 1rem auto; padding: 0.25rem 0.5rem; text-decoration: none; }
@@ -2276,20 +2276,37 @@
                     window.speechSynthesis.speak(utterance);
                 }, 300);
             }
-        } else {
-            var speakBtn = document.getElementById('speak-btn');
-            speakBtn.style.display = "block";
-            document.getElementById('infinitive-btn').style.display = "none";
+            } else {
+                var speakBtn = document.getElementById('speak-btn');
+                speakBtn.style.display = "block";
+                document.getElementById('infinitive-btn').style.display = "none";
 
-            promptDisplay.innerText = "🔊 Listening...";
-            subDisplay.innerText = "Which person AND tense is this?";
-            promptDisplay.style.fontSize = "2.2rem";
-            promptDisplay.style.color = "var(--accent)";
-            trackBadge.innerText = "";
+                promptDisplay.innerText = "🔊 Listening...";
+                subDisplay.innerText = "Which person AND tense is this?";
+                promptDisplay.style.fontSize = "2.2rem";
+                promptDisplay.style.color = "var(--accent)";
+                trackBadge.innerText = "";
 
-            setTimeout(speakSpanishPrompt, 300);
+                setTimeout(speakSpanishPrompt, 300);
+            }
+
+            // Auto-scroll to the active input/reveal area so the user doesn't have to hunt for it
+            setTimeout(function() {
+                if (currentQuizDirection === 'read' && productionMethod === 'type') {
+                    var inputField = document.getElementById('user-input');
+                    if (inputField) {
+                        inputField.focus();
+                        inputField.select();
+                    }
+                } else {
+                    // In Honour mode or Listening mode, scroll the action button into view
+                    var actionBtn = document.getElementById('btn-reveal-container');
+                    if (actionBtn && actionBtn.style.display !== 'none') {
+                        actionBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            }, 50);
         }
-    }
 
     function buildEnglishGloss(card) {
         var entry = null;
@@ -2777,17 +2794,9 @@
         initSessionDeck();
     }
 
-    function handleNextWorkflow() {
-        generateQuestion();
-        setTimeout(function() {
-            if (sessionComplete) return;
-            var inputField = document.getElementById('user-input');
-            if (inputField && currentQuizDirection === 'read') {
-                inputField.focus();
-                inputField.select();
-            }
-        }, 30);
-    }
+        function handleNextWorkflow() {
+            generateQuestion();
+        }
 
     function updateStreakEmoji() {
         var emojiSpan = document.getElementById('streak-emoji');
@@ -3065,6 +3074,47 @@
             if (event.key === '2') { event.preventDefault(); assessHonour(true); }
         }
     });
+
+    // --- SWIPE GESTURE SUPPORT ---
+    var touchStartX = 0;
+    var touchStartY = 0;
+
+    document.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    document.addEventListener('touchend', function(e) {
+        var touchEndX = e.changedTouches[0].screenX;
+        var touchEndY = e.changedTouches[0].screenY;
+        
+        // Calculate distance
+        var xDiff = touchStartX - touchEndX;
+        var yDiff = touchStartY - touchEndY;
+
+        // Ensure it's a horizontal swipe (left) and not a vertical scroll
+        if (xDiff > 70 && Math.abs(xDiff) > Math.abs(yDiff)) {
+            var isFeedbackOpen = document.getElementById('feedback-container').style.display === 'block';
+            var isHonourOpen = document.getElementById('honour-system-controls').style.display === 'flex';
+            
+            if (!sessionStarted || sessionComplete) return;
+
+            // Prevent swipe if the user is currently typing an answer in Production mode
+            var isTyping = (document.activeElement && document.activeElement.tagName === "INPUT");
+            if (isTyping && !isFeedbackOpen) return;
+
+            // Trigger the exact same logic as pressing Space
+            if (isFeedbackOpen) {
+                handleNextWorkflow();
+            } else if (currentQuizDirection === 'read' && productionMethod === 'type') {
+                checkAnswer();
+            } else if (!isHonourOpen) {
+                revealVerbAnswer();
+            } else if (isHonourOpen) {
+                assessHonour(true);
+            }
+        }
+    }, { passive: true });
 
     window.onload = function() {
         populateVerbSelector();
