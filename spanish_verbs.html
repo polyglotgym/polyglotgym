@@ -3084,6 +3084,15 @@
         touchStartY = e.changedTouches[0].screenY;
     }, { passive: true });
 
+    // --- SWIPE GESTURE SUPPORT ---
+    var touchStartX = 0;
+    var touchStartY = 0;
+
+    document.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
     document.addEventListener('touchend', function(e) {
         var touchEndX = e.changedTouches[0].screenX;
         var touchEndY = e.changedTouches[0].screenY;
@@ -3092,26 +3101,45 @@
         var xDiff = touchStartX - touchEndX;
         var yDiff = touchStartY - touchEndY;
 
-        // Ensure it's a horizontal swipe (left) and not a vertical scroll
-        if (xDiff > 70 && Math.abs(xDiff) > Math.abs(yDiff)) {
-            var isFeedbackOpen = document.getElementById('feedback-container').style.display === 'block';
-            var isHonourOpen = document.getElementById('honour-system-controls').style.display === 'flex';
+        // Ensure it's a horizontal swipe (not a vertical scroll)
+        if (Math.abs(xDiff) > 70 && Math.abs(xDiff) > Math.abs(yDiff)) {
             
+            // Safety check: don't trigger if session isn't active
             if (!sessionStarted || sessionComplete) return;
 
-            // Prevent swipe if the user is currently typing an answer in Production mode
+            var isFeedbackOpen = document.getElementById('feedback-container').style.display === 'block';
+            var isHonourOpen = document.getElementById('honour-system-controls').style.display === 'flex';
             var isTyping = (document.activeElement && document.activeElement.tagName === "INPUT");
-            if (isTyping && !isFeedbackOpen) return;
 
-            // Trigger the exact same logic as pressing Space
-            if (isFeedbackOpen) {
-                handleNextWorkflow();
-            } else if (currentQuizDirection === 'read' && productionMethod === 'type') {
-                checkAnswer();
-            } else if (!isHonourOpen) {
-                revealVerbAnswer();
-            } else if (isHonourOpen) {
-                assessHonour(true);
+            // SWIPE LEFT (Forward action)
+            if (xDiff > 0) {
+                if (isTyping && !isFeedbackOpen) return; // Don't skip typing
+
+                if (isFeedbackOpen) {
+                    handleNextWorkflow();
+                } else if (currentQuizDirection === 'read' && productionMethod === 'type') {
+                    checkAnswer();
+                } else if (!isHonourOpen) {
+                    revealVerbAnswer();
+                } else if (isHonourOpen) {
+                    assessHonour(true);
+                }
+            } 
+            // SWIPE RIGHT (Backward action)
+            else {
+                if (isTyping && !isFeedbackOpen) {
+                    // If they are typing, swipe right could just clear the input
+                    document.getElementById('user-input').value = "";
+                    return;
+                }
+                
+                if (isFeedbackOpen) {
+                    // If feedback is open, swipe right = Undo
+                    executeUndoAction();
+                } else if (isHonourOpen) {
+                    // If buttons are revealed, swipe right = Mark Incorrect
+                    assessHonour(false);
+                }
             }
         }
     }, { passive: true });
