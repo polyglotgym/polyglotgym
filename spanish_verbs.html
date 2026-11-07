@@ -36,7 +36,7 @@
         #shutter-header-area.collapsed { max-height: 0px; opacity: 0; margin-bottom: 0px !important; pointer-events: none; }
         h1 { font-size: 1.4rem; margin-top: 0; text-align: center; color: var(--accent); margin-bottom: 0.5rem; letter-spacing: 0.5px; text-transform: uppercase; }
         .score-board { display: flex; justify-content: space-around; background-color: rgba(0,0,0,0.4); padding: 0.75rem; border-radius: 0.5rem 0.5rem 0 0; margin-top: 1rem; margin-bottom: 0; border: 1px solid var(--border); border-bottom: none; font-size: 0.85rem; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
-        .score-board-progress-row { display: flex; justify-content: center; align-items: center; background-color: rgba(0,0,0,0.4); padding: 0.6rem 0.75rem; border-radius: 0 0 0.5rem 0.5rem; margin-top: 0; margin-bottom: 1rem; border: 1px solid var(--border); border-top: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; position: relative; }
+        .score-board-progress-row { display: flex; justify-content: center; align-items: center; box-sizing: border-box; background-color: rgba(0,0,0,0.4); padding: 0.6rem 0.75rem; border-radius: 0 0 0.5rem 0.5rem; margin-top: 0; margin-bottom: 1rem; border: 1px solid var(--border); border-top: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; position: relative; }
         .score-board-progress-row .score-item { margin: 0 auto; }
         .score-board-gear-btn { font-size: 1rem; background: none; color: var(--text-main); padding: 0.2rem 0.5rem; cursor: pointer; border: none; position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); line-height: 1; }
         .score-item span { font-weight: bold; color: var(--accent); }
@@ -155,7 +155,6 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                width: 100%;
                 background-color: rgba(0,0,0,0.4);
                 padding: 0.6rem 0.75rem;
                 border-radius: 0 0 0.5rem 0.5rem;
