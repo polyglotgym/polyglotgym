@@ -459,7 +459,7 @@
 
         <div id="start-btn-container" style="display: none;">
             <div class="input-group">
-                <button id="start-btn" style="width: 100%; height: 2.8rem; background-color: var(--accent); color: #0f172a; font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 1rem;" onclick="startSession();">▶ Start Session</button>
+                <button id="start-btn" style="width: 100%; height: 2.8rem; background-color: var(--accent); color: #0f172a; font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 1rem;" onclick="startSession();">▶ Start Session →</button>
             </div>
         </div>
 
@@ -469,19 +469,19 @@
         </div>
 
         <div class="input-group" id="honour-reveal-container" style="display: none;">
-            <button id="honour-reveal-btn" style="width: 100%; height: 2.8rem; background-color: var(--accent); color: #0f172a; font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 0.95rem;" onclick="revealAnswer();">Reveal Answer</button>
+            <button id="honour-reveal-btn" style="width: 100%; height: 2.8rem; background-color: var(--accent); color: #0f172a; font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 0.95rem;" onclick="revealAnswer();">Reveal Answer →</button>
         </div>
 
         <div id="honour-system-controls" style="display: none; gap: 0.75rem; margin-bottom: 1rem;">
-            <button style="flex: 1; padding: 0.75rem; background-color: var(--error); color: #fff; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 0.95rem;" onclick="assessHonour(false);">Wrong ✖</button>
-            <button style="flex: 1; padding: 0.75rem; background-color: var(--success); color: #0f172a; font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 0.95rem;" onclick="assessHonour(true);">Correct ✔</button>
+            <button style="flex: 1; padding: 0.75rem; background-color: var(--error); color: #fff; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 0.95rem;" onclick="assessHonour(false);">← Wrong ✖</button>
+            <button style="flex: 1; padding: 0.75rem; background-color: var(--success); color: #0f172a; font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 0.95rem;" onclick="assessHonour(true);">Correct ✔ →</button>
         </div>
 
         <div id="feedback-container" style="display: none;">
             <div id="feedback-message" class="feedback"></div>
             <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
                 <button class="next-btn" id="next-btn" onclick="handleNextWorkflow();" style="flex: 2;">Next Number →</button>
-                <button class="next-btn" id="undo-btn" onclick="executeUndoAction();" style="flex: 1; background-color: var(--warning); color: #0f172a;">↩ Undo</button>
+                <button class="next-btn" id="undo-btn" onclick="executeUndoAction();" style="flex: 1; background-color: var(--warning); color: #0f172a;">← Undo</button>
             </div>
         </div>
 
@@ -961,7 +961,17 @@
             subBadge.innerText = "Translate to " + currentTextStyle.toUpperCase() + " Japanese";
         }
 
-        setTimeout(function() { document.getElementById('user-input').focus(); }, 50);
+        setTimeout(function() {
+            if (currentQuizDirection === 'read' && productionMethod === 'type') {
+                var inputField = document.getElementById('user-input');
+                if (inputField) { inputField.focus(); inputField.select(); }
+            } else {
+                var actionBtn = document.getElementById('honour-reveal-container');
+                if (actionBtn && actionBtn.style.display !== 'none') {
+                    actionBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }, 50);
     }
 
     function convertNumberToJapaneseString(num, style) {
@@ -1334,9 +1344,9 @@
     }
 
     function handleNextWorkflow() {
+        if (sessionComplete) return;
         if (activeCardIndex >= currentSessionDeck.length) {
-            initQuizSession();
-            startSession();
+            triggerCompletionState();
             return;
         }
         generateQuestion();
@@ -1723,6 +1733,41 @@
             if (event.key === '2') { event.preventDefault(); assessHonour(true); }
         }
     });
+
+    var touchStartX = 0;
+    var touchStartY = 0;
+    document.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+    document.addEventListener('touchend', function(e) {
+        var touchEndX = e.changedTouches[0].screenX;
+        var touchEndY = e.changedTouches[0].screenY;
+        var xDiff = touchEndX - touchStartX;
+        var yDiff = touchEndY - touchStartY;
+        if (Math.abs(xDiff) > 70 && Math.abs(xDiff) > Math.abs(yDiff)) {
+            var isFeedbackOpen = document.getElementById('feedback-container').style.display === 'block';
+            var isHonourOpen = document.getElementById('honour-system-controls').style.display === 'flex';
+            var isTyping = (document.activeElement && document.activeElement.tagName === "INPUT");
+            var isHonourMode = (currentQuizDirection === 'write' || currentQuizDirection === 'listen') || (currentQuizDirection === 'read' && productionMethod === 'honour');
+            
+            if (xDiff > 0) { // SWIPE RIGHT
+                if (!sessionStarted && !sessionComplete) { startSession(); return; }
+                if (sessionComplete) return;
+                if (isTyping && !isFeedbackOpen) return;
+                
+                if (isFeedbackOpen) { handleNextWorkflow(); }
+                else if ((currentQuizDirection === 'read' || currentQuizDirection === 'listen') && productionMethod === 'type') { checkAnswer(); }
+                else if (isHonourMode && !isHonourOpen) { revealAnswer(); }
+                else if (isHonourMode && isHonourOpen) { assessHonour(true); }
+            } else { // SWIPE LEFT
+                if (!sessionStarted || sessionComplete) return;
+                if (isTyping && !isFeedbackOpen) { document.getElementById('user-input').value = ""; return; }
+                if (isFeedbackOpen) { executeUndoAction(); }
+                else if (isHonourMode && isHonourOpen) { assessHonour(false); }
+            }
+        }
+    }, { passive: true });
 
     window.onload = function() {
         loadState();
