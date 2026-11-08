@@ -1501,6 +1501,9 @@
     }
 
     function triggerCompletionState() {
+        sessionComplete = true;
+        sessionStarted = false;
+        
         var displayBox = document.getElementById('num-display');
         displayBox.innerText = "🎉 Done!";
         displayBox.style.color = "var(--success)";
@@ -1740,31 +1743,37 @@
         touchStartX = e.changedTouches[0].screenX;
         touchStartY = e.changedTouches[0].screenY;
     }, { passive: true });
+    var touchStartX = 0;
+    var touchStartY = 0;
+    document.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
     document.addEventListener('touchend', function(e) {
         var touchEndX = e.changedTouches[0].screenX;
         var touchEndY = e.changedTouches[0].screenY;
         var xDiff = touchEndX - touchStartX;
         var yDiff = touchEndY - touchStartY;
+        
         if (Math.abs(xDiff) > 70 && Math.abs(xDiff) > Math.abs(yDiff)) {
             var isFeedbackOpen = document.getElementById('feedback-container').style.display === 'block';
             var isHonourOpen = document.getElementById('honour-system-controls').style.display === 'flex';
-            var isTyping = (document.activeElement && document.activeElement.tagName === "INPUT");
-            var isHonourMode = (currentQuizDirection === 'write' || currentQuizDirection === 'listen') || (currentQuizDirection === 'read' && productionMethod === 'honour');
             
             if (xDiff > 0) { // SWIPE RIGHT
                 if (!sessionStarted && !sessionComplete) { startSession(); return; }
                 if (sessionComplete) return;
-                if (isTyping && !isFeedbackOpen) return;
                 
                 if (isFeedbackOpen) { handleNextWorkflow(); }
-                else if ((currentQuizDirection === 'read' || currentQuizDirection === 'listen') && productionMethod === 'type') { checkAnswer(); }
-                else if (isHonourMode && !isHonourOpen) { revealAnswer(); }
-                else if (isHonourMode && isHonourOpen) { assessHonour(true); }
+                else if (productionMethod === 'type') { checkAnswer(); }
+                else if (productionMethod === 'honour' && !isHonourOpen) { revealAnswer(); }
+                else if (productionMethod === 'honour' && isHonourOpen) { assessHonour(true); }
             } else { // SWIPE LEFT
                 if (!sessionStarted || sessionComplete) return;
+                var isTyping = (document.activeElement && document.activeElement.tagName === "INPUT");
                 if (isTyping && !isFeedbackOpen) { document.getElementById('user-input').value = ""; return; }
+                
                 if (isFeedbackOpen) { executeUndoAction(); }
-                else if (isHonourMode && isHonourOpen) { assessHonour(false); }
+                else if (productionMethod === 'honour' && isHonourOpen) { assessHonour(false); }
             }
         }
     }, { passive: true });
