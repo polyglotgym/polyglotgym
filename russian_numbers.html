@@ -70,7 +70,7 @@
         .nav-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
         .nav-btn { background: none; border: none; color: var(--text-muted); padding: 0.5rem 0.75rem; cursor: pointer; font-size: 0.9rem; border-radius: 0.25rem; transition: all 0.2s; }
         .nav-btn.active { background-color: var(--border); color: var(--accent); font-weight: bold; }
-        .mode-selector { display: flex; flex-wrap: wrap; background-color: rgba(0, 0, 0, 0.3); padding: 0.4rem; border-radius: 0.5rem; margin-bottom: 1rem; border: 1px solid var(--border); gap: 0.4rem; }
+        .mode-selector { display: flex; flex-wrap: wrap; background-color: rgba(0, 0, 0, 0.3); padding: 0.4rem; border-radius: 0.5rem; margin-bottom: 0.5rem; border: 1px solid var(--border); gap: 0.4rem; }
         .mode-btn { flex: 1 1 calc(50% - 0.4rem); background: none; border: none; color: var(--text-muted); padding: 0.6rem 0.5rem; font-size: 0.85rem; border-radius: 0.35rem; cursor: pointer; text-align: center; }
         .mode-btn.active { background-color: var(--accent); color: #0d0c10; font-weight: bold; }
         .mode-selector.compact-2 { flex-wrap: nowrap; }
@@ -241,17 +241,17 @@
 
         <div id="start-btn-container" style="display: none;">
             <div class="input-group">
-                <button id="start-btn" style="width: 100%; height: 2.8rem; background-color: var(--accent); color: #0d0c10; font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 1rem;" onclick="startSession();">▶ Start Session</button>
+                <button id="start-btn" style="width: 100%; height: 2.8rem; background-color: var(--accent); color: #0d0c10; font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 1rem;" onclick="startSession();">▶ Start Session →</button>
             </div>
         </div>
 
         <div id="panel-universal-controls">
             <div class="input-group" id="btn-reveal-container" style="display: none; width: 100%;">
-                <button id="reveal-btn" style="width: 100%; height: 2.8rem; background-color: var(--accent); color: #0d0c10; font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer;" onclick="revealNumberAnswer()">Reveal Answer</button>
+                <button id="reveal-btn" style="width: 100%; height: 2.8rem; background-color: var(--accent); color: #0d0c10; font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer;" onclick="revealNumberAnswer()">Reveal Answer →</button>
             </div>
             <div class="honour-group" id="honour-system-controls" style="display: none; justify-content: center; gap: 0.75rem; width: 100%; margin-bottom: 1rem;">
-                <button class="honour-btn" style="background-color: var(--error); flex: 1;" onclick="assessHonour(false)">Wrong ✖</button>
-                <button class="honour-btn" style="background-color: var(--success); color: #0d0c10; font-weight: bold; flex: 1;" onclick="assessHonour(true)">Correct ✔</button>
+                <button class="honour-btn" style="background-color: var(--error); flex: 1;" onclick="assessHonour(false)">← Wrong ✖</button>
+                <button class="honour-btn" style="background-color: var(--success); color: #0d0c10; font-weight: bold; flex: 1;" onclick="assessHonour(true)">Correct ✔ →</button>
             </div>
         </div>
 
@@ -259,7 +259,7 @@
             <div id="feedback-message" class="feedback"></div>
             <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
                 <button class="next-btn" id="next-btn" onclick="handleNextWorkflow()" style="flex: 2;">Next Number →</button>
-                <button class="next-btn" id="undo-btn" onclick="executeUndoAction()" style="flex: 1; background-color: var(--warning); color: #0d0c10;">↩ Undo</button>
+                <button class="next-btn" id="undo-btn" onclick="executeUndoAction()" style="flex: 1; background-color: var(--warning); color: #0d0c10;">← Undo</button>
             </div>
         </div>
 
@@ -756,7 +756,24 @@
             document.getElementById('speak-btn').style.display = "block";
             setTimeout(speakRussianPrompt, 300);
         }
+
+        // Auto-scroll to the active input/reveal area so the user doesn't have to hunt for it
+        setTimeout(function() {
+            if (currentQuizDirection === 'read' && productionMethod === 'type') {
+                var inputField = document.getElementById('user-input');
+                if (inputField) {
+                    inputField.focus();
+                    inputField.select();
+                }
+            } else {
+                var actionBtn = document.getElementById('btn-reveal-container');
+                if (actionBtn && actionBtn.style.display !== 'none') {
+                    actionBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }, 50);
     }
+
 
     function speakRussianPrompt() {
         if (!currentClockObj) return;
@@ -942,11 +959,6 @@
     }
 
     function handleNextWorkflow() {
-        if (sessionComplete) return;
-        if (activeCardIndex >= currentSessionDeck.length) {
-            triggerCompletionState();
-            return;
-        }
         generateQuestion();
     }
 
@@ -1039,6 +1051,69 @@
             if (event.key === '2') { event.preventDefault(); assessHonour(true); }
         }
     });
+
+    // --- SWIPE GESTURE SUPPORT ---
+    var touchStartX = 0;
+    var touchStartY = 0;
+
+    document.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    document.addEventListener('touchend', function(e) {
+        var touchEndX = e.changedTouches[0].screenX;
+        var touchEndY = e.changedTouches[0].screenY;
+        
+        // Calculate distance (positive = swiped right, negative = swiped left)
+        var xDiff = touchEndX - touchStartX;
+        var yDiff = touchEndY - touchStartY;
+
+        // Ensure it's a horizontal swipe (not a vertical scroll)
+        if (Math.abs(xDiff) > 70 && Math.abs(xDiff) > Math.abs(yDiff)) {
+            
+            var isFeedbackOpen = document.getElementById('feedback-container').style.display === 'block';
+            var isHonourOpen = document.getElementById('honour-system-controls').style.display === 'flex';
+            var isTyping = (document.activeElement && document.activeElement.tagName === "INPUT");
+
+            // SWIPE RIGHT (Forward action)
+            if (xDiff > 0) {
+                if (!sessionStarted && !sessionComplete) {
+                    startSession(); // Start the session with a swipe!
+                    return;
+                }
+                if (sessionComplete) return; // Let the user tap the buttons on the completion screen
+                if (isTyping && !isFeedbackOpen) return; // Don't skip typing
+
+                if (isFeedbackOpen) {
+                    handleNextWorkflow(); // Next card
+                } else if (currentQuizDirection === 'read' && productionMethod === 'type') {
+                    checkAnswer(); // Submit answer
+                } else if (!isHonourOpen) {
+                    revealVerbAnswer(); // Reveal
+                } else if (isHonourOpen) {
+                    assessHonour(true); // Mark correct
+                }
+            } 
+            // SWIPE LEFT (Backward action)
+            else {
+                if (!sessionStarted || sessionComplete) return;
+                
+                if (isTyping && !isFeedbackOpen) {
+                    // Swipe left to clear input
+                    document.getElementById('user-input').value = "";
+                    return;
+                }
+                
+                if (isFeedbackOpen) {
+                    executeUndoAction(); // Undo the last action
+                } else if (isHonourOpen) {
+                    assessHonour(false); // Mark incorrect
+                }
+            }
+        }
+    }, { passive: true });
+
 
     window.onload = function() {
         loadState();
