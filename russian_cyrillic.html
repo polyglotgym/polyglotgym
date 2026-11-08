@@ -41,13 +41,14 @@
             background-color: rgba(0,0,0,0.25);
             padding: 0.75rem;
             border-radius: 0.5rem 0.5rem 0 0;
-            margin-top: 1rem; margin-bottom: 0;
+            margin-top: 0; margin-bottom: 0;
             border: 1px solid var(--border); border-bottom: none;
             font-size: 0.85rem;
             flex-wrap: wrap; gap: 0.5rem; align-items: center;
         }
         .score-board-progress-row {
             display: flex; justify-content: center; align-items: center;
+            box-sizing: border-box;
             background-color: rgba(0,0,0,0.25);
             padding: 0.6rem 0.75rem;
             border-radius: 0 0 0.5rem 0.5rem;
@@ -152,8 +153,8 @@
                 gap: 0.4rem 0.75rem !important;
                 line-height: 1.4 !important;
             }
-            .score-item { font-size: 0 !important; white-space: nowrap !important; }
-            .score-item span, .score-item a { font-size: 0.9rem !important; }
+            .score-item { font-size: 0.75rem !important; white-space: nowrap !important; }
+            .score-item span, .score-item a { font-size: 0.85rem !important; }
             .score-board-progress-row .score-item { font-size: 0.9rem !important; text-align: center; }
             .score-board-gear-btn {
                 position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%);
