@@ -758,11 +758,10 @@
             var inputField = document.getElementById('user-input');
             if (inputField && currentQuizDirection === 'read' && readProductionMethod === 'type') inputField.focus();
         }, 50);
-        }
 
         // Auto-scroll to the active input/reveal area so the user doesn't have to hunt for it
         setTimeout(function() {
-            if (currentQuizDirection === 'read' && productionMethod === 'type') {
+            if (currentQuizDirection === 'read' && readProductionMethod === 'type') {
                 var inputField = document.getElementById('user-input');
                 if (inputField) {
                     inputField.focus();
@@ -776,7 +775,6 @@
             }
         }, 50);
     }
-
 
     function revealHiddenTip() {
         if (!currentClockObj) return;
@@ -1412,7 +1410,7 @@
                 } else if (currentQuizDirection === 'read' && productionMethod === 'type') {
                     checkAnswer(); // Submit answer
                 } else if (!isHonourOpen) {
-                    revealVerbAnswer(); // Reveal
+                    revealCyrillicAnswer(); // Reveal
                 } else if (isHonourOpen) {
                     assessHonour(true); // Mark correct
                 }
