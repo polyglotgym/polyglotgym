@@ -1385,32 +1385,28 @@
         var touchEndX = e.changedTouches[0].screenX;
         var touchEndY = e.changedTouches[0].screenY;
         
-        // Calculate distance (positive = swiped right, negative = swiped left)
         var xDiff = touchEndX - touchStartX;
         var yDiff = touchEndY - touchStartY;
 
-        // Ensure it's a horizontal swipe (not a vertical scroll)
         if (Math.abs(xDiff) > 70 && Math.abs(xDiff) > Math.abs(yDiff)) {
             
             var isFeedbackOpen = document.getElementById('feedback-container').style.display === 'block';
             var isHonourOpen = document.getElementById('honour-system-controls').style.display === 'flex';
-            var isTyping = (document.activeElement && document.activeElement.tagName === "INPUT");
 
             // SWIPE RIGHT (Forward action)
             if (xDiff > 0) {
                 if (!sessionStarted && !sessionComplete) {
-                    startSession(); // Start the session with a swipe!
+                    startSession(); 
                     return;
                 }
-                if (sessionComplete) return; // Let the user tap the buttons on the completion screen
-                if (isTyping && !isFeedbackOpen) return; // Don't skip typing
+                if (sessionComplete) return; 
 
                 if (isFeedbackOpen) {
                     handleNextWorkflow(); // Next card
-                } else if (currentQuizDirection === 'read' && productionMethod === 'type') {
+                } else if (currentQuizDirection === 'read' && readProductionMethod === 'type') {
                     checkAnswer(); // Submit answer
                 } else if (!isHonourOpen) {
-                    revealCyrillicAnswer(); // Reveal
+                    revealCyrillicAnswer(); // Reveal (fixed function name)
                 } else if (isHonourOpen) {
                     assessHonour(true); // Mark correct
                 }
@@ -1419,21 +1415,14 @@
             else {
                 if (!sessionStarted || sessionComplete) return;
                 
-                if (isTyping && !isFeedbackOpen) {
-                    // Swipe left to clear input
-                    document.getElementById('user-input').value = "";
-                    return;
-                }
-                
                 if (isFeedbackOpen) {
-                    executeUndoAction(); // Undo the last action
+                    executeUndoAction(); // Undo
                 } else if (isHonourOpen) {
                     assessHonour(false); // Mark incorrect
                 }
             }
         }
     }, { passive: true });
-
 
     window.onload = function() { loadState(); initSessionDeck(); };
 </script>
