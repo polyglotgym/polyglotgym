@@ -649,6 +649,12 @@
     let coreDeckOriginalCount = 0;
     let isEndlessMode = false;
 
+    let sessionCorrect = 0;
+    let sessionTotal = 0;
+    let sessionBestStreak = 0;
+    let sessionCurrentStreak = 0;
+    let sessionComplete = false;
+
     const kanjiDigits = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
     const hiraganaDigits = ["", "いち", "に", "さん", "よん", "ご", "ろく", "なな", "はち", "きゅう"];
     const romajiDigits = ["", "ichi", "ni", "san", "yon", "go", "roku", "nana", "hachi", "kyū"];
@@ -701,6 +707,7 @@
 
     function showStartScreen() {
         sessionStarted = false;
+        sessionComplete = false;
 
         var displayBox = document.getElementById('num-display');
         var subBadge = document.getElementById('type-sub-display');
@@ -853,6 +860,12 @@
         currentSessionDeck = [];
         activeCardIndex = 0;
         userActionHistory = [];
+
+        sessionCorrect = 0;
+        sessionTotal = 0;
+        sessionBestStreak = 0;
+        sessionCurrentStreak = 0;
+        sessionComplete = false;
 
         var sizeSel = document.getElementById('deck-size-selector');
         var maxDeckSize = sizeSel ? parseInt(sizeSel.value, 10) : 15;
@@ -1115,6 +1128,7 @@
         document.getElementById('honour-system-controls').style.display = 'none';
 
         totalQuestions++;
+        sessionTotal++;
         var feedbackContainer = document.getElementById('feedback-container');
         var feedbackMessage = document.getElementById('feedback-message');
 
@@ -1196,6 +1210,7 @@
         document.getElementById('submit-btn').disabled = true;
         inputField.disabled = true;
         totalQuestions++;
+        sessionTotal++;
 
         let isCorrect = false;
         let cleanTarget = currentStringTarget.toLowerCase().replace(/\s+/g, "");
@@ -1226,11 +1241,14 @@
         if (isCorrect) {
             totalCorrect++;
             currentStreak++;
+            sessionCorrect++;
+            sessionCurrentStreak++;
+            if (sessionCurrentStreak > sessionBestStreak) sessionBestStreak = sessionCurrentStreak;
             feedbackMessage.className = "feedback correct-box";
-            var answerDisplay = (currentQuizDirection === "write") ? currentStringTarget : currentNumber.toLocaleString();
-            feedbackMessage.innerHTML = "<strong>Correct!</strong> 🎉<br>The answer is exactly '<strong>" + answerDisplay + "</strong>'.";
+            // ...
         } else {
             currentStreak = 0;
+            sessionCurrentStreak = 0;
             feedbackMessage.className = "feedback incorrect-box";
             var answerDisplay = (currentQuizDirection === "write") ? currentStringTarget : currentNumber.toLocaleString();
             feedbackMessage.innerHTML = "<strong>Incorrect.</strong><br>Correct answer was: <strong>" + answerDisplay + "</strong>.";
@@ -1503,7 +1521,9 @@
     function triggerCompletionState() {
         sessionComplete = true;
         sessionStarted = false;
-        
+
+        var accuracy = sessionTotal > 0 ? Math.round(sessionCorrect / sessionTotal * 100) : 0;
+
         var displayBox = document.getElementById('num-display');
         displayBox.innerText = "🎉 Done!";
         displayBox.style.color = "var(--success)";
@@ -1523,10 +1543,44 @@
         var feedbackContainer = document.getElementById('feedback-container');
         var feedbackMessage = document.getElementById('feedback-message');
         feedbackMessage.className = "feedback correct-box";
-        feedbackMessage.innerHTML = "<strong>Congratulations!</strong> 🏆<br>All " + coreDeckOriginalCount + " numbers cleared!<br><small>Reshuffle a fresh deck to keep drilling.</small>";
+        feedbackMessage.innerHTML =
+            '<div style="text-align:center;">' +
+                '<div class="completion-stats">' +
+                    '<div><span class="completion-stat-label">Accuracy</span><span class="completion-stat-value">' + accuracy + '%</span></div>' +
+                    '<div><span class="completion-stat-label">Best Streak</span><span class="completion-stat-value">🔥 ' + sessionBestStreak + '</span></div>' +
+                    '<div><span class="completion-stat-label">Checked</span><span class="completion-stat-value">' + sessionTotal + '</span></div>' +
+                '</div>' +
+                '<div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;">' + sessionCorrect + ' / ' + sessionTotal + ' correct this run</div>' +
+                '<div style="font-size:0.75rem; color:var(--text-muted);">' + coreDeckOriginalCount + ' cards in deck</div>' +
+            '</div>';
+
+        var nextBtn = document.getElementById('next-btn');
+        if (nextBtn) nextBtn.style.display = "none";
+
+        var existingBar = feedbackContainer.querySelector('.completion-actions');
+        if (existingBar) existingBar.remove();
+
+        var actionsHtml = '<div class="completion-actions">';
+        actionsHtml += '<button class="completion-btn primary" onclick="startNewSessionFromComplete()">🔄 New Session</button>';
+        actionsHtml += '<button class="completion-btn" onclick="switchView(\'review\')">📝 Reviews</button>';
+        actionsHtml += '</div>';
+        feedbackContainer.insertAdjacentHTML('beforeend', actionsHtml);
         feedbackContainer.style.display = "block";
+
+        setTimeout(function() {
+            if (feedbackContainer) feedbackContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 450);
     }
 
+    function startNewSessionFromComplete() {
+        var fb = document.getElementById('feedback-container');
+        var bar = fb ? fb.querySelector('.completion-actions') : null;
+        if (bar) bar.remove();
+        var nb = document.getElementById('next-btn');
+        if (nb) nb.style.display = "";
+        sessionComplete = false;
+        initQuizSession();
+    }
     function saveState() {
         try {
             var sizeSel = document.getElementById('deck-size-selector');
@@ -1743,12 +1797,7 @@
         touchStartX = e.changedTouches[0].screenX;
         touchStartY = e.changedTouches[0].screenY;
     }, { passive: true });
-    var touchStartX = 0;
-    var touchStartY = 0;
-    document.addEventListener('touchstart', function(e) {
-        touchStartX = e.changedTouches[0].screenX;
-        touchStartY = e.changedTouches[0].screenY;
-    }, { passive: true });
+    
     document.addEventListener('touchend', function(e) {
         var touchEndX = e.changedTouches[0].screenX;
         var touchEndY = e.changedTouches[0].screenY;
@@ -1758,6 +1807,7 @@
         if (Math.abs(xDiff) > 70 && Math.abs(xDiff) > Math.abs(yDiff)) {
             var isFeedbackOpen = document.getElementById('feedback-container').style.display === 'block';
             var isHonourOpen = document.getElementById('honour-system-controls').style.display === 'flex';
+            var isTyping = (document.activeElement && document.activeElement.tagName === "INPUT");
             
             if (xDiff > 0) { // SWIPE RIGHT
                 if (!sessionStarted && !sessionComplete) { startSession(); return; }
@@ -1769,7 +1819,7 @@
                 else if (productionMethod === 'honour' && isHonourOpen) { assessHonour(true); }
             } else { // SWIPE LEFT
                 if (!sessionStarted || sessionComplete) return;
-                var isTyping = (document.activeElement && document.activeElement.tagName === "INPUT");
+                
                 if (isTyping && !isFeedbackOpen) { document.getElementById('user-input').value = ""; return; }
                 
                 if (isFeedbackOpen) { executeUndoAction(); }
