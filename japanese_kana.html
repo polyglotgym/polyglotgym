@@ -453,18 +453,18 @@
 
         <div id="panel-write-mode" style="display: none;">
             <div class="input-group" id="btn-reveal-container">
-                <button id="reveal-btn" style="width: 100%;" onclick="revealWriteAnswer()">Reveal Answer</button>
+                <button id="reveal-btn" style="width: 100%;" onclick="revealWriteAnswer()">Reveal Answer →</button>
             </div>
             <div class="honour-group" id="honour-system-controls" style="display: none; margin-bottom: 1rem;">
-                <button class="honour-btn" style="background-color: var(--error); color: var(--text-main);" onclick="assessHonour(false)">Wrong ✖</button>
-                <button class="honour-btn" style="background-color: var(--success); color: #0f172a;" onclick="assessHonour(true)">Correct ✔</button>
+                <button class="honour-btn" style="background-color: var(--error); color: var(--text-main);" onclick="assessHonour(false)">← Wrong ✖</button>
+                <button class="honour-btn" style="background-color: var(--success); color: #0f172a;" onclick="assessHonour(true)">Correct ✔ →</button>
             </div>
         </div>
 
         <!-- SESSION START GATE -->
         <div id="start-btn-container" style="display: none;">
             <div class="input-group">
-                <button id="start-btn" style="width: 100%; height: 2.8rem; background-color: var(--accent); color: #0f172a; font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 1rem;" onclick="startSession();">▶ Start Session</button>
+                <button id="start-btn" style="width: 100%; height: 2.8rem; background-color: var(--accent); color: #0f172a; font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 1rem;" onclick="startSession();">▶ Start Session →</button>
             </div>
         </div>
 
@@ -472,7 +472,7 @@
             <div id="feedback-message" class="feedback"></div>
             <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
                 <button class="next-btn" id="next-btn" onclick="handleNextWorkflow();" style="flex: 2; margin-top: 0;">Next Character →</button>
-                <button class="next-btn" id="undo-btn" onclick="executeUndoAction();" style="flex: 1; margin-top: 0; background-color: var(--warning); color: #0f172a;">↩ Undo</button>
+                <button class="next-btn" id="undo-btn" onclick="executeUndoAction();" style="flex: 1; margin-top: 0; background-color: var(--warning); color: #0f172a;">← Undo</button>
             </div>
         </div>
 
@@ -1018,8 +1018,16 @@
             document.getElementById('speak-btn').style.display = "none"; 
         }
 
-        setTimeout(function() { 
-            if (currentQuizDirection === 'read') document.getElementById('user-input').focus(); 
+        setTimeout(function() {
+            if (currentQuizDirection === 'read' && readProductionMethod === 'type') {
+                var inputField = document.getElementById('user-input');
+                if (inputField) { inputField.focus(); inputField.select(); }
+            } else {
+                var actionBtn = document.getElementById('btn-reveal-container');
+                if (actionBtn && actionBtn.style.display !== 'none') {
+                    actionBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
         }, 50);
     }
 </script>
@@ -1337,12 +1345,6 @@
             return;
         }
         generateQuestion();
-        setTimeout(function() {
-            if (currentQuizDirection === 'read') {
-                var inputField = document.getElementById('user-input');
-                if (inputField) { inputField.focus(); inputField.select(); }
-            }
-        }, 30);
     }
 
     function startNewSessionFromComplete() {
@@ -1771,6 +1773,40 @@
             if (event.key === '2') { event.preventDefault(); assessHonour(true); }
         }
     });
+
+    var touchStartX = 0;
+    var touchStartY = 0;
+    document.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+    document.addEventListener('touchend', function(e) {
+        var touchEndX = e.changedTouches[0].screenX;
+        var touchEndY = e.changedTouches[0].screenY;
+        var xDiff = touchEndX - touchStartX;
+        var yDiff = touchEndY - touchStartY;
+        if (Math.abs(xDiff) > 70 && Math.abs(xDiff) > Math.abs(yDiff)) {
+            var isFeedbackOpen = document.getElementById('feedback-container').style.display === 'block';
+            var isHonourOpen = document.getElementById('honour-system-controls').style.display === 'flex';
+            var isTyping = (document.activeElement && document.activeElement.tagName === "INPUT");
+            var isHonourMode = (currentQuizDirection === 'write') || (currentQuizDirection === 'read' && readProductionMethod === 'honour');
+            
+            if (xDiff > 0) { // SWIPE RIGHT
+                if (!sessionStarted && !sessionComplete) { startSession(); return; }
+                if (sessionComplete) return;
+                if (isTyping && !isFeedbackOpen) return;
+                if (isFeedbackOpen) { handleNextWorkflow(); }
+                else if (currentQuizDirection === 'read' && readProductionMethod === 'type') { checkAnswer(); }
+                else if (isHonourMode && !isHonourOpen) { revealWriteAnswer(); }
+                else if (isHonourMode && isHonourOpen) { assessHonour(true); }
+            } else { // SWIPE LEFT
+                if (!sessionStarted || sessionComplete) return;
+                if (isTyping && !isFeedbackOpen) { document.getElementById('user-input').value = ""; return; }
+                if (isFeedbackOpen) { executeUndoAction(); }
+                else if (isHonourMode && isHonourOpen) { assessHonour(false); }
+            }
+        }
+    }, { passive: true });
 
     window.onload = function() { 
         loadState();
