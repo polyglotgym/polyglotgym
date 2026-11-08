@@ -16,6 +16,7 @@
   --accent-ru: #ff4757;
   --accent-es: #f59e0b;
   --accent-it: #22c55e;
+  --accent-pt: #eab308;
 }
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -156,6 +157,7 @@ h1 { font-size: 2rem; margin: 0; color: var(--text-main); letter-spacing: 0.5px;
 .section[data-lang="russian"] h2 { color: var(--accent-ru); border-color: rgba(255, 71, 87, 0.3); }
 .section[data-lang="spanish"] h2 { color: var(--accent-es); border-color: rgba(245, 158, 11, 0.3); }
 .section[data-lang="italian"] h2 { color: var(--accent-it); border-color: rgba(34, 197, 94, 0.3); }
+.section[data-lang="portuguese"] h2 { color: var(--accent-pt); border-color: rgba(234, 179, 8, 0.3); }
 
 .apps-grid {
   display: grid;
@@ -185,6 +187,7 @@ h1 { font-size: 2rem; margin: 0; color: var(--text-main); letter-spacing: 0.5px;
 .app-card[data-lang="russian"]:hover { border-color: var(--accent-ru); }
 .app-card[data-lang="spanish"]:hover { border-color: var(--accent-es); }
 .app-card[data-lang="italian"]:hover { border-color: var(--accent-it); }
+.app-card[data-lang="portuguese"]:hover { border-color: var(--accent-pt); }
 
 .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; gap: 0.5rem; }
 .app-title { font-size: 1.05rem; font-weight: bold; margin: 0; color: var(--text-main); }
@@ -201,6 +204,7 @@ h1 { font-size: 2rem; margin: 0; color: var(--text-main); letter-spacing: 0.5px;
 .badge.russian  { background-color: rgba(255, 71, 87, 0.12); color: #fb7185; border: 1px solid rgba(255, 71, 87, 0.3); }
 .badge.spanish  { background-color: rgba(245, 158, 11, 0.12); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
 .badge.italian  { background-color: rgba(34, 197, 94, 0.12); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
+.badge.portuguese { background-color: rgba(234, 179, 8, 0.12); color: #fde047; border: 1px solid rgba(234, 179, 8, 0.3); }
 
 .desc { color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; margin: 0 0 1rem 0; }
 
@@ -218,6 +222,7 @@ h1 { font-size: 2rem; margin: 0; color: var(--text-main); letter-spacing: 0.5px;
 .app-card[data-lang="russian"] .progress-fill { background-color: var(--accent-ru); }
 .app-card[data-lang="spanish"] .progress-fill { background-color: var(--accent-es); }
 .app-card[data-lang="italian"] .progress-fill { background-color: var(--accent-it); }
+.app-card[data-lang="portuguese"] .progress-fill { background-color: var(--accent-pt); }
 
 .stats-line {
   display: flex;
@@ -242,6 +247,7 @@ h1 { font-size: 2rem; margin: 0; color: var(--text-main); letter-spacing: 0.5px;
 .app-card[data-lang="russian"] .footer-action { color: #fb7185; }
 .app-card[data-lang="spanish"] .footer-action { color: #fbbf24; }
 .app-card[data-lang="italian"] .footer-action { color: #4ade80; }
+.app-card[data-lang="portuguese"] .footer-action { color: #fde047; }
 
 .suite-summary {
   margin-top: 2rem;
@@ -295,6 +301,7 @@ footer {
     <button class="filter-btn" data-filter="russian">Russian</button>
     <button class="filter-btn" data-filter="spanish">Spanish</button>
     <button class="filter-btn" data-filter="italian">Italian</button>
+    <button class="filter-btn" data-filter="portuguese">Portuguese</button>
   </div>
 
   <div class="suite-summary" id="suite-summary"></div>
@@ -396,13 +403,19 @@ const APPS = [
     lang: 'italian', badge: 'Clitics',
     desc: 'Clitic pronouns in every combination — direct, indirect, and the glielo/gliela paradigm, plus modal double-placement and gerund attachment. Covers elision with apostrophe, ne and ci, and past-participle agreement with direct clitics.',
     key: 'ita_clitics_state' },
+
+  { file: 'portuguese_verbs.html', title: 'Verb Conjugation Trainer',
+    lang: 'portuguese', badge: 'Verbs',
+    desc: 'Twenty-six verbs across six tenses — presente, pretérito perfeito, imperfeito, pretérito perfeito composto, futuro, condicional. Includes -IR stem-changers, ter-based compound past, and strict/lenient accent modes.',
+    key: 'por_verbs_state' },
 ];
 
 const LANG_LABELS = {
-  japanese: 'Japanese',
-  russian:  'Russian',
-  spanish:  'Spanish',
-  italian:  'Italian'
+  japanese:   'Japanese',
+  russian:    'Russian',
+  spanish:    'Spanish',
+  italian:    'Italian',
+  portuguese: 'Portuguese'
 };
 
 // ============================================================
