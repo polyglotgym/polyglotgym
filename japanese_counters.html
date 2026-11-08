@@ -86,7 +86,7 @@
         .nav-btn { background: none; border: none; color: var(--text-muted); padding: 0.5rem 0.75rem; cursor: pointer; font-size: 0.9rem; border-radius: 0.25rem; transition: all 0.2s; }
         .nav-btn:hover { color: var(--text-main); }
         .nav-btn.active { background-color: var(--border); color: var(--accent); font-weight: bold; }
-        .mode-selector { display: flex; flex-wrap: nowrap; background-color: rgba(0, 0, 0, 0.3); padding: 0.4rem; border-radius: 0.5rem; margin-bottom: 1rem; border: 1px solid var(--border); gap: 0.4rem; }
+        .mode-selector { display: flex; flex-wrap: nowrap; background-color: rgba(0, 0, 0, 0.3); padding: 0.4rem; border-radius: 0.5rem; margin-bottom: 0.5rem; border: 1px solid var(--border); gap: 0.4rem; }
         .mode-btn { flex: 1 1 0; min-width: 0; white-space: nowrap; background: none; border: none; color: var(--text-muted); padding: 0.6rem 0.5rem; font-size: 0.85rem; border-radius: 0.35rem; cursor: pointer; text-align: center; transition: all 0.2s; }
         .mode-btn:hover { color: var(--text-main); }
         .mode-btn.active { background-color: var(--accent); color: #0f172a; font-weight: bold; }
@@ -221,17 +221,17 @@
 
         <div id="panel-write-mode" style="display: none;">
             <div class="input-group" id="btn-reveal-container">
-                <button id="reveal-btn" style="width: 100%; height: 2.8rem; background-color: var(--accent); color: #0f172a; font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer;" onclick="revealCounterAnswer()">Reveal Answer</button>
+                <button id="reveal-btn" style="width: 100%; height: 2.8rem; background-color: var(--accent); color: #0f172a; font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer;" onclick="revealCounterAnswer()">Reveal Answer →</button>
             </div>
             <div class="honour-group" id="honour-system-controls" style="display: none; margin-bottom: 1rem;">
-                <button class="honour-btn" style="background-color: var(--error);" onclick="assessHonour(false)">Wrong ✖</button>
-                <button class="honour-btn" style="background-color: var(--success); color: #0f172a; font-weight: bold;" onclick="assessHonour(true)">Correct ✔</button>
+                <button class="honour-btn" style="background-color: var(--error);" onclick="assessHonour(false)">← Wrong ✖</button>
+                <button class="honour-btn" style="background-color: var(--success); color: #0f172a; font-weight: bold;" onclick="assessHonour(true)">Correct ✔ →</button>
             </div>
         </div>
 
         <div id="start-btn-container" style="display: none;">
             <div class="input-group">
-                <button id="start-btn" style="width: 100%; height: 2.8rem; background-color: var(--accent); color: #0f172a; font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 1rem;" onclick="startSession();">▶ Start Session</button>
+                <button id="start-btn" style="width: 100%; height: 2.8rem; background-color: var(--accent); color: #0f172a; font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 1rem;" onclick="startSession();">▶ Start Session →</button>
             </div>
         </div>
 
@@ -239,7 +239,7 @@
             <div id="feedback-message" class="feedback"></div>
             <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
                 <button class="next-btn" id="next-btn" onclick="handleNextWorkflow();" style="flex: 2;">Next →</button>
-                <button class="next-btn" id="undo-btn" onclick="executeUndoAction();" style="flex: 1; background-color: var(--warning); color: #0f172a;">↩ Undo</button>
+                <button class="next-btn" id="undo-btn" onclick="executeUndoAction();" style="flex: 1; background-color: var(--warning); color: #0f172a;">← Undo</button>
             </div>
         </div>
 
@@ -763,8 +763,13 @@
 
         setTimeout(function() {
             if (currentQuizDirection === 'read' && productionMethod === 'type') {
-                var inp = document.getElementById('user-input');
-                if (inp) inp.focus();
+                var inputField = document.getElementById('user-input');
+                if (inputField) { inputField.focus(); inputField.select(); }
+            } else {
+                var actionBtn = document.getElementById('btn-reveal-container');
+                if (actionBtn && actionBtn.style.display !== 'none') {
+                    actionBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
             }
         }, 50);
     }
@@ -1430,6 +1435,40 @@
             if (event.key === '2') { event.preventDefault(); assessHonour(true); }
         }
     });
+
+    var touchStartX = 0;
+    var touchStartY = 0;
+    document.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+    document.addEventListener('touchend', function(e) {
+        var touchEndX = e.changedTouches[0].screenX;
+        var touchEndY = e.changedTouches[0].screenY;
+        var xDiff = touchEndX - touchStartX;
+        var yDiff = touchEndY - touchStartY;
+        if (Math.abs(xDiff) > 70 && Math.abs(xDiff) > Math.abs(yDiff)) {
+            var isFeedbackOpen = document.getElementById('feedback-container').style.display === 'block';
+            var isHonourOpen = document.getElementById('honour-system-controls').style.display === 'flex';
+            var isTyping = (document.activeElement && document.activeElement.tagName === "INPUT");
+            var isHonourMode = (currentQuizDirection === 'write') || (currentQuizDirection === 'read' && productionMethod === 'honour');
+            
+            if (xDiff > 0) { // SWIPE RIGHT
+                if (!sessionStarted && !sessionComplete) { startSession(); return; }
+                if (sessionComplete) return;
+                if (isTyping && !isFeedbackOpen) return;
+                if (isFeedbackOpen) { handleNextWorkflow(); }
+                else if (currentQuizDirection === 'read' && productionMethod === 'type') { checkAnswer(); }
+                else if (isHonourMode && !isHonourOpen) { revealCounterAnswer(); }
+                else if (isHonourMode && isHonourOpen) { assessHonour(true); }
+            } else { // SWIPE LEFT
+                if (!sessionStarted || sessionComplete) return;
+                if (isTyping && !isFeedbackOpen) { document.getElementById('user-input').value = ""; return; }
+                if (isFeedbackOpen) { executeUndoAction(); }
+                else if (isHonourMode && isHonourOpen) { assessHonour(false); }
+            }
+        }
+    }, { passive: true });
 
     window.onload = function() { loadState(); initSessionDeck(); };
 </script>
