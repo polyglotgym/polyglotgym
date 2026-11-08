@@ -1339,7 +1339,11 @@
     }
 
     function handleNextWorkflow() {
-        if (sessionComplete) return;
+        if (sessionComplete) {
+                    var compBtn = document.querySelector('.completion-btn.primary');
+                    if (compBtn) compBtn.click();
+                    return;
+                }
         if (activeCardIndex >= currentSessionDeck.length) {
             triggerCompletionState();
             return;
@@ -1793,7 +1797,11 @@
             
             if (xDiff > 0) { // SWIPE RIGHT
                 if (!sessionStarted && !sessionComplete) { startSession(); return; }
-                if (sessionComplete) return;
+                if (sessionComplete) {
+                    var compBtn = document.querySelector('.completion-btn.primary');
+                    if (compBtn) compBtn.click();
+                    return;
+                }
                 if (isTyping && !isFeedbackOpen) return;
                 if (isFeedbackOpen) { handleNextWorkflow(); }
                 else if (currentQuizDirection === 'read' && readProductionMethod === 'type') { checkAnswer(); }

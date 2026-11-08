@@ -1067,11 +1067,12 @@
 
             // SWIPE RIGHT (Forward action)
             if (xDiff > 0) {
-                if (!sessionStarted && !sessionComplete) {
-                    startSession(); 
-                    return;
-                }
-                if (sessionComplete) return; 
+                if (!sessionStarted && !sessionComplete) { startSession(); return; }
+            if (sessionComplete) {
+                var compBtn = document.querySelector('.completion-btn.primary');
+                if (compBtn) compBtn.click();
+                return;
+            }
 
                 if (isFeedbackOpen) {
                     handleNextWorkflow(); // Next card

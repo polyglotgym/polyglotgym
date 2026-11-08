@@ -2440,7 +2440,11 @@
                     startSession(); // Start the session with a swipe!
                     return;
                 }
-                if (sessionComplete) return; // Let the user tap the buttons on the completion screen
+                if (sessionComplete) {
+                    var compBtn = document.querySelector('.completion-btn.primary');
+                    if (compBtn) compBtn.click();
+                    return;
+                }
                 if (isTyping && !isFeedbackOpen) return; // Don't skip typing
 
                 if (isFeedbackOpen) {

@@ -1918,9 +1918,9 @@
 
         var startBtn = document.getElementById('start-btn');
         if (sessionMode === "drill") {
-            startBtn.innerText = "▶ Start Drill (" + currentSessionDeck.length + " cards)";
+            startBtn.innerText = "▶ Start Drill (" + currentSessionDeck.length + " cards) →";
         } else {
-            startBtn.innerText = "▶ Start Session";
+            startBtn.innerText = "▶ Start Session →";
         }
 
         updateDrillPill();
@@ -2420,6 +2420,16 @@
         var utterance = new SpeechSynthesisUtterance(fullWord);
         utterance.lang = "es-ES";
         utterance.rate = 0.8;
+        
+        // Force the use of a Google Spanish voice if available
+        var voices = window.speechSynthesis.getVoices();
+        var googleSpanish = voices.find(function(v) { 
+            return v.name.includes('Google') && v.lang.startsWith('es'); 
+        });
+        if (googleSpanish) {
+            utterance.voice = googleSpanish;
+        }
+
         window.speechSynthesis.speak(utterance);
     }
 
@@ -3123,7 +3133,11 @@
                     startSession(); // Start the session with a swipe!
                     return;
                 }
-                if (sessionComplete) return; // Let the user tap the buttons on the completion screen
+                if (sessionComplete) {
+                    var compBtn = document.querySelector('.completion-btn.primary');
+                    if (compBtn) compBtn.click();
+                    return;
+                }
                 if (isTyping && !isFeedbackOpen) return; // Don't skip typing
 
                 if (isFeedbackOpen) {

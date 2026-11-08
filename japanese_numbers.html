@@ -1362,7 +1362,11 @@
     }
 
     function handleNextWorkflow() {
-        if (sessionComplete) return;
+        if (sessionComplete) {
+                    var compBtn = document.querySelector('.completion-btn.primary');
+                    if (compBtn) compBtn.click();
+                    return;
+                }
         if (activeCardIndex >= currentSessionDeck.length) {
             triggerCompletionState();
             return;
@@ -1811,7 +1815,11 @@
             
             if (xDiff > 0) { // SWIPE RIGHT
                 if (!sessionStarted && !sessionComplete) { startSession(); return; }
-                if (sessionComplete) return;
+                if (sessionComplete) {
+                    var compBtn = document.querySelector('.completion-btn.primary');
+                    if (compBtn) compBtn.click();
+                    return;
+                }
                 
                 if (isFeedbackOpen) { handleNextWorkflow(); }
                 else if (productionMethod === 'type') { checkAnswer(); }
