@@ -246,6 +246,12 @@
             <strong>Strict:</strong> accents, tildes, and cedillas must match.
         </p>
 
+        <div class="grid-header-label">Spanish Diff Filter:</div>
+        <div class="row-grid" style="grid-template-columns: repeat(1, 1fr);">
+            <label class="row-label" id="lbl-opt-diff-only"><input type="checkbox" id="chk-opt-diff-only" onchange="updateDiffOnly()">🇪🇸 Hide cards identical to Spanish</label>
+        </div>
+        <p class="mode-hint">When on, cards whose Portuguese form matches the Spanish equivalent (after the accent mode above is applied) are excluded. Ideal for Spanish speakers drilling only the conversion rules.</p>
+
         <div class="grid-header-label">Session Deck Size:</div>
         <select id="deck-size-selector" onchange="initSessionDeck()" style="width: 100%; padding: 0.45rem; background-color: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border); border-radius: 0.35rem; font-size: 0.85rem; outline: none; margin-top: 0.25rem; margin-bottom: 0.8rem;">
             <option value="15" selected>15 cards (short drill)</option>
@@ -381,6 +387,11 @@
                     <li><strong>Strict</strong> — accents required. Typing <em>falamos</em> for <em>falámos</em> is marked wrong. Essential if accent marks are your weak point.</li>
                 </ul>
                 <p>The homograph warning ("⚠️ Same form also: …") always compares strict forms — so <em>falamos</em> (presente) and <em>falámos</em> (pretérito, when accented) are correctly distinguished.</p>
+
+                <div class="guide-subsection">Spanish Diff Filter</div>
+                <p>If you already speak Spanish, this is the most powerful toggle in the app. Turn on <strong>Hide cards identical to Spanish</strong> in Options, and the deck excludes any card whose Portuguese form happens to match its Spanish equivalent (e.g. <em>como</em> = <em>como</em>, <em>cantamos</em> = <em>cantamos</em>, <em>puede</em> vs <em>pode</em> stays in because it differs). The remaining deck is the conversion you actually need to learn — the spelling shifts in <em>falar</em>, the <em>trabalhar</em> stem, the irregular preterites, and so on.</p>
+                <p>The comparison respects your <strong>Accent Handling</strong> setting. In <em>Lenient</em> mode, <em>comi</em> and <em>comí</em> count as the same, and <em>comeis</em>/<em>coméis</em> are treated as identical. In <em>Strict</em> mode, every accent mark counts, so more cards are shown — use it if accent marks are your weak point. Six verbs (<em>falar, trabalhar, ter, fazer, dizer, vir</em>) have no Spanish cognate with a matching stem, so all their cards always show.</p>
+                <p>After each assessment (in both type and honour modes), the feedback line reports the Spanish equivalent and flags it as (=) (identical to your Spanish mental model) or (≠) (differs). Even with the filter off, this teaches you the conversion rules passively.</p>
 
                 <div class="guide-subsection">European vs Brazilian Portuguese</div>
                 <p>This app follows <strong>European Portuguese</strong> conventions: it uses <em>tu</em> (informal you) and includes <em>vós</em> (archaic/literary plural you) for completeness. Brazilian Portuguese typically replaces <em>tu</em> with <em>você</em> (3rd-person forms) and <em>vós</em> with <em>vocês</em> (3rd-person plural). If you're learning Brazilian, mentally map <em>tu</em> → <em>você</em> and <em>vós</em> → <em>vocês</em>, or use the filters to ignore these pronouns. The verb forms themselves are valid in both dialects (especially <em>tu</em> forms, which are used in Rio Grande do Sul and the Northeast of Brazil).</p>
@@ -565,6 +576,7 @@
     var sessionStarted = false;
     var productionMethod = "type";
     var accentMode = "lenient";
+    var diffOnly = false;
     var autoSpeakInfinitiveSetting = true;
     var hintLevel = "basic";
     var autoPinThreshold = 3;
@@ -635,6 +647,186 @@
         fut:  { eu: "irei", tu: "irás", el: "irá", nos: "iremos", vos: "ireis", eles: "irão" },
         cond: { eu: "iria", tu: "irias", el: "iria", nos: "iríamos", vos: "iríeis", eles: "iriam" }
     };
+
+// ============================================================
+// SPANISH FORMS — for the "diff from Spanish" comparison
+// Format: { pres: [eu,tu,el,nos,vos,eles], ... }
+// Verbs with no entry are treated as always-diff.
+// ============================================================
+var PRONOUN_INDEX = { eu: 0, tu: 1, el: 2, nos: 3, vos: 4, eles: 5 };
+
+var SPANISH_FORMS = {
+    // ----- -AR cognates -----
+    "Cantar": {
+        pres: ["canto", "cantas", "canta", "cantamos", "cantáis", "cantan"],
+        pret: ["canté", "cantaste", "cantó", "cantamos", "cantasteis", "cantaron"],
+        impf: ["cantaba", "cantabas", "cantaba", "cantábamos", "cantabais", "cantaban"],
+        pp:   ["he cantado", "has cantado", "ha cantado", "hemos cantado", "habéis cantado", "han cantado"],
+        fut:  ["cantaré", "cantarás", "cantará", "cantaremos", "cantaréis", "cantarán"],
+        cond: ["cantaría", "cantarías", "cantaría", "cantaríamos", "cantaríais", "cantarían"]
+    },
+    "Comprar": {
+        pres: ["compro", "compras", "compra", "compramos", "compráis", "compran"],
+        pret: ["compré", "compraste", "compró", "compramos", "comprasteis", "compraron"],
+        impf: ["compraba", "comprabas", "compraba", "comprábamos", "comprabais", "compraban"],
+        pp:   ["he comprado", "has comprado", "ha comprado", "hemos comprado", "habéis comprado", "han comprado"],
+        fut:  ["compraré", "comprarás", "comprará", "compraremos", "compraréis", "comprarán"],
+        cond: ["compraría", "comprarías", "compraría", "compraríamos", "compraríais", "comprarían"]
+    },
+
+    // ----- -ER cognates -----
+    "Comer": {
+        pres: ["como", "comes", "come", "comemos", "coméis", "comen"],
+        pret: ["comí", "comiste", "comió", "comimos", "comisteis", "comieron"],
+        impf: ["comía", "comías", "comía", "comíamos", "comíais", "comían"],
+        pp:   ["he comido", "has comido", "ha comido", "hemos comido", "habéis comido", "han comido"],
+        fut:  ["comeré", "comerás", "comerá", "comeremos", "comeréis", "comerán"],
+        cond: ["comería", "comerías", "comería", "comeríamos", "comeríais", "comerían"]
+    },
+    "Beber": {
+        pres: ["bebo", "bebes", "bebe", "bebemos", "bebéis", "beben"],
+        pret: ["bebí", "bebiste", "bebió", "bebimos", "bebisteis", "bebieron"],
+        impf: ["bebía", "bebías", "bebía", "bebíamos", "bebíais", "bebían"],
+        pp:   ["he bebido", "has bebido", "ha bebido", "hemos bebido", "habéis bebido", "han bebido"],
+        fut:  ["beberé", "beberás", "beberá", "beberemos", "beberéis", "beberán"],
+        cond: ["bebería", "beberías", "bebería", "beberíamos", "beberíais", "beberían"]
+    },
+    "Aprender": {
+        pres: ["aprendo", "aprendes", "aprende", "aprendemos", "aprendéis", "aprenden"],
+        pret: ["aprendí", "aprendiste", "aprendió", "aprendimos", "aprendisteis", "aprendieron"],
+        impf: ["aprendía", "aprendías", "aprendía", "aprendíamos", "aprendíais", "aprendían"],
+        pp:   ["he aprendido", "has aprendido", "ha aprendido", "hemos aprendido", "habéis aprendido", "han aprendido"],
+        fut:  ["aprenderé", "aprenderás", "aprenderá", "aprenderemos", "aprenderéis", "aprenderán"],
+        cond: ["aprendería", "aprenderías", "aprendería", "aprenderíamos", "aprenderíais", "aprenderían"]
+    },
+    "Vender": {
+        pres: ["vendo", "vendes", "vende", "vendemos", "vendéis", "venden"],
+        pret: ["vendí", "vendiste", "vendió", "vendimos", "vendisteis", "vendieron"],
+        impf: ["vendía", "vendías", "vendía", "vendíamos", "vendíais", "vendían"],
+        pp:   ["he vendido", "has vendido", "ha vendido", "hemos vendido", "habéis vendido", "han vendido"],
+        fut:  ["venderé", "venderás", "venderá", "venderemos", "venderéis", "venderán"],
+        cond: ["vendería", "venderías", "vendería", "venderíamos", "venderíais", "venderían"]
+    },
+
+    // ----- -IR cognates -----
+    "Partir": {
+        pres: ["parto", "partes", "parte", "partimos", "partís", "parten"],
+        pret: ["partí", "partiste", "partió", "partimos", "partisteis", "partieron"],
+        impf: ["partía", "partías", "partía", "partíamos", "partíais", "partían"],
+        pp:   ["he partido", "has partido", "ha partido", "hemos partido", "habéis partido", "han partido"],
+        fut:  ["partiré", "partirás", "partirá", "partiremos", "partiréis", "partirán"],
+        cond: ["partiría", "partirías", "partiría", "partiríamos", "partiríais", "partirían"]
+    },
+    "Abrir": {
+        pres: ["abro", "abres", "abre", "abrimos", "abrís", "abren"],
+        pret: ["abrí", "abriste", "abrió", "abrimos", "abristeis", "abrieron"],
+        impf: ["abría", "abrías", "abría", "abríamos", "abríais", "abrían"],
+        pp:   ["he abierto", "has abierto", "ha abierto", "hemos abierto", "habéis abierto", "han abierto"],
+        fut:  ["abriré", "abrirás", "abrirá", "abriremos", "abriréis", "abrirán"],
+        cond: ["abriría", "abrirías", "abriría", "abriríamos", "abriríais", "abrirían"]
+    },
+
+    // ----- -IR stem-changers (Spanish has e→ie / o→ue; Portuguese has e→i / o→u) -----
+    "Servir": {
+        pres: ["sirvo", "sirves", "sirve", "servimos", "servís", "sirven"],
+        pret: ["serví", "serviste", "sirvió", "servimos", "servisteis", "sirvieron"],
+        impf: ["servía", "servías", "servía", "servíamos", "servíais", "servían"],
+        pp:   ["he servido", "has servido", "ha servido", "hemos servido", "habéis servido", "han servido"],
+        fut:  ["serviré", "servirás", "servirá", "serviremos", "serviréis", "servirán"],
+        cond: ["serviría", "servirías", "serviría", "serviríamos", "serviríais", "servirían"]
+    },
+    "Preferir": {
+        pres: ["prefiero", "prefieres", "prefiere", "preferimos", "preferís", "prefieren"],
+        pret: ["preferí", "preferiste", "prefirió", "preferimos", "preferisteis", "prefirieron"],
+        impf: ["prefería", "preferías", "prefería", "preferíamos", "preferíais", "preferían"],
+        pp:   ["he preferido", "has preferido", "ha preferido", "hemos preferido", "habéis preferido", "han preferido"],
+        fut:  ["preferiré", "preferirás", "preferirá", "preferiremos", "preferiréis", "preferirán"],
+        cond: ["preferiría", "preferirías", "preferiría", "preferiríamos", "preferiríais", "preferirían"]
+    },
+    "Dormir": {
+        pres: ["duermo", "duermes", "duerme", "dormimos", "dormís", "duermen"],
+        pret: ["dormí", "dormiste", "durmió", "dormimos", "dormisteis", "durmieron"],
+        impf: ["dormía", "dormías", "dormía", "dormíamos", "dormíais", "dormían"],
+        pp:   ["he dormido", "has dormido", "ha dormido", "hemos dormido", "habéis dormido", "han dormido"],
+        fut:  ["dormiré", "dormirás", "dormirá", "dormiremos", "dormiréis", "dormirán"],
+        cond: ["dormiría", "dormirías", "dormiría", "dormiríamos", "dormiríais", "dormirían"]
+    },
+    "Sentir": {
+        pres: ["siento", "sientes", "siente", "sentimos", "sentís", "sienten"],
+        pret: ["sentí", "sentiste", "sintió", "sentimos", "sentisteis", "sintieron"],
+        impf: ["sentía", "sentías", "sentía", "sentíamos", "sentíais", "sentían"],
+        pp:   ["he sentido", "has sentido", "ha sentido", "hemos sentido", "habéis sentido", "han sentido"],
+        fut:  ["sentiré", "sentirás", "sentirá", "sentiremos", "sentiréis", "sentirán"],
+        cond: ["sentiría", "sentirías", "sentiría", "sentiríamos", "sentiríais", "sentirían"]
+    },
+
+    // ----- Irregulars -----
+    "Ser": {
+        pres: ["soy", "eres", "es", "somos", "sois", "son"],
+        pret: ["fui", "fuiste", "fue", "fuimos", "fuisteis", "fueron"],
+        impf: ["era", "eras", "era", "éramos", "erais", "eran"],
+        pp:   ["he sido", "has sido", "ha sido", "hemos sido", "habéis sido", "han sido"],
+        fut:  ["seré", "serás", "será", "seremos", "seréis", "serán"],
+        cond: ["sería", "serías", "sería", "seríamos", "seríais", "serían"]
+    },
+    "Estar": {
+        pres: ["estoy", "estás", "está", "estamos", "estáis", "están"],
+        pret: ["estuve", "estuviste", "estuvo", "estuvimos", "estuvisteis", "estuvieron"],
+        impf: ["estaba", "estabas", "estaba", "estábamos", "estabais", "estaban"],
+        pp:   ["he estado", "has estado", "ha estado", "hemos estado", "habéis estado", "han estado"],
+        fut:  ["estaré", "estarás", "estará", "estaremos", "estaréis", "estarán"],
+        cond: ["estaría", "estarías", "estaría", "estaríamos", "estaríais", "estarían"]
+    },
+    "Ir": {
+        pres: ["voy", "vas", "va", "vamos", "vais", "van"],
+        pret: ["fui", "fuiste", "fue", "fuimos", "fuisteis", "fueron"],
+        impf: ["iba", "ibas", "iba", "íbamos", "ibais", "iban"],
+        pp:   ["he ido", "has ido", "ha ido", "hemos ido", "habéis ido", "han ido"],
+        fut:  ["iré", "irás", "irá", "iremos", "iréis", "irán"],
+        cond: ["iría", "irías", "iría", "iríamos", "iríais", "irían"]
+    },
+    "Querer": {
+        pres: ["quiero", "quieres", "quiere", "queremos", "queréis", "quieren"],
+        pret: ["quise", "quisiste", "quiso", "quisimos", "quisisteis", "quisieron"],
+        impf: ["quería", "querías", "quería", "queríamos", "queríais", "querían"],
+        pp:   ["he querido", "has querido", "ha querido", "hemos querido", "habéis querido", "han querido"],
+        fut:  ["querré", "querrás", "querrá", "querremos", "querréis", "querrán"],
+        cond: ["querría", "querrías", "querría", "querríamos", "querríais", "querrían"]
+    },
+    "Poder": {
+        pres: ["puedo", "puedes", "puede", "podemos", "podéis", "pueden"],
+        pret: ["pude", "pudiste", "pudo", "pudimos", "pudisteis", "pudieron"],
+        impf: ["podía", "podías", "podía", "podíamos", "podíais", "podían"],
+        pp:   ["he podido", "has podido", "ha podido", "hemos podido", "habéis podido", "han podido"],
+        fut:  ["podré", "podrás", "podrá", "podremos", "podréis", "podrán"],
+        cond: ["podría", "podrías", "podría", "podríamos", "podríais", "podrían"]
+    },
+    "Saber": {
+        pres: ["sé", "sabes", "sabe", "sabemos", "sabéis", "saben"],
+        pret: ["supe", "supiste", "supo", "supimos", "supisteis", "supieron"],
+        impf: ["sabía", "sabías", "sabía", "sabíamos", "sabíais", "sabían"],
+        pp:   ["he sabido", "has sabido", "ha sabido", "hemos sabido", "habéis sabido", "han sabido"],
+        fut:  ["sabré", "sabrás", "sabrá", "sabremos", "sabréis", "sabrán"],
+        cond: ["sabría", "sabrías", "sabría", "sabríamos", "sabríais", "sabrían"]
+    },
+    "Ver": {
+        pres: ["veo", "ves", "ve", "vemos", "veis", "ven"],
+        pret: ["vi", "viste", "vio", "vimos", "visteis", "vieron"],
+        impf: ["veía", "veías", "veía", "veíamos", "veíais", "veían"],
+        pp:   ["he visto", "has visto", "ha visto", "hemos visto", "habéis visto", "han visto"],
+        fut:  ["veré", "verás", "verá", "veremos", "veréis", "verán"],
+        cond: ["vería", "verías", "vería", "veríamos", "veríais", "verían"]
+    },
+    "Dar": {
+        pres: ["doy", "das", "da", "damos", "dais", "dan"],
+        pret: ["di", "diste", "dio", "dimos", "disteis", "dieron"],
+        impf: ["daba", "dabas", "daba", "dábamos", "dabais", "daban"],
+        pp:   ["he dado", "has dado", "ha dado", "hemos dado", "habéis dado", "han dado"],
+        fut:  ["daré", "darás", "dará", "daremos", "daréis", "darán"],
+        cond: ["daría", "darías", "daría", "daríamos", "daríais", "darían"]
+    }
+};
+// Falar, Trabalhar, Ter, Fazer, Dizer, Vir intentionally omitted — all forms differ.
 
     var masterVerbDictionary = [
         // ==================== -AR REGULARS ====================
@@ -1181,6 +1373,7 @@
                 if (!selectedIntervals[tenses[t]]) continue;
                 for (var p = 0; p < subjectPronounsArray.length; p++) {
                     if (!selectedIntervals[subjectPronounsArray[p]]) continue;
+                    if (diffOnly && isSameAsSpanish(item.verb, tenses[t], subjectPronounsArray[p])) continue;
                     counts.total++;
                     var key = (item.verb + "|" + tenses[t] + "|" + subjectPronounsArray[p]).toLowerCase();
                     if (knownCards[key]) { counts.known++; continue; }
@@ -1252,6 +1445,7 @@
                 direction: currentQuizDirection,
                 productionMethod: productionMethod,
                 accentMode: accentMode,
+                diffOnly: diffOnly,
                 autoSpeakInfinitive: autoSpeakInfinitiveSetting,
                 hintLevel: hintLevel,
                 knownMode: knownMode,
@@ -1327,6 +1521,17 @@
                     if (lS) lS.classList.remove('selected');
                     if (cL) cL.checked = true;
                     if (cS) cS.checked = false;
+                }
+            }
+
+            if (typeof state.diffOnly === 'boolean') {
+                diffOnly = state.diffOnly;
+                var chkDiff = document.getElementById('chk-opt-diff-only');
+                var lblDiff = document.getElementById('lbl-opt-diff-only');
+                if (chkDiff) chkDiff.checked = diffOnly;
+                if (lblDiff) {
+                    if (diffOnly) lblDiff.classList.add('selected');
+                    else lblDiff.classList.remove('selected');
                 }
             }
 
@@ -1473,6 +1678,19 @@
         saveState();
     }
 
+    function updateDiffOnly() {
+        var chk = document.getElementById('chk-opt-diff-only');
+        var lbl = document.getElementById('lbl-opt-diff-only');
+        if (!chk) return;
+        diffOnly = chk.checked;
+        if (lbl) {
+            if (diffOnly) lbl.classList.add('selected');
+            else lbl.classList.remove('selected');
+        }
+        saveState();
+        initSessionDeck();
+    }
+
     function resetAllProgress() {
         if (!confirm("Clear all progress, scores, review log, and known cards?")) return;
         try { localStorage.removeItem('por_verbs_state'); } catch (e) {}
@@ -1488,6 +1706,10 @@
         playMode = false;
         autoPinThreshold = 3;
         accentMode = "lenient";
+
+        diffOnly = false;
+        document.getElementById('chk-opt-diff-only').checked = false;
+        document.getElementById('lbl-opt-diff-only').classList.remove('selected');
 
         var defaults = { ar: true, er: true, ir: true, stemchange: true, irreg: true,
                          pres: true, pret: true, impf: true, pp: true, fut: true, cond: true,
@@ -1713,6 +1935,10 @@
                 promptDisplay.innerHTML = "🌟 All Known!";
                 promptDisplay.style.color = "var(--success)";
                 subDisplay.innerHTML = "All " + totalFilteredCount + " cards under these filters are known.<br><small>Switch to <strong>Full Sweep</strong> mode in Options to review them, or expand your filters.</small>";
+            } else if (emptyReason === "all-same") {
+                promptDisplay.innerHTML = "🇪🇸 All Match Spanish";
+                promptDisplay.style.color = "var(--success)";
+                subDisplay.innerHTML = "Every card under these filters has the same spelling as its Spanish equivalent.<br><small>Uncheck <strong>Hide cards identical to Spanish</strong> in Options to drill them anyway.</small>";
             } else if (emptyReason === "no-match") {
                 promptDisplay.innerHTML = "No Cards";
                 promptDisplay.style.color = "var(--accent)";
@@ -1856,6 +2082,7 @@
                     var isKnown = !!knownCards[cKey];
 
                     if (knownMode === "adaptive" && isKnown) continue;
+                    if (diffOnly && isSameAsSpanish(card.verb, card.tense, card.pronoun)) continue;
                     currentSessionDeck.push(card);
                 }
             }
@@ -1863,6 +2090,7 @@
 
         if (currentSessionDeck.length === 0) {
             if (totalFilteredCount === 0) emptyReason = "no-match";
+            else if (diffOnly) emptyReason = "all-same";
             else if (knownMode === "adaptive") emptyReason = "all-known";
             else emptyReason = "unknown";
         }
@@ -2152,6 +2380,39 @@
         return "";
     }
 
+function getSpanishForm(verbName, tense, pronoun) {
+    var forms = SPANISH_FORMS[verbName];
+    if (!forms || !forms[tense]) return null;
+    var arr = forms[tense];
+    var idx = PRONOUN_INDEX[pronoun];
+    if (idx === undefined) return null;
+    return arr[idx] || null;
+}
+
+function isSameAsSpanish(verbName, tense, pronoun) {
+    var spaForm = getSpanishForm(verbName, tense, pronoun);
+    if (!spaForm) return false;
+    var entry = null;
+    for (var i = 0; i < masterVerbDictionary.length; i++) {
+        if (masterVerbDictionary[i].verb === verbName) { entry = masterVerbDictionary[i]; break; }
+    }
+    if (!entry || !entry.paradigms[tense]) return false;
+    var ptEnding = entry.paradigms[tense][pronoun];
+    if (ptEnding === undefined) return false;
+    var cardLike = {
+        verb: verbName,
+        stem: entry.stem,
+        stressedStem: entry.stressedStem,
+        irregularTenses: entry.irregularTenses,
+        participle: entry.participle,
+        tense: tense,
+        pronoun: pronoun,
+        ending: ptEnding
+    };
+    var ptForm = computeFullWord(cardLike, cardLike.ending);
+    return cleanString(ptForm) === cleanString(spaForm);
+}
+
     function computeFullWord(card, ending) {
         if (card.tense === 'pp') {
             return ending + " " + card.participle;
@@ -2316,6 +2577,13 @@
             setTimeout(speakPortuguesePrompt, 200);
         }
 
+        var spaForm = getSpanishForm(currentClockObj.verb, currentClockObj.tense, currentClockObj.pronoun);
+        if (spaForm) {
+            var ptFull = computeFullWord(currentClockObj, currentClockObj.ending);
+            var sameFlag = cleanString(ptFull) === cleanString(spaForm);
+            feedbackMessage.innerHTML += '<br><small style="color:' + (sameFlag ? 'var(--success)' : 'var(--text-muted)') + ';">🇪🇸 Spanish: <em>' + spaForm + '</em>' + (sameFlag ? ' (=)' : ' (≠)') + '</small>';
+        }
+
         document.getElementById('speak-btn').style.display = "block";
         activeCardIndex++;
         document.getElementById('deck-progress').innerText = activeCardIndex;
@@ -2448,6 +2716,13 @@
             feedbackMessage.innerHTML = "<strong>Marked Incorrect.</strong> 📚" + speakIconH + "<br>Inflection target was <strong>" + fullWord + "</strong> (" + tenseLabel + ")." + glossHtml + auxHtml + warnHtml + logUpdateMessage(logResult);
             currentSessionDeck.push(Object.assign({}, currentClockObj));
             document.getElementById('deck-total').innerText = currentSessionDeck.length;
+        }
+
+        var spaForm = getSpanishForm(currentClockObj.verb, currentClockObj.tense, currentClockObj.pronoun);
+        if (spaForm) {
+            var ptFull = computeFullWord(currentClockObj, currentClockObj.ending);
+            var sameFlag = cleanString(ptFull) === cleanString(spaForm);
+            feedbackMessage.innerHTML += '<br><small style="color:' + (sameFlag ? 'var(--success)' : 'var(--text-muted)') + ';">🇪🇸 Spanish: <em>' + spaForm + '</em>' + (sameFlag ? ' (=)' : ' (≠)') + '</small>';
         }
 
         activeCardIndex++;
