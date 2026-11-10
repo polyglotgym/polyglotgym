@@ -750,7 +750,7 @@
     var CONTRACTION_LABELS = {
         mo: "it (m) to me",
         to: "it (m) to you",
-        lho: "it (m) to him/her",
+        lho: "it (m) to him/her/them",
         "no-lo": "it (m) to us"
     };
 
@@ -906,6 +906,13 @@
             s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
         }
         return s;
+    }
+
+    function expandSlashVariants(str) {
+        var match = str.match(/^([\s\S]*?)(\w+(?:\/\w+)+)([\s\S]*)$/);
+        if (!match) return [str];
+        var prefix = match[1], group = match[2], suffix = match[3];
+        return group.split("/").map(function(v) { return prefix + v + suffix; });
     }
 
     function normaliseNoSpaces(str) {
@@ -1785,7 +1792,11 @@
             warn.style.display = "none";
         }
 
-        speakBtn.style.display = "block";
+        speakBtn.style.display = (currentQuizDirection === 'comprehension') ? "block" : "none";
+        document.getElementById('user-input').placeholder = (currentQuizDirection === 'production')
+            ? "Type the Portuguese form..."
+            : "Type the English meaning...";
+
         applyPanelVisibility();
 
         if (currentQuizDirection === 'comprehension' &&
@@ -1794,9 +1805,14 @@
         }
 
         setTimeout(function() {
-            if (currentQuizDirection === 'production' && productionMethod === 'type') {
+            var useType = (currentQuizDirection === 'production' && productionMethod === 'type')
+                       || (currentQuizDirection === 'comprehension' && comprehensionMethod === 'type');
+            if (useType) {
                 var inputField = document.getElementById('user-input');
-                if (inputField) { inputField.focus(); inputField.select(); }
+                if (inputField) {
+                    inputField.focus();
+                    inputField.select();
+                }
             } else {
                 var actionBtn = document.getElementById('btn-reveal-container');
                 if (actionBtn && actionBtn.style.display !== 'none') {
@@ -1823,15 +1839,23 @@
     // ANSWER CHECKING
     // ============================================================
     function isCorrectAnswer(userInput, card, direction) {
+        var norm = normaliseAnswer(userInput);
         if (direction === 'production') {
             for (var i = 0; i < card.answers.length; i++) {
-                if (checkAnswerMatch(userInput, card.answers[i])) return true;
+                if (norm === normaliseAnswer(card.answers[i])) return true;
             }
             return false;
         } else {
-            if (checkAnswerMatch(userInput, card.english)) return true;
+            var bases = [card.english];
             var noQual = card.english.replace(/\s*\([^)]+\)/g, '').trim();
-            if (checkAnswerMatch(userInput, noQual)) return true;
+            if (noQual !== card.english) bases.push(noQual);
+            var candidates = [];
+            for (var b = 0; b < bases.length; b++) {
+                candidates = candidates.concat(expandSlashVariants(bases[b]));
+            }
+            for (var i = 0; i < candidates.length; i++) {
+                if (norm === normaliseAnswer(candidates[i])) return true;
+            }
             return false;
         }
     }
@@ -1892,17 +1916,26 @@
 
         var logResult = handleLogUpdate(currentCard, isCorrect, userInput);
 
-        var answerLine = currentQuizDirection === 'production'
-            ? "Answer: <strong>" + currentCard.display + "</strong>"
-            : "Meaning: <strong>" + currentCard.english + "</strong>";
+        var answerLine;
+        if (currentQuizDirection === 'production') {
+            answerLine = "Answer: <strong>" + currentCard.display + "</strong>";
+        } else {
+            answerLine = "Form: <strong>" + currentCard.display + "</strong><br>Meaning: <strong>" + currentCard.english + "</strong>";
+        }
         var trapNote = buildTrapNote(currentCard);
 
+        var youTypedLine = "";
+        if (currentQuizDirection === 'comprehension' && !isCorrect) {
+            youTypedLine = "<br><small style=\"color:var(--text-muted);\">You typed: \"" + userInput + "\"</small>";
+        }
+
+        var speakIconFb = ' <span style="cursor:pointer; opacity:0.85;" onclick="speakCurrentAnswer();" title="Hear the answer">🔊</span>';
         if (isCorrect) {
             feedbackMessage.className = "feedback correct-box";
-            feedbackMessage.innerHTML = "<strong>Correct!</strong> 🎉<br>" + answerLine + trapNote + logUpdateMessage(logResult);
+            feedbackMessage.innerHTML = "<strong>Correct!</strong> 🎉" + speakIconFb + "<br>" + answerLine + trapNote + logUpdateMessage(logResult);
         } else {
             feedbackMessage.className = "feedback incorrect-box";
-            feedbackMessage.innerHTML = "<strong>Incorrect.</strong><br>" + answerLine + trapNote + logUpdateMessage(logResult);
+            feedbackMessage.innerHTML = "<strong>Incorrect.</strong>" + speakIconFb + "<br>" + answerLine + youTypedLine + trapNote + logUpdateMessage(logResult);
             currentSessionDeck.push(currentCard);
             document.getElementById('deck-total').innerText = currentSessionDeck.length;
         }
@@ -1953,6 +1986,7 @@
             sub.innerText = currentCard.display;
         }
 
+        document.getElementById('speak-btn').style.display = "block";
         if (autoSpeakSetting) setTimeout(speakCurrentAnswer, 150);
     }
 
@@ -1981,17 +2015,16 @@
         var logResult = handleLogUpdate(currentCard, isCorrect, isCorrect ? "" : "[Honour System Miss]");
         var trapNote = buildTrapNote(currentCard);
 
+        var speakIconFb = ' <span style="cursor:pointer; opacity:0.85;" onclick="speakCurrentAnswer();" title="Hear the answer">🔊</span>';
         if (isCorrect) {
             feedbackMessage.className = "feedback correct-box";
-            feedbackMessage.innerHTML = "<strong>Marked Correct!</strong> 👍<br>" + currentCard.display + " = " + currentCard.english + "." + trapNote + logUpdateMessage(logResult);
+            feedbackMessage.innerHTML = "<strong>Marked Correct!</strong> 👍" + speakIconFb + "<br>" + currentCard.display + " = " + currentCard.english + "." + trapNote + logUpdateMessage(logResult);
         } else {
             feedbackMessage.className = "feedback incorrect-box";
-            feedbackMessage.innerHTML = "<strong>Marked Incorrect.</strong> 📚<br>" + currentCard.display + " = " + currentCard.english + "." + trapNote + logUpdateMessage(logResult);
+            feedbackMessage.innerHTML = "<strong>Marked Incorrect.</strong> 📚" + speakIconFb + "<br>" + currentCard.display + " = " + currentCard.english + "." + trapNote + logUpdateMessage(logResult);
             currentSessionDeck.push(currentCard);
             document.getElementById('deck-total').innerText = currentSessionDeck.length;
         }
-
-        if (autoSpeakSetting) setTimeout(speakCurrentAnswer, 200);
 
         activeCardIndex++;
         document.getElementById('deck-progress').innerText = activeCardIndex;
@@ -2372,9 +2405,13 @@
                     return;
                 }
                 if (isTyping && !isFeedbackOpen) return;
-                if (isFeedbackOpen) { handleNextWorkflow(); }
-                else if (currentQuizDirection === 'production' && productionMethod === 'type') { checkAnswer(); }
-                else if (!isHonourOpen) { revealVerbAnswer(); }
+                               var useType = (currentQuizDirection === 'production' && productionMethod === 'type')
+                           || (currentQuizDirection === 'comprehension' && comprehensionMethod === 'type');
+                if (isFeedbackOpen) {
+                    handleNextWorkflow();
+                } else if (useType) {
+                    checkAnswer();
+                } else if (!isHonourOpen) { revealVerbAnswer(); }
                 else if (isHonourOpen) { assessHonour(true); }
             } else {
                 if (!sessionStarted || sessionComplete) return;

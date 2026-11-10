@@ -732,7 +732,7 @@
         var clusterData = {
             "me lo": { affEng: "it (m) to me", negEng: "it (m) to me", presEng: "it (m) to you" },
             "te lo": { negEng: "it (m) to yourself", presEng: "it (m) to you" },
-            "se lo": { presEng: "it (m) to him/her", affEng: "it (m) to him/her", negEng: "it (m) to him/her" },
+            "se lo": { presEng: "it (m) to him/her/them", affEng: "it (m) to him/her/them", negEng: "it (m) to him/her/them" },
             "nos lo": { affEng: "it (m) to us", negEng: "it (m) to us" },
             "os lo": { presEng: "it (m) to you all" },
             "me la": { affEng: "it (f) to me", negEng: "it (f) to me" },
@@ -783,19 +783,19 @@
 
     // ---------- 2b. INDIRECT EXTENDED (28 cards) ----------
     var EXTENDED_VERBS = [
-        { verb: "comprar", eng: "buy", impSubj: "compres", meEng: "for me", seEng: "for him/her",
+        { verb: "comprar", eng: "buy", impSubj: "compres", meEng: "for me", seEng: "for him/her/them",
           affImpMe: "Cómpramelo", affImpSe: "Cómpraselo" },
-        { verb: "escribir", eng: "write", impSubj: "escribas", meEng: "for me", seEng: "for him/her",
+        { verb: "escribir", eng: "write", impSubj: "escribas", meEng: "for me", seEng: "for him/her/them",
           affImpMe: "Escríbemelo", affImpSe: "Escríbeselo" },
-        { verb: "mandar", eng: "send", impSubj: "mandes", meEng: "to me", seEng: "to him/her",
+        { verb: "mandar", eng: "send", impSubj: "mandes", meEng: "to me", seEng: "to him/her/them",
           affImpMe: "Mándamelo", affImpSe: "Mándaselo" },
-        { verb: "traer", eng: "bring", impSubj: "traigas", meEng: "to me", seEng: "to him/her",
+        { verb: "traer", eng: "bring", impSubj: "traigas", meEng: "to me", seEng: "to him/her/them",
           affImpMe: "Tráemelo", affImpSe: "Tráeselo" },
-        { verb: "vender", eng: "sell", impSubj: "vendas", meEng: "to me", seEng: "to him/her",
+        { verb: "vender", eng: "sell", impSubj: "vendas", meEng: "to me", seEng: "to him/her/them",
           affImpMe: "Véndemelo", affImpSe: "Véndeselo" },
-        { verb: "poner", eng: "put", impSubj: "pongas", meEng: "on me", seEng: "on him/her",
+        { verb: "poner", eng: "put", impSubj: "pongas", meEng: "on me", seEng: "on him/her/them",
           affImpMe: "Pónmelo", affImpSe: "Pónselo" },
-        { verb: "tener", eng: "hold", impSubj: "tengas", meEng: "for me", seEng: "for him/her",
+        { verb: "tener", eng: "hold", impSubj: "tengas", meEng: "for me", seEng: "for him/her/them",
           affImpMe: "Ténmelo", affImpSe: "Ténselo" }
     ];
 
@@ -966,6 +966,13 @@
             s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
         }
         return s;
+    }
+
+    function expandSlashVariants(str) {
+        var match = str.match(/^([\s\S]*?)(\w+(?:\/\w+)+)([\s\S]*)$/);
+        if (!match) return [str];
+        var prefix = match[1], group = match[2], suffix = match[3];
+        return group.split("/").map(function(v) { return prefix + v + suffix; });
     }
 
     function cardMatchesSet(card) {
@@ -1840,8 +1847,10 @@
             warn.style.display = "none";
         }
 
-        speakBtn.style.display = "block";
-
+        speakBtn.style.display = (currentQuizDirection === 'comprehension') ? "block" : "none";
+        document.getElementById('user-input').placeholder = (currentQuizDirection === 'production')
+            ? "Type the Spanish form..."
+            : "Type the English meaning...";
         applyPanelVisibility();
 
         // Comprehension prompt audio — governed by prompt mode, not by autoSpeakSetting
@@ -1851,8 +1860,11 @@
         }
 
         // Auto-scroll to the active input/reveal area so the user doesn't have to hunt for it
+
         setTimeout(function() {
-            if (currentQuizDirection === 'read' && productionMethod === 'type') {
+            var useType = (currentQuizDirection === 'production' && productionMethod === 'type')
+                       || (currentQuizDirection === 'comprehension' && comprehensionMethod === 'type');
+            if (useType) {
                 var inputField = document.getElementById('user-input');
                 if (inputField) {
                     inputField.focus();
@@ -1889,9 +1901,16 @@
             }
             return false;
         } else {
-            if (norm === normaliseAnswer(card.english)) return true;
+            var bases = [card.english];
             var noQual = card.english.replace(/\s*\([^)]+\)/g, '').trim();
-            if (norm === normaliseAnswer(noQual)) return true;
+            if (noQual !== card.english) bases.push(noQual);
+            var candidates = [];
+            for (var b = 0; b < bases.length; b++) {
+                candidates = candidates.concat(expandSlashVariants(bases[b]));
+            }
+            for (var i = 0; i < candidates.length; i++) {
+                if (norm === normaliseAnswer(candidates[i])) return true;
+            }
             return false;
         }
     }
@@ -1946,17 +1965,26 @@
 
         var logResult = handleLogUpdate(currentCard, isCorrect, userInput);
 
-        var answerLine = currentQuizDirection === 'production'
-            ? "Answer: <strong>" + currentCard.display + "</strong>"
-            : "Meaning: <strong>" + currentCard.english + "</strong>";
+        var answerLine;
+        if (currentQuizDirection === 'production') {
+            answerLine = "Answer: <strong>" + currentCard.display + "</strong>";
+        } else {
+            answerLine = "Form: <strong>" + currentCard.display + "</strong><br>Meaning: <strong>" + currentCard.english + "</strong>";
+        }
         var trapNote = buildTrapNote(currentCard);
 
+        var youTypedLine = "";
+        if (currentQuizDirection === 'comprehension' && !isCorrect) {
+            youTypedLine = "<br><small style=\"color:var(--text-muted);\">You typed: \"" + userInput + "\"</small>";
+        }
+
+        var speakIconFb = ' <span style="cursor:pointer; opacity:0.85;" onclick="speakCurrentAnswer();" title="Hear the answer">🔊</span>';
         if (isCorrect) {
             feedbackMessage.className = "feedback correct-box";
-            feedbackMessage.innerHTML = "<strong>Correct!</strong> 🎉<br>" + answerLine + trapNote + logUpdateMessage(logResult);
+            feedbackMessage.innerHTML = "<strong>Correct!</strong> 🎉" + speakIconFb + "<br>" + answerLine + trapNote + logUpdateMessage(logResult);
         } else {
             feedbackMessage.className = "feedback incorrect-box";
-            feedbackMessage.innerHTML = "<strong>Incorrect.</strong><br>" + answerLine + trapNote + logUpdateMessage(logResult);
+            feedbackMessage.innerHTML = "<strong>Incorrect.</strong>" + speakIconFb + "<br>" + answerLine + youTypedLine + trapNote + logUpdateMessage(logResult);
             currentSessionDeck.push(currentCard);
             document.getElementById('deck-total').innerText = currentSessionDeck.length;
         }
@@ -2010,6 +2038,7 @@
             sub.innerText = currentCard.display;
         }
 
+        document.getElementById('speak-btn').style.display = "block";
         if (autoSpeakSetting) setTimeout(speakCurrentAnswer, 150);
     }
 
@@ -2039,17 +2068,16 @@
 
         var trapNote = buildTrapNote(currentCard);
 
+        var speakIconFb = ' <span style="cursor:pointer; opacity:0.85;" onclick="speakCurrentAnswer();" title="Hear the answer">🔊</span>';
         if (isCorrect) {
             feedbackMessage.className = "feedback correct-box";
-            feedbackMessage.innerHTML = "<strong>Marked Correct!</strong> 👍<br>" + currentCard.display + " = " + currentCard.english + "." + trapNote + logUpdateMessage(logResult);
+            feedbackMessage.innerHTML = "<strong>Marked Correct!</strong> 👍" + speakIconFb + "<br>" + currentCard.display + " = " + currentCard.english + "." + trapNote + logUpdateMessage(logResult);
         } else {
             feedbackMessage.className = "feedback incorrect-box";
-            feedbackMessage.innerHTML = "<strong>Marked Incorrect.</strong> 📚<br>" + currentCard.display + " = " + currentCard.english + "." + trapNote + logUpdateMessage(logResult);
+            feedbackMessage.innerHTML = "<strong>Marked Incorrect.</strong> 📚" + speakIconFb + "<br>" + currentCard.display + " = " + currentCard.english + "." + trapNote + logUpdateMessage(logResult);
             currentSessionDeck.push(currentCard);
             document.getElementById('deck-total').innerText = currentSessionDeck.length;
         }
-
-        if (autoSpeakSetting) setTimeout(speakCurrentAnswer, 200);
 
         activeCardIndex++;
         document.getElementById('deck-progress').innerText = activeCardIndex;
@@ -2447,10 +2475,12 @@
                 }
                 if (isTyping && !isFeedbackOpen) return; // Don't skip typing
 
+                var useType = (currentQuizDirection === 'production' && productionMethod === 'type')
+                           || (currentQuizDirection === 'comprehension' && comprehensionMethod === 'type');
                 if (isFeedbackOpen) {
-                    handleNextWorkflow(); // Next card
-                } else if (currentQuizDirection === 'read' && productionMethod === 'type') {
-                    checkAnswer(); // Submit answer
+                    handleNextWorkflow();
+                } else if (useType) {
+                    checkAnswer();
                 } else if (!isHonourOpen) {
                     revealVerbAnswer(); // Reveal
                 } else if (isHonourOpen) {
