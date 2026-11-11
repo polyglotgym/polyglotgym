@@ -1970,7 +1970,7 @@
         var trapNote = buildTrapNote(currentCard);
 
         var youTypedLine = "";
-        if (currentQuizDirection === 'comprehension' && !isCorrect) {
+        if (!isCorrect) {
             youTypedLine = "<br><small style=\"color:var(--text-muted);\">You typed: \"" + userInput + "\"</small>";
         }
 

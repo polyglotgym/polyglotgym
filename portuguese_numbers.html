@@ -1,0 +1,2233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portuguese Numbers</title>
+    <style>
+        :root {
+            --bg-color: #040911;
+            --card-bg: #0b1424;
+            --text-main: #f8fafc;
+            --text-muted: #64748b;
+            --accent: #ca8a04;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #eab308;
+            --border: #1e293b;
+            --shadow: rgba(0, 0, 0, 0.6);
+        }
+        :root { font-size: 17px; }
+        html { scrollbar-gutter: stable; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 1rem;
+            background-color: var(--bg-color); color: var(--text-main);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; overflow-x: hidden;
+            overflow-anchor: none;
+        }
+        .container {
+            background-color: var(--card-bg); padding: 2rem; border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px var(--shadow); width: 100%; max-width: 550px;
+            border: 1px solid var(--border); position: relative;
+            min-width: 0;
+        }
+        #shutter-header-area { max-height: 2200px; opacity: 1; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.4s ease; }
+        #shutter-header-area.collapsed { max-height: 0px; opacity: 0; margin-bottom: 0px !important; pointer-events: none; }
+        h1 { font-size: 1.4rem; margin-top: 0; text-align: center; color: var(--accent); margin-bottom: 0.5rem; letter-spacing: 0.5px; text-transform: uppercase; }
+        .score-board { display: flex; justify-content: space-around; background-color: rgba(0,0,0,0.4); padding: 0.75rem; border-radius: 0.5rem 0.5rem 0 0; margin-top: 0; margin-bottom: 0; border: 1px solid var(--border); border-bottom: none; font-size: 0.85rem; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+        .score-board-progress-row { display: flex; box-sizing: border-box; justify-content: center; align-items: center; background-color: rgba(0,0,0,0.4); padding: 0.6rem 0.75rem; border-radius: 0 0 0.5rem 0.5rem; margin-top: 0; margin-bottom: 1rem; border: 1px solid var(--border); border-top: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; position: relative; }
+        .score-board-progress-row .score-item { margin: 0 auto; }
+        .score-board-gear-btn { font-size: 1rem; background: none; color: var(--text-main); padding: 0.2rem 0.5rem; cursor: pointer; border: none; position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); line-height: 1; }
+        .score-item span { font-weight: bold; color: var(--accent); }
+        .review-phase-text { color: var(--warning) !important; transition: color 0.3s ease; }
+        .nav-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+        .nav-btn { background: none; border: none; color: var(--text-muted); padding: 0.5rem 0.75rem; cursor: pointer; font-size: 0.9rem; border-radius: 0.25rem; transition: all 0.2s; }
+        .nav-btn.active { background-color: var(--border); color: var(--accent); font-weight: bold; }
+        .mode-selector { display: flex; flex-wrap: wrap; background-color: rgba(0, 0, 0, 0.4); padding: 0.4rem; border-radius: 0.5rem; margin-bottom: 0.5rem; border: 1px solid var(--border); gap: 0.4rem; }
+        .mode-btn { flex: 1 1 calc(50% - 0.4rem); background: none; border: none; color: var(--text-muted); padding: 0.6rem 0.5rem; font-size: 0.85rem; border-radius: 0.35rem; cursor: pointer; text-align: center; }
+        .mode-btn.active { background-color: var(--accent); color: #0d0c10; font-weight: bold; }
+        .drawer-toggle { background: none; border: none; color: var(--accent); font-size: 0.85rem; cursor: pointer; display: block; margin: -0.75rem auto 1rem auto; padding: 0.25rem 0.5rem; text-decoration: none; }
+        .settings-drawer { background-color: rgba(0, 0, 0, 0.3); border: 1px dashed var(--border); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.5rem; display: none; }
+        .grid-header-label { font-size: 0.8rem; color: var(--text-muted); font-weight: bold; margin-top: 0.5rem; }
+        .row-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.4rem; margin-top: 0.3rem; margin-bottom: 0.8rem; }
+        .row-label { display: flex; align-items: center; justify-content: center; background-color: rgba(255,255,255,0.01); border: 1px solid var(--border); border-radius: 0.35rem; padding: 0.45rem; font-size: 0.8rem; cursor: pointer; text-align: center; user-select: none; }
+        .row-label input { display: none; }
+        .row-label.selected { background-color: rgba(202, 138, 4, 0.15); border-color: var(--accent); color: var(--text-main); font-weight: bold; }
+        .question-box { background-color: rgba(0,0,0,0.5); padding: 2rem 1.5rem; border-radius: 0.5rem; text-align: center; margin-bottom: 1.5rem; border: 1px solid var(--border); min-height: 11rem; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 0.25rem; position: relative; }
+        .prompt-main { font-size: 2.8rem; font-weight: bold; color: var(--text-main); line-height: 1.15; font-family: Georgia, serif; overflow-wrap: break-word; word-break: break-word; }
+        .prompt-sub { font-size: 1rem; color: var(--accent); font-weight: 500; margin-top: 0.4rem; min-height: 1.5rem; overflow-wrap: break-word; }
+        .sub-badge { font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 0.5rem; }
+        .input-group { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+        input.text-input { flex: 1; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid var(--border); background-color: rgba(0,0,0,0.4); color: var(--text-main); font-size: 1.1rem; outline: none; text-align: center; }
+        input.text-input:focus { border-color: var(--accent); }
+        .feedback { padding: 1rem; border-radius: 0.5rem; margin-top: 1rem; font-size: 0.95rem; line-height: 1.5; overflow-wrap: break-word; word-break: break-word; }
+        .correct-box { background-color: rgba(16, 185, 129, 0.15); border: 1px solid var(--success); color: #34d399; }
+        .incorrect-box { background-color: rgba(239, 68, 68, 0.15); border: 1px solid var(--error); color: #fb7185; }
+        .honour-group { display: flex; gap: 0.75rem; width: 100%; }
+        .honour-btn { flex: 1; font-size: 0.95rem; padding: 0.75rem; border: none; border-radius: 0.5rem; color: #fff; cursor: pointer; }
+        .next-btn { width: 100%; margin-top: 1rem; background-color: var(--border); color: var(--text-main); border: none; border-radius: 0.5rem; padding: 0.75rem; font-weight: bold; cursor: pointer; }
+        .ref-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; font-size: 0.85rem; }
+        .ref-table th, .ref-table td { border: 1px solid var(--border); padding: 0.4rem; text-align: center; }
+        .ref-table th { background-color: rgba(0,0,0,0.5); color: var(--accent); }
+        .portal-shortcut-bar { width: 100%; max-width: 550px; margin: 1.5rem auto 0 auto; padding: 0.75rem 1rem; background-color: rgba(0, 0, 0, 0.25); border: 1px solid var(--border); border-radius: 0.5rem; display: flex; align-items: center; box-sizing: border-box; box-shadow: 0 4px 15px var(--shadow); }
+        .portal-shortcut-bar a { color: var(--accent); text-decoration: none; font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; gap: 0.4rem; transition: opacity 0.2s; }
+        .portal-shortcut-bar a:hover { opacity: 0.8; }
+        .portal-shortcut-bar .terminal-label { margin-left: auto; font-size: 0.75rem; color: var(--text-muted); font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase; }
+        .warning-badge { background-color: rgba(234, 179, 8, 0.15); border: 1px dashed var(--warning); color: #facc15; font-size: 0.75rem; padding: 0.25rem 0.6rem; border-radius: 0.25rem; font-weight: bold; margin-top: 0.4rem; text-transform: uppercase; letter-spacing: 0.5px; max-width: 95%; line-height: 1.35; }
+        .trivia-badge { background-color: rgba(168, 85, 247, 0.18); border: 1px dashed #a855f7; color: #d8b4fe; font-size: 0.8rem; padding: 0.35rem 0.75rem; border-radius: 0.25rem; font-weight: bold; margin-top: 0.5rem; text-align: center; }
+        .drill-pill { font-size: 0.75rem; background-color: rgba(234, 179, 8, 0.18); border: 1px solid var(--warning); color: var(--warning); padding: 0.25rem 0.6rem; border-radius: 1rem; font-weight: bold; }
+        .drill-pill a { color: var(--warning); text-decoration: underline; margin-left: 0.35rem; }
+        .play-pill { background-color: rgba(168, 85, 247, 0.18) !important; border-color: #a855f7 !important; color: #d8b4fe !important; }
+        .drill-all-btn { width: 100%; margin-bottom: 1rem; padding: 0.6rem; background-color: var(--accent); color: #0d0c10; border: none; border-radius: 0.5rem; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
+        .drill-all-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .review-tabs { display: flex; justify-content: center; gap: 0.4rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; flex-wrap: wrap; }
+        .review-tab { background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 0.5rem 0.75rem; border-radius: 0.35rem; cursor: pointer; font-size: 0.8rem; transition: all 0.15s; }
+        .review-tab.active { background-color: var(--border); color: var(--text-main); font-weight: bold; }
+        .review-tab[data-bucket="known"].active { color: #86efac; }
+        .review-tab[data-bucket="active"].active { color: #cbd5e1; }
+        .review-tab[data-bucket="pending"].active { color: #fbbf24; }
+        .review-tab[data-bucket="pinned"].active { color: #ef4444; }
+        .review-header { color: var(--text-muted); font-size: 0.8rem; line-height: 1.5; padding: 0.5rem 0; margin-bottom: 0.5rem; text-align: left; }
+        .review-table th .pin-all-btn { margin: 0; padding: 0.15rem 0.4rem; font-size: 0.7rem; background-color: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.5); border-radius: 0.25rem; cursor: pointer; font-weight: bold; white-space: nowrap; transition: all 0.15s; }
+        .review-table th .pin-all-btn:hover { background-color: rgba(239, 68, 68, 0.35); color: #fca5a5; border-color: #ef4444; }
+        .review-empty { color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 2rem 0; }
+        .review-table .prompt-cell { font-weight: bold; color: var(--warning); text-align: left; }
+        .review-table .correct-cell { color: var(--success); font-weight: bold; }
+        .review-table .wrong-cell { color: var(--error); font-style: italic; }
+        .review-table .fail-cell { color: var(--text-muted); font-size: 0.75rem; text-align: center; }
+        .review-table .actions-cell { white-space: nowrap; }
+        .review-table .actions-cell button { background: none; border: 1px solid var(--border); color: var(--text-muted); font-size: 0.85rem; padding: 0.2rem 0.4rem; border-radius: 0.25rem; cursor: pointer; margin: 0 0.1rem; }
+        .review-table .actions-cell button:hover { color: var(--text-main); border-color: var(--text-muted); }
+        .review-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
+        .review-actions button { flex: 1; padding: 0.6rem; border: none; border-radius: 0.5rem; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
+        #drill-bucket-btn { background-color: var(--accent); color: #0d0c10; }
+        #clear-bucket-btn { background-color: var(--border); color: var(--text-main); }
+        .review-actions button:disabled { opacity: 0.4; cursor: not-allowed; }
+        .completion-actions { display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
+        .completion-btn { flex: 1; min-width: 120px; padding: 0.65rem; border: none; border-radius: 0.5rem; font-weight: bold; cursor: pointer; font-size: 0.85rem; background-color: var(--border); color: var(--text-main); }
+        .completion-btn.primary { background-color: var(--accent); color: #0d0c10; }
+        .completion-stats { display: flex; justify-content: center; gap: 1.5rem; margin: 1rem 0 0.5rem 0; flex-wrap: wrap; }
+        .completion-stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; }
+        .completion-stat-value { font-size: 1.6rem; font-weight: bold; color: var(--text-main); }
+        .mode-hint { font-size: 0.7rem; color: var(--text-muted); margin: 0.25rem 0 0.5rem 0; line-height: 1.4; }
+        .progress-bar-container { width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; margin: 1rem 0 0.5rem 0; }
+        .progress-bar-fill { height: 100%; background: var(--success); transition: width 0.3s ease; }
+        .big-stat { font-size: 2.4rem; font-weight: bold; color: var(--text-main); margin: 0.5rem 0; text-align: center; }
+        .guide-subtabs { display: flex; gap: 0.4rem; margin-bottom: 1rem; padding: 0.4rem; background-color: rgba(0, 0, 0, 0.4); border: 1px solid var(--border); border-radius: 0.5rem; }
+        .guide-subtab-btn { flex: 1; background: none; border: none; color: var(--text-muted); padding: 0.55rem 0.75rem; font-size: 0.85rem; border-radius: 0.35rem; cursor: pointer; transition: all 0.15s; }
+        .guide-subtab-btn:hover { color: var(--text-main); }
+        .guide-subtab-btn.active { background-color: var(--accent); color: #0d0c10; font-weight: bold; }
+        .guide-scroll { max-height: 55vh; overflow-y: auto; padding-right: 0.5rem; }
+        .guide-body { font-size: 0.9rem; line-height: 1.6; color: var(--text-main); }
+        .guide-body p { margin: 0 0 0.75rem 0; }
+        .guide-body strong { color: var(--text-main); }
+        .guide-body em { color: var(--text-muted); }
+        .guide-section-header { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.2px; font-weight: bold; margin: 1.75rem 0 0.75rem 0; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border); }
+        .guide-section-header:first-child { margin-top: 0; }
+        .guide-subsection { font-size: 0.95rem; color: var(--accent); font-weight: bold; margin: 1.25rem 0 0.5rem 0; }
+        .guide-tagline { color: var(--accent); font-style: italic; text-align: center; font-size: 0.95rem; margin: 1rem 0; font-weight: 500; }
+        .guide-pile { margin: 0 0 0.75rem 0; padding: 0.6rem 0.75rem; background: rgba(255,255,255,0.02); border-left: 3px solid var(--border); border-radius: 0.25rem; }
+        .guide-pile-label { font-weight: bold; color: var(--text-main); margin-right: 0.35rem; }
+        .guide-pile-desc { color: var(--text-main); font-size: 0.88rem; }
+        .guide-scroll ul { margin: 0.5rem 0 0.75rem 0; padding-left: 1.2rem; }
+        .trap-callout { background: rgba(234, 179, 8, 0.08); border-left: 3px solid var(--warning); padding: 0.75rem 1rem; border-radius: 0.25rem; margin: 0.75rem 0; font-size: 0.85rem; }
+        .trap-callout strong { color: #facc15; }
+
+        @media (max-width: 550px) {
+            .container { padding: 1rem; }
+            .score-board { flex-wrap: wrap !important; justify-content: center !important; font-size: 0.9rem !important; padding: 0.5rem 0.75rem !important; gap: 0.4rem 0.75rem !important; line-height: 1.4 !important; }
+            .score-item { font-size: 0.75rem !important; white-space: nowrap !important; }
+            .score-item span, .score-item a { font-size: 0.85rem !important; }
+            .score-board-progress-row { display: flex; justify-content: center; align-items: center; background-color: rgba(0,0,0,0.4); padding: 0.6rem 0.75rem; border-radius: 0 0 0.5rem 0.5rem; margin-top: 0; margin-bottom: 1rem; border: 1px solid var(--border); border-top: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; position: relative; }
+            .score-board-progress-row .score-item { font-size: 0.9rem !important; text-align: center; }
+            .score-board-gear-btn { font-size: 1rem; background: none; color: var(--text-main); padding: 0.2rem 0.5rem; cursor: pointer; border: none; position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); }
+            #review-status-label { display: block !important; width: 100% !important; text-align: center !important; font-size: 0.75rem !important; color: var(--warning) !important; margin-top: 0.25rem !important; font-style: italic !important; }
+            .question-box { padding: 1.25rem 1rem !important; min-height: auto !important; justify-content: flex-start !important; padding-top: 1.5rem !important; }
+            .prompt-main { font-size: 1.6rem !important; }
+            .prompt-sub { font-size: 0.9rem !important; }
+        }
+        .hidden-during-feedback { display: none !important; }
+    </style>
+    <meta name="copyright" content="© 2026 Simon Reynolds · The Polyglot Gym · All rights reserved.">
+</head>
+<body>
+<div class="container">
+    <div id="shutter-header-area">
+        <h1>Portuguese Numbers</h1>
+        <div class="nav-tabs">
+            <button class="nav-btn active" id="tab-quiz" onclick="switchView('quiz')">🎯 Drills</button>
+            <button class="nav-btn" id="tab-guide" onclick="switchView('guide')">📚 Guide</button>
+            <button class="nav-btn" id="tab-review" onclick="switchView('review')">📝 Reviews (<span id="review-count">0</span>)</button>
+        </div>
+        <div class="mode-selector">
+            <button class="mode-btn active" id="dir-r" onclick="setDirection('production')">Number → Words</button>
+            <button class="mode-btn" id="dir-w" onclick="setDirection('comprehension')">Words → Number</button>
+        </div>
+    </div>
+
+    <div id="view-quiz">
+        <div class="score-board">
+            <div class="score-item">Correct: <span id="score-correct">0</span></div>
+            <div class="score-item">Checked: <span id="score-total">0</span></div>
+            <div class="score-item">Streak: <span id="score-streak">0</span> <span id="streak-emoji">🐣</span></div>
+            <div class="score-item">Known: <span id="score-known">0</span> / <span id="score-known-total">0</span></div>
+            <div class="score-item">Deck: <span id="score-filtered">0</span></div>
+            <div class="drill-pill play-pill" id="play-mode-pill" style="display: none;">🎮 Play Mode</div>
+            <div class="drill-pill" id="drill-pill" style="display: none;">🎯 Drilling <span id="drill-count">0</span> · <a href="#" onclick="exitDrillToReview(); return false;">Exit</a></div>
+        </div>
+        <div class="score-board-progress-row">
+            <div class="score-item" id="progress-box">Progress: <span id="deck-progress">0</span> / <span id="deck-total">--</span><span id="review-status-label"></span></div>
+            <button onclick="openOptionsPanel();" class="score-board-gear-btn">⚙️</button>
+        </div>
+
+        <div class="question-box">
+            <div class="prompt-main" id="num-prompt-display">1,234</div>
+            <div class="prompt-sub" id="num-sub-display">Type the words</div>
+            <div id="trivia-badge" class="trivia-badge" style="display: none;"></div>
+            <div id="warning-badge" class="warning-badge" style="display: none;"></div>
+            <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem; margin-bottom: 0.25rem;">
+                <button id="speak-btn" style="background-color: var(--border); color: var(--text-main); font-size: 0.8rem; padding: 0.35rem 0.75rem; border-radius: 0.25rem; border: none; cursor: pointer;" onclick="speakCurrentAnswer();">Listen 🔊</button>
+                <button id="hint-btn" style="background-color: var(--border); color: var(--text-main); font-size: 0.8rem; padding: 0.35rem 0.75rem; border-radius: 0.25rem; border: none; cursor: pointer; display: none;" onclick="revealWrittenHint()">Show written 👁️</button>
+            </div>
+            <div class="sub-badge" id="track-badge">Type the full Portuguese form</div>
+        </div>
+
+        <div id="panel-read-mode">
+            <div class="input-group">
+                <input type="text" class="text-input" id="user-input" placeholder="Type your answer..." autocomplete="off" onkeydown="if(event.key === 'Enter') { event.preventDefault(); event.stopPropagation(); checkAnswer(); }">
+                <button id="submit-btn" style="background-color: var(--accent); color: #0d0c10; font-weight: bold; border: none; border-radius: 0.5rem; padding: 0 1.5rem; cursor: pointer;" onclick="checkAnswer();">Check</button>
+            </div>
+        </div>
+
+        <div id="panel-write-mode" style="display: none;">
+            <div class="input-group" id="btn-reveal-container" style="display: block; width: 100%;">
+                <button id="reveal-btn" style="width: 100%; height: 2.8rem; background-color: var(--accent); color: #0d0c10; font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer;" onclick="revealVerbAnswer()">Reveal Answer →</button>
+            </div>
+            <div class="honour-group" id="honour-system-controls" style="display: none; justify-content: center; gap: 0.75rem; width: 100%; margin-bottom: 1rem;">
+                <button class="honour-btn" style="background-color: var(--error); flex: 1;" onclick="assessHonour(false)">← Wrong ✖</button>
+                <button class="honour-btn" style="background-color: var(--success); color: #0d0c10; font-weight: bold; flex: 1;" onclick="assessHonour(true)">Correct ✔ →</button>
+            </div>
+        </div>
+
+        <div id="start-btn-container" style="display: none;">
+            <div class="input-group">
+                <button id="start-btn" style="width: 100%; height: 2.8rem; background-color: var(--accent); color: #0d0c10; font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 1rem;" onclick="startSession();">▶ Start Session →</button>
+            </div>
+        </div>
+
+        <div id="feedback-container" style="display: none;">
+            <div id="feedback-message" class="feedback"></div>
+            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                <button class="next-btn" id="next-btn" onclick="handleNextWorkflow()" style="flex: 2;">Next Number →</button>
+                <button class="next-btn" id="undo-btn" onclick="executeUndoAction()" style="flex: 1; background-color: var(--warning); color: #0d0c10;">← Undo</button>
+            </div>
+        </div>
+    </div>
+
+    <button class="drawer-toggle" id="drawer-toggle-btn" onclick="toggleSettingsDrawer();" style="width: 100%; padding: 0.75rem; margin-top: 1rem; font-size: 0.95rem; background: none; border: 1px solid var(--border); border-radius: 0.5rem; color: var(--text-muted); cursor: pointer; text-align: center;">⚙️ Options & Filters ▾</button>
+    <div id="filter-status-line" style="text-align:center; font-size:0.72rem; color:var(--text-muted); margin:-0.5rem 0 1rem 0; letter-spacing:0.3px;"></div>
+    <div class="settings-drawer" id="settings-drawer">
+        <div class="grid-header-label">Card Set:</div>
+        <select id="card-set-selector" onchange="initSessionDeck()" style="width: 100%; padding: 0.45rem; background-color: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border); border-radius: 0.35rem; font-size: 0.85rem; outline: none; margin-top: 0.25rem; margin-bottom: 0.8rem;">
+            <option value="all" selected>All cards (default)</option>
+            <option value="standard">Standard only (no years, no tricky)</option>
+            <option value="tricky">Tricky only (traps)</option>
+            <option value="years">Years only (with trivia)</option>
+        </select>
+
+        <div class="grid-header-label">Production Input Method:</div>
+        <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <label class="row-label selected" id="lbl-method-type"><input type="radio" name="rad-method" id="chk-method-type" checked onchange="updateProductionMethod('type')">Type answer</label>
+            <label class="row-label" id="lbl-method-honour"><input type="radio" name="rad-method" id="chk-method-honour" onchange="updateProductionMethod('honour')">Honour (self-assess)</label>
+        </div>
+        <p class="mode-hint">Applies only in Number → Words direction.</p>
+
+        <div class="grid-header-label">Comprehension Input Method:</div>
+        <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <label class="row-label selected" id="lbl-comp-method-type"><input type="radio" name="rad-comp-method" id="chk-comp-method-type" checked onchange="updateComprehensionMethod('type')">Type answer</label>
+            <label class="row-label" id="lbl-comp-method-honour"><input type="radio" name="rad-comp-method" id="chk-comp-method-honour" onchange="updateComprehensionMethod('honour')">Honour (self-assess)</label>
+        </div>
+        <p class="mode-hint">Applies only in Words → Number direction.</p>
+
+        <div class="grid-header-label">Comprehension Prompt:</div>
+        <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <label class="row-label selected" id="lbl-comp-audio"><input type="checkbox" id="chk-comp-audio" checked onchange="updateComprehensionAudio()">🔊 Speak audio</label>
+            <label class="row-label" id="lbl-comp-written"><input type="checkbox" id="chk-comp-written" onchange="updateComprehensionShowWritten()">📖 Show written</label>
+        </div>
+        <p class="mode-hint">Applies only in Words → Number direction. At least one must be on.</p>
+
+        <div class="grid-header-label">Known Cards Mode:</div>
+        <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <label class="row-label selected" id="lbl-known-adaptive"><input type="radio" name="rad-known-mode" id="chk-known-adaptive" checked onchange="updateKnownMode('adaptive')">Adaptive</label>
+            <label class="row-label" id="lbl-known-sweep"><input type="radio" name="rad-known-mode" id="chk-known-sweep" onchange="updateKnownMode('sweep')">Full Sweep</label>
+        </div>
+        <p class="mode-hint">
+            <strong>Adaptive:</strong> active + pending + pinned (skips known).<br>
+            <strong>Sweep:</strong> every card, including known.
+        </p>
+
+        <div class="grid-header-label">Session Deck Size:</div>
+        <select id="deck-size-selector" onchange="initSessionDeck()" style="width: 100%; padding: 0.45rem; background-color: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border); border-radius: 0.35rem; font-size: 0.85rem; outline: none; margin-top: 0.25rem; margin-bottom: 0.8rem;">
+            <option value="10" selected>10 cards (short)</option>
+            <option value="20">20 cards</option>
+            <option value="30">30 cards</option>
+            <option value="50">50 cards</option>
+            <option value="9999">Full set (no cap)</option>
+        </select>
+
+        <div class="grid-header-label">Card Behaviour:</div>
+        <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <label class="row-label" id="lbl-opt-play-mode"><input type="checkbox" id="chk-opt-play-mode" onchange="updatePlayMode()">🎮 Play mode</label>
+            <label class="row-label selected" id="lbl-opt-auto-speak"><input type="checkbox" id="chk-opt-auto-speak" checked onchange="updateAutoSpeak()">Auto-speak answers</label>
+        </div>
+        <div class="row-grid" style="grid-template-columns: repeat(1, 1fr);">
+            <div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.2rem;">Auto-pin after fails:</div>
+                <select id="auto-pin-selector" onchange="setAutoPinThreshold(this.value)" style="width: 100%; padding: 0.45rem; background-color: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border); border-radius: 0.35rem; font-size: 0.85rem; outline: none;">
+                    <option value="0">Off</option>
+                    <option value="2">2 fails</option>
+                    <option value="3" selected>3 fails</option>
+                    <option value="5">5 fails</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid-header-label">Accent Handling:</div>
+        <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <label class="row-label selected" id="lbl-accent-lenient"><input type="radio" name="rad-accent" id="chk-accent-lenient" checked onchange="updateAccentMode('lenient')">Lenient (forgiven)</label>
+            <label class="row-label" id="lbl-accent-strict"><input type="radio" name="rad-accent" id="chk-accent-strict" onchange="updateAccentMode('strict')">Strict (required)</label>
+        </div>
+        <p class="mode-hint">Lenient: tres passes for três. Strict: accents and tildes required.</p>
+
+        <div class="grid-header-label">Progress:</div>
+        <button onclick="resetAllProgress();" style="width: 100%; padding: 0.45rem; background-color: rgba(239, 68, 68, 0.15); color: var(--error); border: 1px solid var(--error); border-radius: 0.35rem; font-size: 0.8rem; cursor: pointer; font-weight: bold; margin-top: 0.25rem;">Reset all progress</button>
+    </div>
+
+    <div id="view-guide" style="display: none;">
+        <div class="guide-subtabs">
+            <button class="guide-subtab-btn active" id="guide-subtab-user" onclick="setGuideTab('user')">📖 User Guide</button>
+            <button class="guide-subtab-btn" id="guide-subtab-conj" onclick="setGuideTab('conj')">📚 Number Tables</button>
+        </div>
+        <div class="guide-scroll">
+            <div id="guide-user-content" class="guide-body">
+                <h3 style="color: var(--accent); margin: 0 0 1rem 0; text-align: center; font-size: 1.15rem;">How to Use This App</h3>
+
+                <div class="guide-subsection" style="margin-top: 0;">What this is</div>
+                <p>A drill for <strong>Portuguese number words</strong>. Portuguese numbers up to a trillion are compositional — you can build any number once you know a handful of base forms and patterns. This app drills the composition, with a strong focus on the traps that trip learners up.</p>
+                <p>The deck is roughly 110 cards, covering 0–20, the 21–29 family, round tens, hundreds with their irregular forms, thousands, millions, and a set of representative composites and years.</p>
+                <p class="guide-tagline">Learn the patterns, then drill the traps.</p>
+
+                <div class="guide-subsection">The two directions</div>
+                <ul>
+                    <li><strong>Number → Words</strong> (default) — you see the numeral and type the Portuguese words. This is <em>production</em>.</li>
+                    <li><strong>Words → Number</strong> — you see the Portuguese words and type the numeral. This is <em>comprehension</em>, and it's a genuinely different skill.</li>
+                </ul>
+                <p>Both directions drill the same underlying cards. Progress is shared — a card you know in Production is also Known in Comprehension.</p>
+
+                <div class="guide-subsection">The four piles</div>
+                <div class="guide-pile"><span class="guide-pile-label">⚪ Active</span><span class="guide-pile-desc">Cards you're still working through. Appear in every drill. A card is Active if it's new <em>or</em> if you've failed it once and corrected it.</span></div>
+                <div class="guide-pile"><span class="guide-pile-label">🟡 Pending</span><span class="guide-pile-desc">Cards you've recently missed. Mixed into the general rotation but called out separately. Pin with 📍 or use <strong>📌 All</strong>.</span></div>
+                <div class="guide-pile"><span class="guide-pile-label">🔴 Pinned</span><span class="guide-pile-desc">Your watchlist. Stays in rotation indefinitely. Auto-pin after 3 fails (adjustable).</span></div>
+                <div class="guide-pile"><span class="guide-pile-label">💚 Known</span><span class="guide-pile-desc">Mastered. Skipped in Adaptive mode. To review, switch to Full Sweep or Forget All.</span></div>
+
+                <div class="guide-section-header">Card Sets</div>
+
+                <div class="guide-subsection" style="margin-top: 0;">Four drill modes</div>
+                <ul>
+                    <li><strong>All cards</strong> — the full deck, including tricky traps and years.</li>
+                    <li><strong>Standard only</strong> — excludes tricky traps and years. The "plain" drill.</li>
+                    <li><strong>Tricky only</strong> — just the trap cards (cem vs cento, duzentos, quinhentos, etc).</li>
+                    <li><strong>Years only</strong> — 16 historical years, each with a trivia fact shown in feedback.</li>
+                </ul>
+
+                <div class="guide-section-header">The Rules</div>
+
+                <div class="guide-subsection" style="margin-top: 0;">0–15: irregular base</div>
+                <p>Every number up to 15 is memorised as a single word. <em>zero, um, dois, três, quatro, cinco, seis, sete, oito, nove, dez, onze, doze, treze, catorze, quinze.</em></p>
+                <p>Note: <em>catorze</em> is EP; <em>quatorze</em> is also accepted (both EP). BR uses <em>quatorze</em> as standard.</p>
+
+                <div class="guide-subsection">16–19: irregular teens</div>
+                <p>16 = <em>dezasseis</em>, 17 = <em>dezassete</em>, 18 = <em>dezoito</em>, 19 = <em>dezanove</em>.</p>
+                <p><strong>EP/BR note:</strong> 16, 17, 19 have different spellings in BP: <em>dezesseis, dezessete, dezenove</em>. The app accepts both (EP as canonical, BR as alternate). 18 (<em>dezoito</em>) is the same in both.</p>
+
+                <div class="guide-subsection">20–29: vinte e X (three words)</div>
+                <p>This is the <strong>biggest difference from Spanish</strong>. Spanish contracts 21–29 into one word (<em>veintiuno, veintidós...</em>). Portuguese does not: it uses <strong>three words</strong> with <em>e</em> connecting:</p>
+                <p><em>vinte e um, vinte e dois, vinte e três, vinte e quatro, vinte e cinco, vinte e seis, vinte e sete, vinte e oito, vinte e nove.</em></p>
+                <p>Trap: <em>vinte e três</em> carries an accent on <em>três</em>. Otherwise no accents in this range.</p>
+
+                <div class="guide-subsection">30–99: tens + e + units</div>
+                <p>Round tens: <em>trinta, quarenta, cinquenta, sessenta, setenta, oitenta, noventa</em>. Composite tens use <em>e</em>: <em>trinta e três</em>, <em>quarenta e dois</em>.</p>
+
+                <div class="guide-subsection">100 vs 101+: cem vs cento</div>
+                <p>Standalone 100 is <em>cem</em>. But anything over 100 uses <em>cento</em>, and Portuguese uses <em>e</em> between hundreds and tens/units: <em>cento e um</em>, <em>cento e vinte</em>, <em>cento e quarenta e sete</em>. This is one of the most common traps.</p>
+                <p><strong>Key difference from Spanish:</strong> Spanish uses <em>y</em> only between tens and units (<em>doscientos treinta y cuatro</em>). Portuguese uses <em>e</em> between hundreds and tens too (<em>duzentos e trinta e quatro</em>).</p>
+
+                <div class="guide-subsection">200–999: hundreds with three traps</div>
+                <p>All hundreds are single words. Three are irregular (contracted stems):</p>
+                <p><em>duzentos</em> (200, not "dois centos"), <em>trezentos</em> (300, not "três centos"), <em>quinhentos</em> (500, not "cinco centos").</p>
+                <p>The rest are regular: <em>quatrocentos, seiscentos, setecentos, oitocentos, novecentos</em>.</p>
+
+                <div class="guide-subsection">1000 and up</div>
+                <p>1000 is <em>mil</em> — not "um mil". 2000 is <em>dois mil</em>. Unlike Spanish, Portuguese does <strong>not</strong> truncate "vinte e um" before <em>mil</em>: 21,000 = <em>vinte e um mil</em> (Spanish: <em>veintiún mil</em>). 100,000 = <em>cem mil</em>. 101,000 = <em>cento e um mil</em>.</p>
+                <p>Join rule: use <em>e</em> between <em>mil</em> and the remainder when the remainder is under 100 or is a round hundred (100, 200, 300, ... 900):</p>
+                <ul>
+                    <li>1001 = <em>mil e um</em></li>
+                    <li>1100 = <em>mil e cem</em></li>
+                    <li>1200 = <em>mil e duzentos</em></li>
+                    <li>1234 = <em>mil duzentos e trinta e quatro</em> (no <em>e</em> after <em>mil</em> — 234 isn't round)</li>
+                </ul>
+
+                <div class="guide-subsection">Millions and billions</div>
+                <p>1,000,000 = <em>um milhão</em> — "um", not "um milhão" without article. 2,000,000 = <em>dois milhões</em> (plural). 21,000,000 = <em>vinte e um milhões</em>.</p>
+                <p>1,000,000,000 = <em>mil milhões</em> (literally "a thousand millions" — European Portuguese does not use <em>bilhão</em> for 10⁹; <em>bilhão</em> is BR and means 10⁹ too, but the EP standard is <em>mil milhões</em>).</p>
+
+                <div class="guide-section-header">Context-Dependent Forms</div>
+
+                <p>This app drills the <strong>standalone</strong> forms. Two truncations apply only when a number precedes a noun, and are not drilled here:</p>
+                <ul>
+                    <li><strong>um → Ø</strong> before a noun: <em>um livro</em> but only <em>vinte e um anos</em> in the standalone form. Actually both work: standalone <em>vinte e um</em>, before noun <em>vinte e um anos</em> (same).</li>
+                    <li><strong>dois → duas</strong> before feminine plural noun: <em>duas mesas</em>. Context-dependent.</li>
+                </ul>
+                <p>These are context-dependent and belong to a sentence-context drill. This app drills standalone forms.</p>
+
+                <div class="guide-section-header">EP vs BR</div>
+                <p>This app uses <strong>European Portuguese</strong> as the canonical form, with BR variants accepted for teens (14, 16, 17, 19). The rest of the number system is identical between EP and BR, except for 10⁹:</p>
+                <ul>
+                    <li>EP: <em>mil milhões</em> (10⁹)</li>
+                    <li>BR: <em>um bilhão</em> (10⁹)</li>
+                </ul>
+                <p>The deck drills EP. Guide only.</p>
+
+                <div class="guide-section-header">Drilling</div>
+
+                <div class="guide-subsection" style="margin-top: 0;">Reading the scoreboard</div>
+                <ul>
+                    <li><strong>Correct / Checked</strong> — lifetime totals.</li>
+                    <li><strong>Streak</strong> — resets on any wrong answer; 👑 = 15+.</li>
+                    <li><strong>Known / Deck</strong> — under current filters.</li>
+                    <li><strong>Progress</strong> — current session only.</li>
+                </ul>
+
+                <div class="guide-subsection">Hotkeys</div>
+                <p><strong>Space</strong> or <strong>Enter</strong> for move on / correct, <strong>X</strong> (or <strong>1</strong>) for incorrect, <strong>2</strong> for correct (honour mode), <strong>Ctrl+Z</strong> to undo the last answer.</p>
+
+                <div class="guide-section-header">Suggested Workflow</div>
+                <p><strong>Start with Standard only.</strong> Get the plain patterns automatic — 0–20, tens, hundreds — before touching the traps.</p>
+                <p><strong>Then Tricky only.</strong> Run these as a dedicated session. This is where you internalise <em>vinte e um</em> (three words), <em>duzentos</em>, <em>quinhentos</em>, <em>cem</em> vs <em>cento</em>, <em>mil e cem</em>.</p>
+                <p><strong>Then Years only.</strong> Optional. Years are essentially 4-digit numbers with trivia attached — worth doing once to see them in context, but not a distinct skill.</p>
+                <p><strong>Switch direction.</strong> Once you can produce the words, drill Comprehension. Listening comprehension is where the number really clicks — you'll start hearing "mil duzentos e trinta e quatro" in the wild and recognise it instantly.</p>
+            </div>
+
+            <div id="guide-conj-content" style="display: none;">
+                <h3 style="color: var(--accent); margin-top: 0; text-align: center;">0–20 (base forms)</h3>
+                <table class="ref-table" style="font-size: 0.78rem;">
+                    <tr><th>Num</th><th>Word</th><th>Num</th><th>Word</th><th>Num</th><th>Word</th></tr>
+                    <tr><td>0</td><td>zero</td><td>7</td><td>sete</td><td>14</td><td>catorze</td></tr>
+                    <tr><td>1</td><td>um</td><td>8</td><td>oito</td><td>15</td><td>quinze</td></tr>
+                    <tr><td>2</td><td>dois</td><td>9</td><td>nove</td><td>16</td><td>dezasseis</td></tr>
+                    <tr><td>3</td><td>três</td><td>10</td><td>dez</td><td>17</td><td>dezassete</td></tr>
+                    <tr><td>4</td><td>quatro</td><td>11</td><td>onze</td><td>18</td><td>dezoito</td></tr>
+                    <tr><td>5</td><td>cinco</td><td>12</td><td>doze</td><td>19</td><td>dezanove</td></tr>
+                    <tr><td>6</td><td>seis</td><td>13</td><td>treze</td><td>20</td><td>vinte</td></tr>
+                </table>
+
+                <h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">21–29 (vinte e X)</h3>
+                <table class="ref-table" style="font-size: 0.78rem;">
+                    <tr><th>Num</th><th>Word</th><th>Notes</th></tr>
+                    <tr><td>21</td><td>vinte e um</td><td>three words</td></tr>
+                    <tr><td>22</td><td>vinte e dois</td><td></td></tr>
+                    <tr><td>23</td><td>vinte e três</td><td>accent on três</td></tr>
+                    <tr><td>24</td><td>vinte e quatro</td><td></td></tr>
+                    <tr><td>25</td><td>vinte e cinco</td><td></td></tr>
+                    <tr><td>26</td><td>vinte e seis</td><td></td></tr>
+                    <tr><td>27</td><td>vinte e sete</td><td></td></tr>
+                    <tr><td>28</td><td>vinte e oito</td><td></td></tr>
+                    <tr><td>29</td><td>vinte e nove</td><td></td></tr>
+                </table>
+
+                <h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">Tens (30–90)</h3>
+                <table class="ref-table" style="font-size: 0.78rem;">
+                    <tr><td>30 trinta</td><td>40 quarenta</td><td>50 cinquenta</td><td>60 sessenta</td><td>70 setenta</td><td>80 oitenta</td><td>90 noventa</td></tr>
+                </table>
+                <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">Composite: <em>trinta e três</em> (33), <em>cinquenta e cinco</em> (55), <em>noventa e nove</em> (99).</p>
+
+                <h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">Hundreds (100–900)</h3>
+                <table class="ref-table" style="font-size: 0.78rem;">
+                    <tr><th>Num</th><th>Word</th><th>Notes</th></tr>
+                    <tr><td>100</td><td>cem</td><td>standalone only</td></tr>
+                    <tr><td>101</td><td>cento e um</td><td>cento before units</td></tr>
+                    <tr><td>200</td><td>duzentos</td><td>⚠ irregular stem</td></tr>
+                    <tr><td>300</td><td>trezentos</td><td>⚠ irregular stem</td></tr>
+                    <tr><td>400</td><td>quatrocentos</td><td></td></tr>
+                    <tr><td>500</td><td>quinhentos</td><td>⚠ irregular stem</td></tr>
+                    <tr><td>600</td><td>seiscentos</td><td></td></tr>
+                    <tr><td>700</td><td>setecentos</td><td></td></tr>
+                    <tr><td>800</td><td>oitocentos</td><td></td></tr>
+                    <tr><td>900</td><td>novecentos</td><td></td></tr>
+                </table>
+
+                <h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">Thousands &amp; higher</h3>
+                <table class="ref-table" style="font-size: 0.78rem;">
+                    <tr><th>Num</th><th>Word</th><th>Notes</th></tr>
+                    <tr><td>1,000</td><td>mil</td><td>not um mil</td></tr>
+                    <tr><td>1,001</td><td>mil e um</td><td>e since 1 &lt; 100</td></tr>
+                    <tr><td>1,100</td><td>mil e cem</td><td>e since cem is round hundred</td></tr>
+                    <tr><td>1,234</td><td>mil duzentos e trinta e quatro</td><td>no e after mil</td></tr>
+                    <tr><td>2,000</td><td>dois mil</td><td></td></tr>
+                    <tr><td>21,000</td><td>vinte e um mil</td><td>keep the e (unlike Spanish)</td></tr>
+                    <tr><td>100,000</td><td>cem mil</td><td>cem before mil</td></tr>
+                    <tr><td>101,000</td><td>cento e um mil</td><td></td></tr>
+                    <tr><td>1,000,000</td><td>um milhão</td><td>keep um</td></tr>
+                    <tr><td>2,000,000</td><td>dois milhões</td><td>plural</td></tr>
+                    <tr><td>21,000,000</td><td>vinte e um milhões</td><td></td></tr>
+                    <tr><td>1,000,000,000</td><td>mil milhões</td><td>10⁹ (EP)</td></tr>
+                </table>
+
+                <h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">The Traps</h3>
+                <div class="trap-callout">
+                    <strong>vinte e um, not vinte-um.</strong> 21–29 are three words with <em>e</em>.<br>
+                    <strong>cem standalone, cento in compounds.</strong> 100 = cem; 101+ = cento.<br>
+                    <strong>duzentos, trezentos, quinhentos.</strong> 200, 300, 500 have contracted stems.<br>
+                    <strong>e between hundreds and tens.</strong> duzentos E trinta (not "duzentos trinta").<br>
+                    <strong>mil, not um mil.</strong> 1,000 is just mil.<br>
+                    <strong>vinte e um mil, not vinte um mil.</strong> Keep the e before mil.<br>
+                    <strong>mil e cem, not mil cem.</strong> Round hundred after mil uses e.<br>
+                    <strong>um milhão, not milhão.</strong> Keep um.<br>
+                    <strong>mil milhões for 10⁹</strong> — not "um bilhão" in EP.
+                </div>
+
+                <h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">Context-Dependent Forms</h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">
+                    <strong>um → uma</strong> before fem. sg. noun (<em>uma mesa</em>).<br>
+                    <strong>dois → duas</strong> before fem. pl. noun (<em>duas mesas</em>).<br>
+                    These are not drilled — this app drills the standalone forms.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-review" style="display: none;">
+        <button id="drill-all-btn" class="drill-all-btn" onclick="drillFromLog('all')">🎯 Drill All Reviews (Pending &amp; Pinned) (0)</button>
+
+        <div class="review-tabs">
+            <button class="review-tab" data-bucket="known" id="tab-known" onclick="setReviewTab('known')">💚 Known (<span id="count-known">0</span>)</button>
+            <button class="review-tab" data-bucket="active" id="tab-active" onclick="setReviewTab('active')">⚪ Active (<span id="count-active">0</span>)</button>
+            <button class="review-tab active" data-bucket="pending" id="tab-pending" onclick="setReviewTab('pending')">🟡 Pending (<span id="count-pending">0</span>)</button>
+            <button class="review-tab" data-bucket="pinned" id="tab-pinned" onclick="setReviewTab('pinned')">🔴 Pinned (<span id="count-pinned">0</span>)</button>
+        </div>
+
+        <div id="review-header" class="review-header"></div>
+        <div id="review-list-container" style="max-height: 40vh; overflow-y: auto;"></div>
+
+        <div class="review-actions">
+            <button id="drill-bucket-btn" onclick="drillActiveBucket()">🎯 Drill</button>
+            <button id="clear-bucket-btn" onclick="clearActiveBucket()">🗑️ Clear</button>
+        </div>
+    </div>
+
+</div>
+
+<div class="portal-shortcut-bar">
+    <a href="index.html">Return to Hub</a>
+    <div class="terminal-label">P-App 04</div>
+</div>
+
+<script>
+    var sessionStarted = false;
+    var accentMode = "lenient";
+    var autoSpeakSetting = true;
+    var productionMethod = "type";
+    var comprehensionShowWritten = false;
+    var comprehensionMethod = "type";
+    var comprehensionAudio = true;
+    var currentCardRevealed = false;
+    var autoPinThreshold = 3;
+    var knownMode = "adaptive";
+    var playMode = false;
+    var currentCard = null;
+    var currentQuizDirection = "production";
+    var totalCorrect = 0;
+    var totalQuestions = 0;
+    var currentStreak = 0;
+    var mistakeLog = [];
+    var knownCards = {};
+    var currentSessionDeck = [];
+    var activeCardIndex = 0;
+    var coreDeckOriginalCount = 0;
+    var userActionHistory = [];
+    var pendingSpeakTimer = null;
+    var emptyReason = null;
+    var totalFilteredCount = 0;
+
+    var reviewTab = "pending";
+    var guideTab = "user";
+
+    var sessionMode = "normal";
+    var sessionFirstAttempts = {};
+    var sessionCorrect = 0;
+    var sessionTotal = 0;
+    var sessionCurrentStreak = 0;
+    var sessionBestStreak = 0;
+    var sessionRecoveredCount = 0;
+    var sessionKnownCount = 0;
+    var sessionComplete = false;
+
+    // ============================================================
+    // NUMBER-TO-WORDS ENGINE (PORTUGUESE)
+    // ============================================================
+    function numberToPortuguese(n) {
+        if (n === 0) return "zero";
+        if (n < 0) return "menos " + numberToPortuguese(-n);
+
+        var billionPart = 0, millionPart = 0, thousandPart = 0, rest = n;
+
+        if (n >= 1000000000) {
+            billionPart = Math.floor(n / 1000000000);
+            rest = n % 1000000000;
+        }
+        if (rest >= 1000000) {
+            millionPart = Math.floor(rest / 1000000);
+            rest = rest % 1000000;
+        }
+        if (rest >= 1000) {
+            thousandPart = Math.floor(rest / 1000);
+            rest = rest % 1000;
+        }
+
+        var parts = [];
+
+        if (billionPart > 0) {
+            parts.push((billionPart === 1) ? "mil milhões" : numberToPortuguese(billionPart) + " mil milhões");
+        }
+        if (millionPart > 0) {
+            parts.push((millionPart === 1) ? "um milhão" : numberToPortuguese(millionPart) + " milhões");
+        }
+        if (thousandPart > 0) {
+            parts.push((thousandPart === 1) ? "mil" : numberToPortuguese(thousandPart) + " mil");
+        }
+        if (rest > 0) {
+            parts.push(underThousandPT(rest));
+        }
+
+        if (parts.length === 1) return parts[0];
+
+        var beforeLast = parts.slice(0, -1).join(" ");
+        var lastPart = parts[parts.length - 1];
+        if (rest > 0 && shouldUseE(rest)) {
+            return beforeLast + " e " + lastPart;
+        }
+        return beforeLast + " " + lastPart;
+    }
+
+    function shouldUseE(rest) {
+        if (rest <= 0) return false;
+        if (rest < 100) return true;
+        if (rest >= 100 && rest <= 900 && rest % 100 === 0) return true;
+        return false;
+    }
+
+    function underThousandPT(n) {
+        if (n === 0) return "";
+        if (n === 100) return "cem";
+        var hundreds = ["", "cento", "duzentos", "trezentos", "quatrocentos", "quinhentos", "seiscentos", "setecentos", "oitocentos", "novecentos"];
+        var h = Math.floor(n / 100);
+        var r = n % 100;
+        if (h === 0) return underHundredPT(r);
+        if (r === 0) return hundreds[h];
+        return hundreds[h] + " e " + underHundredPT(r);
+    }
+
+    function underHundredPT(n) {
+        if (n === 0) return "";
+        var units = ["", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove"];
+        var teens = ["dez", "onze", "doze", "treze", "catorze", "quinze", "dezasseis", "dezassete", "dezoito", "dezanove"];
+        var tens = ["", "", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"];
+
+        if (n < 10) return units[n];
+        if (n < 20) return teens[n - 10];
+        if (n < 30) {
+            if (n === 20) return "vinte";
+            return "vinte e " + units[n - 20];
+        }
+        var t = Math.floor(n / 10);
+        var o = n % 10;
+        if (o === 0) return tens[t];
+        return tens[t] + " e " + units[o];
+    }
+
+    // ============================================================
+    // VARIANT HANDLING (EP/BR teens + catorze/quatorze)
+    // ============================================================
+    var WORD_VARIANTS = {
+        14: ["quatorze"],
+        16: ["dezesseis"],
+        17: ["dezessete"],
+        19: ["dezenove"]
+    };
+
+    // ============================================================
+    // THE DECK
+    // ============================================================
+    var masterDeck = [
+        { n: 0 }, { n: 1 }, { n: 2 }, { n: 3 }, { n: 4 }, { n: 5 }, { n: 6 }, { n: 7 }, { n: 8 }, { n: 9 },
+        { n: 10 }, { n: 11 }, { n: 12 }, { n: 13 },
+        { n: 14, note: "catorze (EP, also quatorze)" },
+        { n: 15 },
+        { n: 16, note: "dezasseis (EP) / dezesseis (BR)" },
+        { n: 17, note: "dezassete (EP) / dezessete (BR)" },
+        { n: 18 },
+        { n: 19, note: "dezanove (EP) / dezenove (BR)" },
+        { n: 20 },
+
+        { n: 21, note: "vinte e um — three words, not contracted" },
+        { n: 22 },
+        { n: 23, tricky: true, note: "vinte e três — accent on três" },
+        { n: 24 }, { n: 25 }, { n: 26 }, { n: 27 }, { n: 28 }, { n: 29 },
+
+        { n: 30 }, { n: 40 }, { n: 50 }, { n: 60 }, { n: 70 }, { n: 80 }, { n: 90 },
+
+        { n: 33, note: "trinta e três — accent on três" }, { n: 42 }, { n: 55 }, { n: 67 }, { n: 78 }, { n: 88 }, { n: 99 },
+
+        { n: 100, tricky: true, note: "cem standalone — 'cento' in compounds" },
+        { n: 101, tricky: true, note: "cento e um — 'cento' before units, 'e' required" },
+
+        { n: 200, tricky: true, note: "duzentos — one word, irregular stem (dois → duz-)" },
+        { n: 300, tricky: true, note: "trezentos — one word, irregular stem (três → trez-)" },
+        { n: 400 },
+        { n: 500, tricky: true, note: "quinhentos — one word, irregular stem (cinco → quinh-)" },
+        { n: 600 },
+        { n: 700 },
+        { n: 800 },
+        { n: 900 },
+
+        { n: 111 }, { n: 155 }, { n: 199 }, { n: 222 }, { n: 333 },
+        { n: 347 }, { n: 456 }, { n: 481 }, { n: 555 }, { n: 666 },
+        { n: 777 }, { n: 888 }, { n: 962 }, { n: 999 },
+
+        { n: 1000, tricky: true, note: "mil — not 'um mil'" },
+        { n: 1001 },
+        { n: 1100 },
+        { n: 2000 }, { n: 3000 }, { n: 5000 }, { n: 10000 },
+        { n: 21000, tricky: true, note: "vinte e um mil — 'e' kept before mil (unlike Spanish)" },
+        { n: 50000 },
+        { n: 100000, tricky: true, note: "cem mil — 'cem' before mil" },
+        { n: 101000, tricky: true, note: "cento e um mil — 'cento e um' before mil" },
+
+        { n: 1234 }, { n: 1555 }, { n: 1721 }, { n: 1844 }, { n: 2024 },
+        { n: 3567 }, { n: 5124 }, { n: 7743 }, { n: 9876 },
+
+        { n: 1000000, tricky: true, note: "um milhão — keep 'um', not 'milhão'" },
+        { n: 2000000, tricky: true, note: "dois milhões — plural" },
+        { n: 21000000, tricky: true, note: "vinte e um milhões — 'e' kept" },
+        { n: 100000000, tricky: true, note: "cem milhões — 'cem' before milhões" },
+        { n: 1000000000, tricky: true, note: "mil milhões — EP 'a thousand million'" },
+
+        { n: 1066, year: true, trivia: "Norman conquest of England" },
+        { n: 1215, year: true, trivia: "Magna Carta signed" },
+        { n: 1492, year: true, trivia: "Columbus reaches the Americas" },
+        { n: 1588, year: true, trivia: "Spanish Armada" },
+        { n: 1776, year: true, trivia: "American independence" },
+        { n: 1789, year: true, trivia: "French Revolution begins" },
+        { n: 1815, year: true, trivia: "Battle of Waterloo" },
+        { n: 1848, year: true, trivia: "European revolutions" },
+        { n: 1914, year: true, trivia: "World War I begins" },
+        { n: 1918, year: true, trivia: "World War I ends" },
+        { n: 1939, year: true, trivia: "World War II begins" },
+        { n: 1945, year: true, trivia: "World War II ends" },
+        { n: 1969, year: true, trivia: "Moon landing" },
+        { n: 1989, year: true, trivia: "Fall of the Berlin Wall" },
+        { n: 2000, year: true, trivia: "Millennium" },
+        { n: 2024, year: true, trivia: "Paris Olympics" }
+    ];
+
+    // ============================================================
+    // HELPERS
+    // ============================================================
+    function cardKey(card) { return "num_" + card.n; }
+    function entryKey(e) { return e.key || ("num_" + e.n); }
+
+    function findLogEntry(key) {
+        for (var i = 0; i < mistakeLog.length; i++) {
+            if (entryKey(mistakeLog[i]) === key) return mistakeLog[i];
+        }
+        return null;
+    }
+    function removeLogEntry(key) {
+        for (var i = 0; i < mistakeLog.length; i++) {
+            if (entryKey(mistakeLog[i]) === key) { mistakeLog.splice(i, 1); return; }
+        }
+    }
+    function graduateToKnown(key) {
+        if (!knownCards[key]) knownCards[key] = { firstKnownAt: Date.now() };
+    }
+
+    function normaliseWord(str) {
+        var s = str.toLowerCase().trim();
+        s = s.replace(/[-\s]+/g, " ");
+        if (accentMode === 'lenient') {
+            s = s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        }
+        return s;
+    }
+
+    function normaliseNumber(str) {
+        return str.replace(/[^\d-]/g, "");
+    }
+
+    function wordForm(card) { return numberToPortuguese(card.n); }
+    function numberForm(card) { return card.n.toLocaleString(); }
+
+    function getWordVariants(card) {
+        var variants = [wordForm(card)];
+        if (WORD_VARIANTS[card.n]) {
+            variants = variants.concat(WORD_VARIANTS[card.n]);
+        }
+        return variants;
+    }
+
+    function getCardSet() {
+        return document.getElementById('card-set-selector').value;
+    }
+
+    function cardMatchesSet(card) {
+        var set = getCardSet();
+        if (set === 'tricky') return !!card.tricky;
+        if (set === 'years') return !!card.year;
+        if (set === 'standard') return !card.tricky && !card.year;
+        return true;
+    }
+
+    // ============================================================
+    // LOG UPDATE
+    // ============================================================
+    function makeLogEntry(card, yours) {
+        return {
+            key: cardKey(card),
+            n: card.n,
+            prompt: card.n.toLocaleString(),
+            correct: wordForm(card),
+            yours: yours,
+            status: "pending",
+            failCount: 1,
+            firstSeen: Date.now(),
+            lastSeen: Date.now()
+        };
+    }
+
+    function handleLogUpdate(card, isCorrect, userInput) {
+        if (playMode) return { mode: 'play' };
+        var key = cardKey(card);
+        var entry = findLogEntry(key);
+        var isKnown = !!knownCards[key];
+        var isFirstAttempt = !(key in sessionFirstAttempts);
+        if (!isFirstAttempt) return { mode: 'not-first-attempt' };
+        sessionFirstAttempts[key] = isCorrect;
+
+        var result = { mode: 'no-change' };
+
+        if (isCorrect) {
+            if (isKnown) { result.mode = 'still-known'; }
+            else if (entry) {
+                if (entry.status === "pinned") { entry.lastSeen = Date.now(); result.mode = 'still-pinned'; }
+                else if (entry.status === "pending") {
+                    entry.status = "active"; entry.lastSeen = Date.now();
+                    sessionRecoveredCount++; result.mode = 'pending-to-active';
+                } else if (entry.status === "active") {
+                    graduateToKnown(key); sessionKnownCount++;
+                    removeLogEntry(key); result.mode = 'active-to-known';
+                }
+            } else {
+                graduateToKnown(key); sessionKnownCount++; result.mode = 'fresh-to-known';
+            }
+        } else {
+            if (isKnown) {
+                delete knownCards[key];
+                mistakeLog.push(makeLogEntry(card, userInput));
+                result.mode = 'known-to-pending';
+            } else if (entry) {
+                entry.failCount = (entry.failCount || 1) + 1;
+                entry.yours = userInput;
+                entry.lastSeen = Date.now();
+                if (entry.status === "pinned") {
+                    result.mode = 'still-pinned-wrong';
+                    result.failCount = entry.failCount;
+                } else {
+                    entry.status = "pending";
+                    if (autoPinThreshold > 0 && entry.failCount >= autoPinThreshold) {
+                        entry.status = "pinned";
+                        result.mode = 'auto-pinned';
+                        result.failCount = entry.failCount;
+                    } else {
+                        result.mode = 'pending-wrong';
+                        result.failCount = entry.failCount;
+                    }
+                }
+            } else {
+                mistakeLog.push(makeLogEntry(card, userInput));
+                result.mode = 'fresh-to-pending';
+            }
+        }
+        updateLogBadges();
+        updateScoreboard();
+        return result;
+    }
+
+    function logUpdateMessage(result) {
+        if (!result) return '';
+        switch (result.mode) {
+            case 'pending-to-active': return '<br><small style="color:#fbbf24;">↩️ Moved back to Active deck</small>';
+            case 'active-to-known': return '<br><small style="color:#4ade80;">✨ Graduated to Known</small>';
+            case 'fresh-to-known': return '<br><small style="color:#4ade80;">✨ Added to Known deck</small>';
+            case 'known-to-pending': return '<br><small style="color:#fbbf24;">↪️ Demoted to Pending (was Known)</small>';
+            case 'auto-pinned': return '<br><small style="color:#ef4444;">🔴 Auto-pinned (fail #' + result.failCount + ')</small>';
+            case 'fresh-to-pending': return '<br><small style="color:#fbbf24;">🟡 Added to Pending</small>';
+            case 'still-pinned-wrong': return '<br><small style="color:#ef4444;">📌 Still pinned (fail #' + result.failCount + ')</small>';
+            case 'play': return '<br><small style="color:#d8b4fe;">🎮 Play mode — progress not recorded</small>';
+            default: return '';
+        }
+    }
+
+    function computeCounts() {
+        var counts = { known: 0, active: 0, pending: 0, pinned: 0, total: 0 };
+        for (var i = 0; i < masterDeck.length; i++) {
+            var card = masterDeck[i];
+            if (!cardMatchesSet(card)) continue;
+            counts.total++;
+            var key = cardKey(card);
+            if (knownCards[key]) { counts.known++; continue; }
+            var entry = findLogEntry(key);
+            if (entry) {
+                if (entry.status === "pinned") counts.pinned++;
+                else if (entry.status === "pending") counts.pending++;
+                else counts.active++;
+            } else {
+                counts.active++;
+            }
+        }
+        return counts;
+    }
+
+    function updateLogBadges() {
+        var counts = computeCounts();
+        document.getElementById('review-count').innerText = counts.pending;
+        document.getElementById('count-known').innerText = counts.known;
+        document.getElementById('count-active').innerText = counts.active;
+        document.getElementById('count-pending').innerText = counts.pending;
+        document.getElementById('count-pinned').innerText = counts.pinned;
+
+        var dall = document.getElementById('drill-all-btn');
+        if (dall) {
+            var drillable = counts.pending + counts.pinned;
+            dall.innerText = "🎯 Drill All Reviews (Pending & Pinned) (" + drillable + ")";
+            dall.disabled = drillable === 0;
+        }
+    }
+
+    function updatePlayModePill() {
+        var pill = document.getElementById('play-mode-pill');
+        if (pill) pill.style.display = playMode ? "inline-block" : "none";
+    }
+
+    function updateFilterStatusLine() {
+        var counts = computeCounts();
+        var el = document.getElementById('filter-status-line');
+        if (el) {
+            var remaining = counts.active + counts.pending + counts.pinned;
+            el.innerText = counts.total + " cards under current filters · " + counts.known + " mastered · " + remaining + " remaining";
+        }
+    }
+
+    // ============================================================
+    // STATE SAVE / LOAD
+    // ============================================================
+    function saveState() {
+        try {
+            var sizeSel = document.getElementById('deck-size-selector');
+            var setSel = document.getElementById('card-set-selector');
+            var state = {
+                dataVersion: 2,
+                direction: currentQuizDirection,
+                cardSet: setSel ? setSel.value : "all",
+                deckSize: sizeSel ? sizeSel.value : "10",
+                accentMode: accentMode,
+                autoSpeak: autoSpeakSetting,
+                productionMethod: productionMethod,
+                comprehensionMethod: comprehensionMethod,
+                comprehensionShowWritten: comprehensionShowWritten,
+                comprehensionAudio: comprehensionAudio,
+                knownMode: knownMode,
+                autoPinThreshold: autoPinThreshold,
+                playMode: playMode,
+                reviewTab: reviewTab,
+                guideTab: guideTab,
+                stats: { correct: totalCorrect, total: totalQuestions, streak: currentStreak },
+                knownCards: knownCards,
+                mistakes: mistakeLog
+            };
+            localStorage.setItem('por_numbers_state', JSON.stringify(state));
+        } catch (e) {}
+    }
+
+    function loadState() {
+        try {
+            var raw = localStorage.getItem('por_numbers_state');
+            if (!raw) return;
+            var state = JSON.parse(raw);
+
+            if (state.direction === 'production' || state.direction === 'comprehension') {
+                currentQuizDirection = state.direction;
+                document.getElementById('dir-r').classList.toggle('active', state.direction === 'production');
+                document.getElementById('dir-w').classList.toggle('active', state.direction === 'comprehension');
+            }
+            if (state.cardSet) { var s = document.getElementById('card-set-selector'); if (s) s.value = state.cardSet; }
+            if (state.deckSize) { var d = document.getElementById('deck-size-selector'); if (d) d.value = state.deckSize; }
+            if (state.accentMode === 'strict' || state.accentMode === 'lenient') {
+                accentMode = state.accentMode;
+                document.getElementById('chk-accent-lenient').checked = accentMode === 'lenient';
+                document.getElementById('chk-accent-strict').checked = accentMode === 'strict';
+                document.getElementById('lbl-accent-lenient').classList.toggle('selected', accentMode === 'lenient');
+                document.getElementById('lbl-accent-strict').classList.toggle('selected', accentMode === 'strict');
+            }
+            if (typeof state.autoSpeak !== 'undefined') {
+                autoSpeakSetting = state.autoSpeak;
+                document.getElementById('chk-opt-auto-speak').checked = autoSpeakSetting;
+                document.getElementById('lbl-opt-auto-speak').classList.toggle('selected', autoSpeakSetting);
+            }
+            if (state.productionMethod === 'type' || state.productionMethod === 'honour') {
+                productionMethod = state.productionMethod;
+                document.getElementById('chk-method-type').checked = productionMethod === 'type';
+                document.getElementById('chk-method-honour').checked = productionMethod === 'honour';
+                document.getElementById('lbl-method-type').classList.toggle('selected', productionMethod === 'type');
+                document.getElementById('lbl-method-honour').classList.toggle('selected', productionMethod === 'honour');
+            }
+            if (state.comprehensionMethod === 'type' || state.comprehensionMethod === 'honour') {
+                comprehensionMethod = state.comprehensionMethod;
+                document.getElementById('chk-comp-method-type').checked = comprehensionMethod === 'type';
+                document.getElementById('chk-comp-method-honour').checked = comprehensionMethod === 'honour';
+                document.getElementById('lbl-comp-method-type').classList.toggle('selected', comprehensionMethod === 'type');
+                document.getElementById('lbl-comp-method-honour').classList.toggle('selected', comprehensionMethod === 'honour');
+            }
+            if (typeof state.comprehensionShowWritten === 'boolean') {
+                comprehensionShowWritten = state.comprehensionShowWritten;
+                document.getElementById('chk-comp-written').checked = comprehensionShowWritten;
+                document.getElementById('lbl-comp-written').classList.toggle('selected', comprehensionShowWritten);
+            }
+            if (typeof state.comprehensionAudio === 'boolean') {
+                comprehensionAudio = state.comprehensionAudio;
+                document.getElementById('chk-comp-audio').checked = comprehensionAudio;
+                document.getElementById('lbl-comp-audio').classList.toggle('selected', comprehensionAudio);
+            }
+            if (!comprehensionShowWritten && !comprehensionAudio) {
+                comprehensionAudio = true;
+                document.getElementById('chk-comp-audio').checked = true;
+                document.getElementById('lbl-comp-audio').classList.add('selected');
+            }
+            if (state.knownMode === 'sweep' || state.knownMode === 'adaptive') {
+                knownMode = state.knownMode;
+                document.getElementById('chk-known-adaptive').checked = knownMode === 'adaptive';
+                document.getElementById('chk-known-sweep').checked = knownMode === 'sweep';
+                document.getElementById('lbl-known-adaptive').classList.toggle('selected', knownMode === 'adaptive');
+                document.getElementById('lbl-known-sweep').classList.toggle('selected', knownMode === 'sweep');
+            }
+            if (typeof state.autoPinThreshold === "number") {
+                autoPinThreshold = state.autoPinThreshold;
+                var aps = document.getElementById('auto-pin-selector');
+                if (aps) aps.value = String(autoPinThreshold);
+            }
+            if (typeof state.playMode !== 'undefined') {
+                playMode = state.playMode;
+                document.getElementById('chk-opt-play-mode').checked = playMode;
+                document.getElementById('lbl-opt-play-mode').classList.toggle('selected', playMode);
+            }
+            if (state.knownCards) knownCards = state.knownCards;
+            if (state.reviewTab && ["known","active","pending","pinned"].indexOf(state.reviewTab) !== -1) {
+                reviewTab = state.reviewTab;
+                document.querySelectorAll('.review-tab').forEach(function(b) { b.classList.toggle('active', b.dataset.bucket === reviewTab); });
+            }
+            if (state.guideTab === "user" || state.guideTab === "conj") setGuideTab(state.guideTab);
+            if (state.stats) {
+                totalCorrect = state.stats.correct || 0;
+                totalQuestions = state.stats.total || 0;
+                currentStreak = state.stats.streak || 0;
+            }
+            if (Array.isArray(state.mistakes)) mistakeLog = state.mistakes;
+
+            updateScoreboard();
+            updateLogBadges();
+            updatePlayModePill();
+        } catch (e) {}
+    }
+
+    // ============================================================
+    // FILTERS / DRAWER
+    // ============================================================
+    function updateKnownMode(mode) {
+        knownMode = mode;
+        document.getElementById('lbl-known-adaptive').classList.remove('selected');
+        document.getElementById('lbl-known-sweep').classList.remove('selected');
+        document.getElementById('lbl-known-' + mode).classList.add('selected');
+        saveState();
+        initSessionDeck();
+    }
+
+    function updatePlayMode() {
+        var chk = document.getElementById('chk-opt-play-mode');
+        var lbl = document.getElementById('lbl-opt-play-mode');
+        playMode = chk.checked;
+        if (lbl) lbl.classList.toggle('selected', playMode);
+        updatePlayModePill();
+        saveState();
+    }
+
+    function setAutoPinThreshold(val) {
+        autoPinThreshold = parseInt(val, 10) || 0;
+        saveState();
+    }
+
+    function updateAccentMode(mode) {
+        accentMode = mode;
+        document.getElementById('lbl-accent-lenient').classList.toggle('selected', mode === 'lenient');
+        document.getElementById('lbl-accent-strict').classList.toggle('selected', mode === 'strict');
+        saveState();
+    }
+
+    function updateAutoSpeak() {
+        autoSpeakSetting = document.getElementById('chk-opt-auto-speak').checked;
+        document.getElementById('lbl-opt-auto-speak').classList.toggle('selected', autoSpeakSetting);
+        saveState();
+    }
+
+    function updateProductionMethod(method) {
+        productionMethod = method;
+        document.getElementById('lbl-method-type').classList.toggle('selected', method === 'type');
+        document.getElementById('lbl-method-honour').classList.toggle('selected', method === 'honour');
+        saveState();
+        initSessionDeck();
+    }
+
+    function updateComprehensionMethod(method) {
+        comprehensionMethod = method;
+        document.getElementById('lbl-comp-method-type').classList.toggle('selected', method === 'type');
+        document.getElementById('lbl-comp-method-honour').classList.toggle('selected', method === 'honour');
+        saveState();
+        initSessionDeck();
+    }
+
+    function updateComprehensionShowWritten() {
+        comprehensionShowWritten = document.getElementById('chk-comp-written').checked;
+        if (!comprehensionShowWritten && !comprehensionAudio) {
+            comprehensionAudio = true;
+            document.getElementById('chk-comp-audio').checked = true;
+            document.getElementById('lbl-comp-audio').classList.add('selected');
+        }
+        document.getElementById('lbl-comp-written').classList.toggle('selected', comprehensionShowWritten);
+        saveState();
+        initSessionDeck();
+    }
+
+    function updateComprehensionAudio() {
+        comprehensionAudio = document.getElementById('chk-comp-audio').checked;
+        if (!comprehensionShowWritten && !comprehensionAudio) {
+            comprehensionShowWritten = true;
+            document.getElementById('chk-comp-written').checked = true;
+            document.getElementById('lbl-comp-written').classList.add('selected');
+        }
+        document.getElementById('lbl-comp-audio').classList.toggle('selected', comprehensionAudio);
+        saveState();
+        initSessionDeck();
+    }
+
+    function revealWrittenHint() {
+        if (currentQuizDirection !== 'comprehension' || !currentCard) return;
+        currentCardRevealed = true;
+        var prompt = document.getElementById('num-prompt-display');
+        prompt.innerText = wordForm(currentCard);
+        prompt.style.fontSize = "1.6rem";
+        var hintBtn = document.getElementById('hint-btn');
+        if (hintBtn) hintBtn.style.display = "none";
+    }
+
+    function resetAllProgress() {
+        if (!confirm("Clear all progress, scores, review log, and known cards?")) return;
+        try { localStorage.removeItem('por_numbers_state'); } catch (e) {}
+        totalCorrect = 0; totalQuestions = 0; currentStreak = 0;
+        mistakeLog = []; knownCards = {};
+        reviewTab = "pending"; guideTab = "user";
+        knownMode = "adaptive"; playMode = false; autoPinThreshold = 3;
+        accentMode = "lenient"; autoSpeakSetting = true;
+        productionMethod = "type"; comprehensionMethod = "type"; comprehensionShowWritten = false; comprehensionAudio = true; currentCardRevealed = false;
+
+        document.getElementById('chk-known-adaptive').checked = true;
+        document.getElementById('chk-known-sweep').checked = false;
+        document.getElementById('lbl-known-adaptive').classList.add('selected');
+        document.getElementById('lbl-known-sweep').classList.remove('selected');
+        document.getElementById('chk-opt-play-mode').checked = false;
+        document.getElementById('lbl-opt-play-mode').classList.remove('selected');
+        document.getElementById('auto-pin-selector').value = "3";
+        document.getElementById('chk-accent-lenient').checked = true;
+        document.getElementById('chk-accent-strict').checked = false;
+        document.getElementById('lbl-accent-lenient').classList.add('selected');
+        document.getElementById('lbl-accent-strict').classList.remove('selected');
+        document.getElementById('chk-opt-auto-speak').checked = true;
+        document.getElementById('lbl-opt-auto-speak').classList.add('selected');
+        document.getElementById('chk-method-type').checked = true;
+        document.getElementById('chk-method-honour').checked = false;
+        document.getElementById('lbl-method-type').classList.add('selected');
+        document.getElementById('lbl-method-honour').classList.remove('selected');
+        document.getElementById('chk-comp-method-type').checked = true;
+        document.getElementById('chk-comp-method-honour').checked = false;
+        document.getElementById('lbl-comp-method-type').classList.add('selected');
+        document.getElementById('lbl-comp-method-honour').classList.remove('selected');
+        document.getElementById('chk-comp-written').checked = false;
+        document.getElementById('lbl-comp-written').classList.remove('selected');
+        document.getElementById('chk-comp-audio').checked = true;
+        document.getElementById('lbl-comp-audio').classList.add('selected');
+        document.getElementById('card-set-selector').value = "all";
+        document.getElementById('deck-size-selector').value = "10";
+        currentQuizDirection = "production";
+        document.getElementById('dir-r').classList.add('active');
+        document.getElementById('dir-w').classList.remove('active');
+        document.querySelectorAll('.review-tab').forEach(function(b) { b.classList.toggle('active', b.dataset.bucket === "pending"); });
+        setGuideTab("user");
+        var drawer = document.getElementById('settings-drawer');
+        var btn = document.getElementById('drawer-toggle-btn');
+        if (drawer) drawer.style.display = "none";
+        if (btn) btn.innerText = "⚙️ Options & Filters ▾";
+        updateScoreboard(); updateLogBadges(); updatePlayModePill(); initSessionDeck();
+    }
+
+    function switchView(target) {
+        document.getElementById('view-quiz').style.display = target === 'quiz' ? 'block' : 'none';
+        document.getElementById('view-guide').style.display = target === 'guide' ? 'block' : 'none';
+        document.getElementById('view-review').style.display = target === 'review' ? 'block' : 'none';
+        var btns = document.getElementsByClassName('nav-btn');
+        for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+        document.getElementById('tab-' + target).classList.add('active');
+        var drawer = document.getElementById('settings-drawer');
+        var btn = document.getElementById('drawer-toggle-btn');
+        if (drawer) drawer.style.display = "none";
+        if (btn) btn.innerText = "⚙️ Options & Filters ▾";
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter) shutter.classList.remove('collapsed');
+        if (target === 'review') renderReviewList();
+    }
+
+    function setGuideTab(tab) {
+        guideTab = tab;
+        document.getElementById('guide-subtab-user').classList.toggle('active', tab === 'user');
+        document.getElementById('guide-subtab-conj').classList.toggle('active', tab === 'conj');
+        document.getElementById('guide-user-content').style.display = tab === 'user' ? 'block' : 'none';
+        document.getElementById('guide-conj-content').style.display = tab === 'conj' ? 'block' : 'none';
+        var scroll = document.querySelector('.guide-scroll');
+        if (scroll) scroll.scrollTop = 0;
+        saveState();
+    }
+
+    function setDirection(dir) {
+        currentQuizDirection = dir;
+        document.getElementById('dir-r').classList.remove('active');
+        document.getElementById('dir-w').classList.remove('active');
+        document.getElementById('dir-' + (dir === 'production' ? 'r' : 'w')).classList.add('active');
+        initSessionDeck();
+    }
+
+    function toggleSettingsDrawer() {
+        var drawer = document.getElementById('settings-drawer');
+        var btn = document.getElementById('drawer-toggle-btn');
+        if (drawer.style.display === "block") {
+            drawer.style.display = "none";
+            btn.innerText = "⚙️ Options & Filters ▾";
+        } else {
+            drawer.style.display = "block";
+            btn.innerText = "Close Options ▴";
+        }
+    }
+
+    function openOptionsPanel() {
+        var inp = document.getElementById('user-input');
+        if (inp) inp.blur();
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter) shutter.classList.remove('collapsed');
+        var drawer = document.getElementById('settings-drawer');
+        var btn = document.getElementById('drawer-toggle-btn');
+        if (drawer) drawer.style.display = "block";
+        if (btn) btn.innerText = "Close Options ▴";
+
+        setTimeout(function() {
+            var drawer = document.getElementById('settings-drawer');
+            if (drawer) {
+                drawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }, 100);
+    }
+
+    // ============================================================
+    // SESSION
+    // ============================================================
+    function resetSessionCounters() {
+        sessionFirstAttempts = {};
+        sessionCorrect = 0; sessionTotal = 0;
+        sessionCurrentStreak = 0; sessionBestStreak = 0;
+        sessionRecoveredCount = 0; sessionKnownCount = 0;
+        sessionComplete = false;
+    }
+
+    function updateDrillPill() {
+        var pill = document.getElementById('drill-pill');
+        if (!pill) return;
+        if (sessionMode === "drill" && sessionStarted) {
+            pill.style.display = "inline-block";
+            document.getElementById('drill-count').innerText = currentSessionDeck.length - activeCardIndex;
+        } else {
+            pill.style.display = "none";
+        }
+    }
+
+    function showStartScreen() {
+        sessionStarted = false;
+        sessionComplete = false;
+
+        var prompt = document.getElementById('num-prompt-display');
+        var sub = document.getElementById('num-sub-display');
+
+        document.getElementById('trivia-badge').style.display = "none";
+        document.getElementById('warning-badge').style.display = "none";
+        document.getElementById('speak-btn').style.display = "none";
+        document.getElementById('hint-btn').style.display = "none";
+        document.getElementById('panel-read-mode').style.display = "none";
+        document.getElementById('panel-write-mode').style.display = "none";
+        document.getElementById('feedback-container').style.display = "none";
+        document.getElementById('deck-progress').innerText = "0";
+
+        var restoreIds = ['panel-read-mode', 'panel-write-mode', 'honour-system-controls', 'btn-reveal-container', 'hint-btn'];
+        restoreIds.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.remove('hidden-during-feedback');
+        });
+
+        if (currentSessionDeck.length === 0) {
+            document.getElementById('start-btn-container').style.display = "none";
+            prompt.style.fontSize = "1.6rem";
+            prompt.style.color = "var(--accent)";
+            prompt.style.fontFamily = "-apple-system, sans-serif";
+
+            if (emptyReason === "all-known") {
+                prompt.innerHTML = "🌟 All Known!";
+                prompt.style.color = "var(--success)";
+                sub.innerHTML = "All " + totalFilteredCount + " cards under these filters are known.<br><small>Switch to <strong>Full Sweep</strong> mode to review them, or change the card set.</small>";
+            } else {
+                prompt.innerHTML = "No Cards";
+                prompt.style.color = "var(--accent)";
+                sub.innerText = "No cards in this set.";
+            }
+
+            updateDrillPill();
+            return;
+        }
+
+        prompt.innerText = "Ready?";
+        prompt.style.fontSize = "2rem";
+        prompt.style.color = "var(--accent)";
+        prompt.style.fontFamily = "-apple-system, sans-serif";
+        sub.innerText = "Click Start to begin";
+        document.getElementById('start-btn-container').style.display = "block";
+
+        var startBtn = document.getElementById('start-btn');
+        if (sessionMode === "drill") {
+            startBtn.innerText = "▶ Start Drill (" + currentSessionDeck.length + " cards) →";
+        } else {
+            startBtn.innerText = "▶ Start Session →";
+        }
+        updateDrillPill();
+    }
+
+    function startSession() {
+        if (sessionStarted) return;
+        if (currentSessionDeck.length === 0) return;
+        sessionStarted = true;
+        document.getElementById('start-btn-container').style.display = "none";
+        applyPanelVisibility();
+        updateDrillPill();
+        generateQuestion();
+    }
+
+    function applyPanelVisibility() {
+        var readPanel = document.getElementById('panel-read-mode');
+        var writePanel = document.getElementById('panel-write-mode');
+        var honourControls = document.getElementById('honour-system-controls');
+        var revealContainer = document.getElementById('btn-reveal-container');
+        var useHonour = (currentQuizDirection === 'production' && productionMethod === 'honour')
+                     || (currentQuizDirection === 'comprehension' && comprehensionMethod === 'honour');
+        if (useHonour) {
+            if (readPanel) readPanel.style.display = 'none';
+            if (writePanel) writePanel.style.display = 'block';
+            if (honourControls) honourControls.style.display = 'none';
+            if (revealContainer) revealContainer.style.display = 'block';
+        } else {
+            if (readPanel) readPanel.style.display = 'block';
+            if (writePanel) writePanel.style.display = 'none';
+        }
+    }
+
+    function initSessionDeck() {
+        currentSessionDeck = [];
+        activeCardIndex = 0;
+        userActionHistory = [];
+        sessionMode = "normal";
+        emptyReason = null;
+        totalFilteredCount = 0;
+        resetSessionCounters();
+
+        for (var i = 0; i < masterDeck.length; i++) {
+            var card = masterDeck[i];
+            if (!cardMatchesSet(card)) continue;
+            totalFilteredCount++;
+            var key = cardKey(card);
+            if (knownMode === "adaptive" && knownCards[key]) continue;
+            currentSessionDeck.push(card);
+        }
+
+        if (currentSessionDeck.length === 0) {
+            if (totalFilteredCount === 0) emptyReason = "no-match";
+            else if (knownMode === "adaptive") emptyReason = "all-known";
+            else emptyReason = "unknown";
+        }
+
+        for (var i = currentSessionDeck.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var t = currentSessionDeck[i]; currentSessionDeck[i] = currentSessionDeck[j]; currentSessionDeck[j] = t;
+        }
+
+        var sizeSel = document.getElementById('deck-size-selector');
+        var maxDeckSize = sizeSel ? parseInt(sizeSel.value, 10) : 10;
+        if (currentSessionDeck.length > maxDeckSize) currentSessionDeck = currentSessionDeck.slice(0, maxDeckSize);
+        coreDeckOriginalCount = currentSessionDeck.length;
+        document.getElementById('deck-total').innerText = coreDeckOriginalCount;
+
+        var pBox = document.getElementById('progress-box');
+        if (pBox) pBox.className = "score-item";
+        document.getElementById('review-status-label').innerText = "";
+
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter) shutter.classList.remove('collapsed');
+
+        saveState();
+        showStartScreen();
+        updateDrillPill();
+        updateFilterStatusLine();
+    }
+
+    function buildCardFromEntry(entry) {
+        for (var i = 0; i < masterDeck.length; i++) {
+            if (masterDeck[i].n === entry.n) return masterDeck[i];
+        }
+        return null;
+    }
+
+    function speakLogEntry(entryIndex) {
+        var entry = mistakeLog[entryIndex];
+        if (!entry) return;
+        var card = buildCardFromEntry(entry);
+        if (!card) return;
+        var utterance = new SpeechSynthesisUtterance(wordForm(card));
+        utterance.lang = "pt-PT";
+        utterance.rate = 0.85;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function drillFromLog(bucket) {
+        var pool;
+        if (bucket === "pinned") pool = mistakeLog.filter(function(e) { return e.status === "pinned"; });
+        else if (bucket === "pending") pool = mistakeLog.filter(function(e) { return e.status === "pending"; });
+        else if (bucket === "all") pool = mistakeLog.filter(function(e) { return e.status === "pending" || e.status === "pinned"; });
+        else return;
+        if (pool.length === 0) return;
+
+        currentSessionDeck = [];
+        for (var i = 0; i < pool.length; i++) {
+            var card = buildCardFromEntry(pool[i]);
+            if (card) currentSessionDeck.push(card);
+        }
+        if (currentSessionDeck.length === 0) return;
+
+        for (var i = currentSessionDeck.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var t = currentSessionDeck[i]; currentSessionDeck[i] = currentSessionDeck[j]; currentSessionDeck[j] = t;
+        }
+
+        activeCardIndex = 0;
+        userActionHistory = [];
+        sessionMode = "drill";
+        resetSessionCounters();
+        emptyReason = null;
+        coreDeckOriginalCount = currentSessionDeck.length;
+        document.getElementById('deck-total').innerText = coreDeckOriginalCount;
+
+        var pBox = document.getElementById('progress-box');
+        if (pBox) pBox.className = "score-item";
+        document.getElementById('review-status-label').innerText = "";
+
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter) shutter.classList.remove('collapsed');
+
+        saveState();
+        switchView('quiz');
+        showStartScreen();
+        updateDrillPill();
+    }
+
+    function drillActiveBucket() {
+        if (reviewTab === "pending" || reviewTab === "pinned") drillFromLog(reviewTab);
+    }
+
+    function exitDrillToReview() { switchView('review'); }
+
+    // ============================================================
+    // QUESTION GENERATION
+    // ============================================================
+    function generateQuestion() {
+        document.getElementById('user-input').value = "";
+        document.getElementById('user-input').disabled = false;
+        document.getElementById('feedback-container').style.display = "none";
+        document.getElementById('submit-btn').disabled = false;
+        document.getElementById('deck-progress').innerText = activeCardIndex;
+        updateDrillPill();
+        document.getElementById('trivia-badge').style.display = "none";
+        currentCardRevealed = false;
+
+        var restoreIds = ['panel-read-mode', 'panel-write-mode', 'honour-system-controls', 'btn-reveal-container', 'hint-btn'];
+        restoreIds.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.remove('hidden-during-feedback');
+        });
+
+        var pBox = document.getElementById('progress-box');
+        if (activeCardIndex >= coreDeckOriginalCount && activeCardIndex < currentSessionDeck.length) {
+            if (pBox) pBox.className = "score-item review-phase-text";
+            document.getElementById('review-status-label').innerText = " 🔄 Reviewing Misses";
+        } else if (activeCardIndex === 0) {
+            if (pBox) pBox.className = "score-item";
+            document.getElementById('review-status-label').innerText = "";
+        }
+
+        if (activeCardIndex >= currentSessionDeck.length) {
+            var shutter = document.getElementById('shutter-header-area');
+            if (shutter) shutter.classList.add('collapsed');
+            triggerCompletionState();
+            return;
+        }
+
+        currentCard = currentSessionDeck[activeCardIndex];
+
+        var prompt = document.getElementById('num-prompt-display');
+        var sub = document.getElementById('num-sub-display');
+        var badge = document.getElementById('track-badge');
+        var warn = document.getElementById('warning-badge');
+        var speakBtn = document.getElementById('speak-btn');
+        var hintBtn = document.getElementById('hint-btn');
+
+        if (currentQuizDirection === 'production') {
+            prompt.innerText = numberForm(currentCard);
+            prompt.style.fontSize = "2.8rem";
+            prompt.style.fontFamily = "Georgia, serif";
+            if (productionMethod === 'honour') {
+                sub.innerText = "";
+                badge.innerText = "Say the answer, then tap Reveal";
+            } else {
+                sub.innerText = "Type the Portuguese words";
+                badge.innerText = "Type the full Portuguese form";
+            }
+            sub.style.color = "var(--accent)";
+            speakBtn.style.display = "block";
+            if (hintBtn) hintBtn.style.display = "none";
+        } else {
+            if (comprehensionShowWritten) {
+                prompt.innerText = wordForm(currentCard);
+                prompt.style.fontSize = "1.6rem";
+                if (hintBtn) hintBtn.style.display = "none";
+            } else {
+                prompt.innerHTML = '<span style="color:var(--accent);">🔊 Listening...</span>';
+                prompt.style.fontSize = "2rem";
+                if (hintBtn) hintBtn.style.display = "inline-block";
+            }
+            prompt.style.fontFamily = "Georgia, serif";
+            if (comprehensionMethod === 'honour') {
+                sub.innerText = "";
+                badge.innerText = "Say the number aloud, then tap Reveal";
+            } else {
+                sub.innerText = "Type the number";
+                badge.innerText = "Type the digits (commas optional)";
+            }
+            sub.style.color = "var(--accent)";
+            speakBtn.style.display = "block";
+        }
+
+        if (currentCard.tricky && currentCard.note) {
+            warn.innerText = "⚠️ Trap card";
+            warn.style.display = "block";
+        } else {
+            warn.style.display = "none";
+        }
+
+        if (currentCard.year && currentCard.trivia && currentQuizDirection === 'comprehension') {
+            document.getElementById('trivia-badge').innerText = "📖 " + currentCard.trivia;
+            document.getElementById('trivia-badge').style.display = "block";
+        } else {
+            document.getElementById('trivia-badge').style.display = "none";
+        }
+
+        applyPanelVisibility();
+        cancelPendingSpeak();
+
+        if (currentQuizDirection === 'comprehension' && comprehensionAudio) {
+            setTimeout(speakAnswer, 300);
+        }
+
+        setTimeout(function() {
+            var useType = (currentQuizDirection === 'production' && productionMethod === 'type')
+                       || (currentQuizDirection === 'comprehension' && comprehensionMethod === 'type');
+            if (useType) {
+                var inputField = document.getElementById('user-input');
+                if (inputField) {
+                    inputField.focus();
+                    inputField.select();
+                }
+            } else {
+                var actionBtn = document.getElementById('btn-reveal-container');
+                if (actionBtn && actionBtn.style.display !== 'none') {
+                    actionBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }, 50);
+    }
+
+    function cancelPendingSpeak() {
+        if (pendingSpeakTimer) { clearTimeout(pendingSpeakTimer); pendingSpeakTimer = null; }
+    }
+
+    function speakCurrentAnswer() {
+        if (!currentCard) return;
+        window.speechSynthesis.cancel();
+        var utterance = new SpeechSynthesisUtterance(wordForm(currentCard));
+        utterance.lang = "pt-PT";
+        utterance.rate = 0.85;
+        var voices = window.speechSynthesis.getVoices();
+        var googlePt = voices.find(function(v) { return v.name.includes('Google') && v.lang.startsWith('pt'); });
+        if (googlePt) utterance.voice = googlePt;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function speakAnswer() {
+        speakCurrentAnswer();
+    }
+
+    // ============================================================
+    // ANSWER CHECKING
+    // ============================================================
+    function checkAnswer() {
+        cancelPendingSpeak();
+        var inputField = document.getElementById('user-input');
+        var userInput = inputField.value.trim();
+        if (userInput === "") return;
+
+        collapseHeaderShutter();
+        var feedbackContainer = document.getElementById('feedback-container');
+        var feedbackMessage = document.getElementById('feedback-message');
+
+        document.getElementById('submit-btn').disabled = true;
+        inputField.disabled = true;
+
+        totalQuestions++;
+        sessionTotal++;
+
+        var isCorrect = false;
+        if (currentQuizDirection === 'production') {
+            var userNorm = normaliseWord(userInput);
+            var variants = getWordVariants(currentCard);
+            for (var vi = 0; vi < variants.length; vi++) {
+                if (userNorm === normaliseWord(variants[vi])) { isCorrect = true; break; }
+            }
+        } else {
+            isCorrect = normaliseNumber(userInput) === normaliseNumber(numberForm(currentCard));
+        }
+
+        userActionHistory.push({
+            streakBefore: currentStreak, correctBefore: totalCorrect, questionsBefore: totalQuestions - 1,
+            activeCardIndexBefore: activeCardIndex, wasCardPushed: !isCorrect,
+            cardObjectSnapshot: currentCard
+        });
+
+        if (isCorrect) {
+            totalCorrect++; currentStreak++;
+            sessionCorrect++; sessionCurrentStreak++;
+            if (sessionCurrentStreak > sessionBestStreak) sessionBestStreak = sessionCurrentStreak;
+        } else {
+            currentStreak = 0; sessionCurrentStreak = 0;
+        }
+
+        var logResult = handleLogUpdate(currentCard, isCorrect, userInput);
+
+        var answerLine = currentQuizDirection === 'production'
+            ? "Answer: <strong>" + numberForm(currentCard) + "</strong> = <strong>" + wordForm(currentCard) + "</strong>"
+            : "Answer: <strong>" + wordForm(currentCard) + "</strong> = <strong>" + numberForm(currentCard) + "</strong>";
+
+        var extra = "";
+        if (currentCard.note) extra += "<br><small style='color:var(--warning);'>💡 " + currentCard.note + "</small>";
+        if (currentCard.year && currentCard.trivia) extra += "<br><div class='trivia-badge' style='margin-top:0.5rem;'>📖 " + currentCard.trivia + "</div>";
+
+        var youTypedLine = "";
+        if (!isCorrect) {
+            youTypedLine = "<br><small style=\"color:var(--text-muted);\">You typed: \"" + userInput + "\"</small>";
+        }
+
+        if (isCorrect) {
+            feedbackMessage.className = "feedback correct-box";
+            feedbackMessage.innerHTML = "<strong>Correct!</strong> 🎉<br>" + answerLine + extra + logUpdateMessage(logResult);
+        } else {
+            feedbackMessage.className = "feedback incorrect-box";
+            feedbackMessage.innerHTML = "<strong>Incorrect.</strong><br>" + answerLine + youTypedLine + extra + logUpdateMessage(logResult);
+            currentSessionDeck.push(currentCard);
+            document.getElementById('deck-total').innerText = currentSessionDeck.length;
+        }
+
+        if (autoSpeakSetting) setTimeout(speakAnswer, 200);
+
+        document.getElementById('speak-btn').style.display = "block";
+        activeCardIndex++;
+        document.getElementById('deck-progress').innerText = activeCardIndex;
+        updateScoreboard();
+        feedbackContainer.style.display = "block";
+
+        var hideIds = ['panel-read-mode', 'panel-write-mode', 'honour-system-controls', 'btn-reveal-container', 'hint-btn'];
+        hideIds.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.add('hidden-during-feedback');
+        });
+
+        setTimeout(function() {
+            var nextBtn = document.getElementById('next-btn');
+            if (nextBtn) {
+                nextBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }, 100);
+
+        updateDrillPill();
+        saveState();
+    }
+
+    function collapseHeaderShutter() {
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter && !shutter.classList.contains('collapsed')) shutter.classList.add('collapsed');
+    }
+
+    function revealVerbAnswer() {
+        cancelPendingSpeak();
+        collapseHeaderShutter();
+        document.getElementById('btn-reveal-container').style.display = "none";
+        document.getElementById('honour-system-controls').style.display = "flex";
+
+        var prompt = document.getElementById('num-prompt-display');
+        var sub = document.getElementById('num-sub-display');
+
+        if (currentQuizDirection === 'production') {
+            prompt.innerText = wordForm(currentCard);
+            prompt.style.fontSize = "2rem";
+            sub.innerText = numberForm(currentCard) + " in Portuguese";
+        } else {
+            prompt.innerText = numberForm(currentCard);
+            prompt.style.fontSize = "2.8rem";
+            sub.innerText = wordForm(currentCard);
+        }
+
+        if (autoSpeakSetting) setTimeout(speakAnswer, 150);
+    }
+
+    function assessHonour(isCorrect) {
+        totalQuestions++;
+        sessionTotal++;
+
+        var feedbackContainer = document.getElementById('feedback-container');
+        var feedbackMessage = document.getElementById('feedback-message');
+        document.getElementById('honour-system-controls').style.display = "none";
+
+        userActionHistory.push({
+            streakBefore: currentStreak, correctBefore: totalCorrect, questionsBefore: totalQuestions - 1,
+            activeCardIndexBefore: activeCardIndex, wasCardPushed: !isCorrect,
+            cardObjectSnapshot: currentCard
+        });
+
+        if (isCorrect) {
+            totalCorrect++; currentStreak++;
+            sessionCorrect++; sessionCurrentStreak++;
+            if (sessionCurrentStreak > sessionBestStreak) sessionBestStreak = sessionCurrentStreak;
+        } else {
+            currentStreak = 0; sessionCurrentStreak = 0;
+        }
+
+        var yoursLabel = "[Honour System Miss]";
+        var logResult = handleLogUpdate(currentCard, isCorrect, isCorrect ? "" : yoursLabel);
+
+        var extra = "";
+        if (currentCard.note) extra += "<br><small style='color:var(--warning);'>💡 " + currentCard.note + "</small>";
+        if (currentCard.year && currentCard.trivia) extra += "<br><div class='trivia-badge' style='margin-top:0.5rem;'>📖 " + currentCard.trivia + "</div>";
+
+        if (isCorrect) {
+            feedbackMessage.className = "feedback correct-box";
+            feedbackMessage.innerHTML = "<strong>Marked Correct!</strong> 👍<br>" + numberForm(currentCard) + " = <strong>" + wordForm(currentCard) + "</strong>." + extra + logUpdateMessage(logResult);
+        } else {
+            feedbackMessage.className = "feedback incorrect-box";
+            feedbackMessage.innerHTML = "<strong>Marked Incorrect.</strong> 📚<br>" + numberForm(currentCard) + " = <strong>" + wordForm(currentCard) + "</strong>." + extra + logUpdateMessage(logResult);
+            currentSessionDeck.push(currentCard);
+            document.getElementById('deck-total').innerText = currentSessionDeck.length;
+        }
+
+        if (autoSpeakSetting) setTimeout(speakAnswer, 200);
+
+        activeCardIndex++;
+        document.getElementById('deck-progress').innerText = activeCardIndex;
+        updateScoreboard();
+        feedbackContainer.style.display = "block";
+
+        var hideIds = ['panel-read-mode', 'panel-write-mode', 'honour-system-controls', 'btn-reveal-container', 'hint-btn'];
+        hideIds.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.add('hidden-during-feedback');
+        });
+
+        setTimeout(function() {
+            var nextBtn = document.getElementById('next-btn');
+            if (nextBtn) {
+                nextBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }, 100);
+
+        updateDrillPill();
+        saveState();
+    }
+
+    function updateScoreboard() {
+        document.getElementById('score-correct').innerText = totalCorrect;
+        document.getElementById('score-total').innerText = totalQuestions;
+        document.getElementById('score-streak').innerText = currentStreak;
+        var counts = computeCounts();
+        document.getElementById('score-known').innerText = counts.known;
+        document.getElementById('score-known-total').innerText = counts.total;
+        document.getElementById('score-filtered').innerText = counts.total;
+        updateStreakEmoji();
+        updatePlayModePill();
+        updateFilterStatusLine();
+    }
+
+    function executeUndoAction() {
+        if (userActionHistory.length === 0) return;
+        var prev = userActionHistory.pop();
+        currentStreak = prev.streakBefore;
+        totalCorrect = prev.correctBefore;
+        totalQuestions = prev.questionsBefore;
+        activeCardIndex = prev.activeCardIndexBefore;
+        if (prev.wasCardPushed) {
+            currentSessionDeck.pop();
+            document.getElementById('deck-total').innerText = currentSessionDeck.length;
+        }
+        updateScoreboard(); generateQuestion(); saveState();
+    }
+
+    // ============================================================
+    // COMPLETION
+    // ============================================================
+    function triggerCompletionState() {
+        sessionComplete = true;
+        sessionStarted = false;
+
+        var accuracy = sessionTotal > 0 ? Math.round(sessionCorrect / sessionTotal * 100) : 0;
+        var remainingPending = mistakeLog.filter(function(e) { return e.status === "pending"; }).length;
+
+        var prompt = document.getElementById('num-prompt-display');
+        var sub = document.getElementById('num-sub-display');
+        prompt.innerHTML = "🎉 Parabéns!";
+        prompt.style.color = "var(--success)";
+        prompt.style.fontSize = "2rem";
+        prompt.style.fontFamily = "-apple-system, sans-serif";
+        sub.innerText = "";
+
+        document.getElementById('trivia-badge').style.display = "none";
+        document.getElementById('warning-badge').style.display = "none";
+        document.getElementById('speak-btn').style.display = "none";
+        document.getElementById('hint-btn').style.display = "none";
+        document.getElementById('btn-reveal-container').style.display = "none";
+        document.getElementById('honour-system-controls').style.display = "none";
+
+        var feedbackContainer = document.getElementById('feedback-container');
+        var feedbackMessage = document.getElementById('feedback-message');
+        feedbackMessage.className = "feedback correct-box";
+
+        var counts = computeCounts();
+        var knownStat = sessionKnownCount > 0
+            ? '<div><span class="completion-stat-label">Newly Known</span><span class="completion-stat-value" style="color:#4ade80;">+' + sessionKnownCount + '</span></div>'
+            : '';
+        var recoveredStat = sessionRecoveredCount > 0
+            ? '<div><span class="completion-stat-label">Recovered</span><span class="completion-stat-value" style="color:#fbbf24;">' + sessionRecoveredCount + '</span></div>'
+            : '';
+
+        feedbackMessage.innerHTML =
+            '<div style="text-align:center;">' +
+                '<div class="completion-stats">' +
+                    '<div><span class="completion-stat-label">Accuracy</span><span class="completion-stat-value">' + accuracy + '%</span></div>' +
+                    '<div><span class="completion-stat-label">Best Streak</span><span class="completion-stat-value">🔥 ' + sessionBestStreak + '</span></div>' +
+                    recoveredStat + knownStat +
+                '</div>' +
+                '<div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.25rem;">' + sessionCorrect + ' / ' + sessionTotal + ' correct this run</div>' +
+                '<div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.5rem;">' + counts.known + ' / ' + counts.total + ' known under current filters</div>' +
+                (playMode ? '<div style="font-size:0.75rem; color:#d8b4fe; margin-bottom:0.5rem;">🎮 Play mode active — progress not recorded</div>' : '') +
+            '</div>';
+
+        var nextBtn = document.getElementById('next-btn');
+        if (nextBtn) nextBtn.style.display = "none";
+
+        var actionsHtml = '<div class="completion-actions">';
+        actionsHtml += '<button class="completion-btn primary" onclick="startNewSessionFromComplete()">🔄 New Session</button>';
+        actionsHtml += '<button class="completion-btn" onclick="exitDrillToReview()">📝 Reviews</button>';
+        if (sessionMode === "drill" && remainingPending > 0) {
+            actionsHtml += '<button class="completion-btn" style="background-color:var(--warning); color:#0d0c10;" onclick="drillFromLog(\'pending\')">🎯 Drill ' + remainingPending + ' Pending</button>';
+        }
+        actionsHtml += '</div>';
+
+        var existingBar = feedbackContainer.querySelector('.completion-actions');
+        if (existingBar) existingBar.remove();
+        feedbackContainer.insertAdjacentHTML('beforeend', actionsHtml);
+
+        feedbackContainer.style.display = "block";
+        updateDrillPill();
+
+        setTimeout(function() {
+            if (feedbackContainer) feedbackContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 450);
+    }
+
+    function startNewSessionFromComplete() {
+        var fb = document.getElementById('feedback-container');
+        var bar = fb.querySelector('.completion-actions');
+        if (bar) bar.remove();
+        var nb = document.getElementById('next-btn');
+        if (nb) nb.style.display = "";
+        sessionComplete = false;
+        initSessionDeck();
+    }
+
+    function handleNextWorkflow() {
+        generateQuestion();
+    }
+
+    function updateStreakEmoji() {
+        var el = document.getElementById('streak-emoji');
+        if (!el) return;
+        if (currentStreak >= 15) el.innerHTML = "👑";
+        else if (currentStreak >= 10) el.innerHTML = "🥷";
+        else if (currentStreak >= 6) el.innerHTML = "🔥";
+        else if (currentStreak >= 3) el.innerHTML = "⚡";
+        else el.innerHTML = "🐣";
+    }
+
+    // ============================================================
+    // REVIEWS
+    // ============================================================
+    function setReviewTab(bucket) {
+        reviewTab = bucket;
+        document.querySelectorAll('.review-tab').forEach(function(b) { b.classList.toggle('active', b.dataset.bucket === bucket); });
+        saveState();
+        renderReviewList();
+    }
+
+    function renderReviewList() {
+        var container = document.getElementById('review-list-container');
+        var headerEl = document.getElementById('review-header');
+        updateLogBadges();
+        var counts = computeCounts();
+
+        if (reviewTab === "known") {
+            if (counts.known === 0) {
+                headerEl.className = "review-empty";
+                headerEl.innerHTML = "💚 <strong>No known cards yet.</strong><br>Answer cards correctly to graduate them here.";
+                container.innerHTML = "";
+                updateReviewActions(0);
+                return;
+            }
+            headerEl.className = "review-header";
+            headerEl.innerHTML = "💚 <strong>" + counts.known + " of " + counts.total + " numbers mastered</strong> under current filters.<br>These are skipped in Adaptive mode. Use <em>Forget All</em> below to reset them.";
+            container.innerHTML = "";
+            updateReviewActions(counts.known);
+            return;
+        }
+
+        if (reviewTab === "active") {
+            if (counts.active === 0) {
+                headerEl.className = "review-empty";
+                headerEl.innerHTML = "⚪ <strong>No active cards under current filters.</strong><br>Every card is either known, pending, or pinned.";
+                container.innerHTML = "";
+                updateReviewActions(0);
+                return;
+            }
+            var pct = counts.total > 0 ? Math.round((counts.known / counts.total) * 100) : 0;
+            headerEl.className = "review-header";
+            headerEl.innerHTML = "⚪ <strong>" + counts.active + " cards still learning</strong> under current filters.";
+            container.innerHTML =
+                '<div class="big-stat">' + counts.active + '</div>' +
+                '<div style="text-align:center; color:var(--text-muted); font-size:0.75rem;">' + counts.known + ' / ' + counts.total + ' mastered (' + pct + '%)</div>' +
+                '<div class="progress-bar-container"><div class="progress-bar-fill" style="width:' + pct + '%;"></div></div>';
+            updateReviewActions(counts.active);
+            return;
+        }
+
+        if (reviewTab === "pending") {
+            var pendingEntries = mistakeLog.filter(function(e) { return e.status === "pending"; });
+            if (pendingEntries.length === 0) {
+                headerEl.className = "review-empty";
+                headerEl.innerHTML = "🟡 <strong>Nothing pending.</strong><br>Every mistake has been corrected.";
+                container.innerHTML = "";
+                updateReviewActions(0);
+                return;
+            }
+            headerEl.className = "review-header";
+            headerEl.innerHTML = "🟡 <strong>" + pendingEntries.length + " numbers you've recently missed.</strong><br>Correct one on first attempt to return it to Active. Miss the same number " + (autoPinThreshold > 0 ? autoPinThreshold + " times" : "(never auto-pin)") + " and it auto-pins.";
+            renderLogTable(container, pendingEntries, 'pending');
+            updateReviewActions(pendingEntries.length);
+            return;
+        }
+
+        if (reviewTab === "pinned") {
+            var pinnedEntries = mistakeLog.filter(function(e) { return e.status === "pinned"; });
+            if (pinnedEntries.length === 0) {
+                headerEl.className = "review-empty";
+                headerEl.innerHTML = "🔴 <strong>Nothing pinned.</strong><br>Miss a card " + (autoPinThreshold > 0 ? autoPinThreshold + " times" : "(off)") + ", or click 📍 on any row, to add it to your watchlist.";
+                container.innerHTML = "";
+                updateReviewActions(0);
+                return;
+            }
+            headerEl.className = "review-header";
+            headerEl.innerHTML = "🔴 <strong>" + pinnedEntries.length + " numbers in your watchlist.</strong><br>These stay in rotation indefinitely and require manual unpin to retire.";
+            renderLogTable(container, pinnedEntries, 'pinned');
+            updateReviewActions(pinnedEntries.length);
+            return;
+        }
+    }
+
+    function renderLogTable(container, entries, bucket) {
+        var actionHeader = "";
+        if (bucket === 'pending' && entries.length > 1) {
+            actionHeader = "<button class='pin-all-btn' title='Move all pending to Pinned' onclick='pinAllPending()'>📌 All</button>";
+        }
+        var html = "<table class='ref-table review-table'><tr><th>Number</th><th>Word</th><th>Last wrong</th><th>Fails</th><th>" + actionHeader + "</th></tr>";
+        for (var i = 0; i < entries.length; i++) {
+            var item = entries[i];
+            var entryIndex = mistakeLog.indexOf(item);
+            var isPinned = item.status === "pinned";
+            var pinIcon = isPinned ? "📌" : "📍";
+            var pinTitle = isPinned ? "Unpin (→ Active)" : "Pin (permanent drill)";
+            html += "<tr>";
+            html += "<td class='prompt-cell'>" + item.prompt + "</td>";
+            html += "<td class='correct-cell'>" + item.correct + "</td>";
+            html += "<td class='wrong-cell'>" + item.yours + "</td>";
+            html += "<td class='fail-cell'>" + (item.failCount > 1 ? "×" + item.failCount : "") + "</td>";
+            html += "<td class='actions-cell'>";
+            html += "<button onclick='speakLogEntry(" + entryIndex + ")' title='Hear answer'>🔊</button>";
+            html += "<button onclick='togglePin(" + entryIndex + ")' title='" + pinTitle + "'>" + pinIcon + "</button>";
+            html += "<button onclick='deleteEntry(" + entryIndex + ")' title='Clear'>✖</button>";
+            html += "</td>";
+            html += "</tr>";
+        }
+        html += "</table>";
+        container.innerHTML = html;
+    }
+
+    function updateReviewActions(count) {
+        var drillBtn = document.getElementById('drill-bucket-btn');
+        var clearBtn = document.getElementById('clear-bucket-btn');
+        if (reviewTab === "active") {
+            if (drillBtn) { drillBtn.innerText = "🎯 Drill"; drillBtn.disabled = true; }
+            if (clearBtn) { clearBtn.innerText = "🗑️ Clear"; clearBtn.disabled = true; }
+            return;
+        }
+        if (reviewTab === "known") {
+            if (drillBtn) { drillBtn.innerText = "🎯 Drill"; drillBtn.disabled = true; }
+            if (clearBtn) { clearBtn.innerText = "🗑️ Forget All Known (" + count + ")"; clearBtn.disabled = count === 0; }
+            return;
+        }
+        var bucketLabels = { pending: "Pending", pinned: "Pinned" };
+        if (drillBtn) { drillBtn.innerText = "🎯 Drill " + bucketLabels[reviewTab] + " (" + count + ")"; drillBtn.disabled = count === 0; }
+        if (clearBtn) { clearBtn.innerText = "🗑️ Clear " + bucketLabels[reviewTab] + " (" + count + ")"; clearBtn.disabled = count === 0; }
+    }
+
+    function pinAllPending() {
+        var pendingEntries = mistakeLog.filter(function(e) { return e.status === "pending"; });
+        if (pendingEntries.length === 0) return;
+        if (!confirm("Move all " + pendingEntries.length + " pending numbers to Pinned?")) return;
+        for (var i = 0; i < pendingEntries.length; i++) pendingEntries[i].status = "pinned";
+        saveState(); updateLogBadges(); updateScoreboard(); renderReviewList();
+    }
+
+    function togglePin(entryIndex) {
+        var e = mistakeLog[entryIndex];
+        if (!e) return;
+        if (e.status === "pinned") mistakeLog.splice(entryIndex, 1);
+        else e.status = "pinned";
+        saveState(); updateLogBadges(); updateScoreboard(); renderReviewList();
+    }
+
+    function deleteEntry(entryIndex) {
+        if (entryIndex < 0 || entryIndex >= mistakeLog.length) return;
+        mistakeLog.splice(entryIndex, 1);
+        saveState(); updateLogBadges(); updateScoreboard(); renderReviewList();
+    }
+
+    function clearActiveBucket() {
+        if (reviewTab === "known") {
+            var count = Object.keys(knownCards).length;
+            if (count === 0) return;
+            if (!confirm("Forget all " + count + " known numbers? They'll return to Active.")) return;
+            knownCards = {};
+            saveState(); updateScoreboard(); updateLogBadges(); renderReviewList();
+            return;
+        }
+        if (reviewTab === "active") return;
+        var filtered = mistakeLog.filter(function(e) { return e.status === reviewTab; });
+        if (filtered.length === 0) return;
+        var label = reviewTab.charAt(0).toUpperCase() + reviewTab.slice(1);
+        if (!confirm("Clear all " + filtered.length + " " + label + " entries?")) return;
+        for (var i = 0; i < filtered.length; i++) {
+            var idx = mistakeLog.indexOf(filtered[i]);
+            if (idx >= 0) mistakeLog.splice(idx, 1);
+        }
+        saveState(); updateLogBadges(); updateScoreboard(); renderReviewList();
+    }
+
+    // ============================================================
+    // KEYBOARD
+    // ============================================================
+    document.addEventListener('keydown', function(event) {
+        var isFeedbackOpen = document.getElementById('feedback-container').style.display === 'block';
+        var isHonourOpen = document.getElementById('honour-system-controls').style.display === 'flex';
+        var isTyping = (document.activeElement && document.activeElement.tagName === "INPUT");
+        var isQuizView = document.getElementById('view-quiz').style.display !== 'none';
+
+        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') {
+            event.preventDefault();
+            executeUndoAction();
+            return;
+        }
+        if (!isQuizView) return;
+
+        if (!sessionStarted && !sessionComplete) {
+            if (event.key === ' ' || event.code === 'Space' || event.key === 'Enter') {
+                event.preventDefault();
+                startSession();
+            }
+            return;
+        }
+        if (sessionComplete) {
+            if (event.key === ' ' || event.code === 'Space' || event.key === 'Enter') {
+                event.preventDefault();
+                startNewSessionFromComplete();
+            }
+            return;
+        }
+
+        if (event.key === ' ' || event.code === 'Space' || event.key === 'Enter') {
+            if (isTyping && !isFeedbackOpen) return;
+            event.preventDefault();
+            if (isFeedbackOpen) { handleNextWorkflow(); return; }
+            var useHonour = (currentQuizDirection === 'production' && productionMethod === 'honour')
+                         || (currentQuizDirection === 'comprehension' && comprehensionMethod === 'honour');
+            if (useHonour) {
+                if (isHonourOpen) { assessHonour(true); return; }
+                revealVerbAnswer(); return;
+            }
+            checkAnswer();
+            return;
+        }
+
+        if (isHonourOpen) {
+            if (event.key === '1' || event.key.toLowerCase() === 'x') { event.preventDefault(); assessHonour(false); }
+            if (event.key === '2') { event.preventDefault(); assessHonour(true); }
+        }
+    });
+
+    // --- SWIPE GESTURE SUPPORT ---
+    var touchStartX = 0;
+    var touchStartY = 0;
+
+    document.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    document.addEventListener('touchend', function(e) {
+        var touchEndX = e.changedTouches[0].screenX;
+        var touchEndY = e.changedTouches[0].screenY;
+
+        var xDiff = touchEndX - touchStartX;
+        var yDiff = touchEndY - touchStartY;
+
+        if (Math.abs(xDiff) > 70 && Math.abs(xDiff) > Math.abs(yDiff)) {
+
+            var isFeedbackOpen = document.getElementById('feedback-container').style.display === 'block';
+            var isHonourOpen = document.getElementById('honour-system-controls').style.display === 'flex';
+            var isTyping = (document.activeElement && document.activeElement.tagName === "INPUT");
+
+            if (xDiff > 0) {
+                if (!sessionStarted && !sessionComplete) {
+                    startSession();
+                    return;
+                }
+                if (sessionComplete) {
+                    var compBtn = document.querySelector('.completion-btn.primary');
+                    if (compBtn) compBtn.click();
+                    return;
+                }
+                if (isTyping && !isFeedbackOpen) return;
+
+                var useType = (currentQuizDirection === 'production' && productionMethod === 'type')
+                           || (currentQuizDirection === 'comprehension' && comprehensionMethod === 'type');
+                if (isFeedbackOpen) {
+                    handleNextWorkflow();
+                } else if (useType) {
+                    checkAnswer();
+                } else if (!isHonourOpen) {
+                    revealVerbAnswer();
+                } else if (isHonourOpen) {
+                    assessHonour(true);
+                }
+            } else {
+                if (!sessionStarted || sessionComplete) return;
+
+                if (isTyping && !isFeedbackOpen) {
+                    document.getElementById('user-input').value = "";
+                    return;
+                }
+
+                if (isFeedbackOpen) {
+                    executeUndoAction();
+                } else if (isHonourOpen) {
+                    assessHonour(false);
+                }
+            }
+        }
+    }, { passive: true });
+
+    window.onload = function() {
+        loadState();
+        initSessionDeck();
+        updateLogBadges();
+        updateScoreboard();
+        updatePlayModePill();
+    };
+</script>
+<!-- polyglot-copyright -->
+<footer style="text-align:center; margin:1rem auto 0 auto; padding:1rem 20px 0 20px;
+               font-size:0.7rem; color:#64748b; letter-spacing:0.3px; line-height:1.5;">
+    Copyright The Polyglot Gym 2026 · Simon Reynolds · All rights reserved.
+</footer>
+<!-- /polyglot-copyright -->
+</body>
+</html>
