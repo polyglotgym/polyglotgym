@@ -106,6 +106,18 @@
         .prompt-sub { font-size: 1.15rem; color: var(--accent); font-weight: 500; margin-top: 0.25rem; min-height: 1.5rem; overflow-wrap: break-word; }
         .sub-badge { font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 0.5rem; }
         .input-group { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+        input.text-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+            background-color: rgba(0,0,0,0.4);
+            color: var(--text-main);
+            font-size: 1.1rem;
+            outline: none;
+            text-align: center;
+        }
+        input.text-input:focus { border-color: var(--accent); }
         .feedback { padding: 1rem; border-radius: 0.5rem; margin-top: 1rem; font-size: 0.95rem; line-height: 1.5; overflow-wrap: break-word; word-break: break-word; }
         .correct-box { background-color: rgba(16, 185, 129, 0.15); border: 1px solid var(--success); color: #34d399; }
         .incorrect-box { background-color: rgba(244, 63, 94, 0.15); border: 1px solid var(--error); color: #fb7185; }
@@ -199,6 +211,41 @@
         .completion-stats { display: flex; justify-content: center; gap: 1.5rem; margin: 1rem 0 0.5rem 0; flex-wrap: wrap; }
         .completion-stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; }
         .completion-stat-value { font-size: 1.6rem; font-weight: bold; color: var(--text-main); }
+
+        /* === Phase 1 additions === */
+        .drill-pill { font-size: 0.75rem; background-color: rgba(245, 158, 11, 0.18); border: 1px solid var(--warning); color: var(--warning); padding: 0.25rem 0.6rem; border-radius: 1rem; font-weight: bold; }
+        .drill-pill a { color: var(--warning); text-decoration: underline; margin-left: 0.35rem; }
+        .play-pill { background-color: rgba(168, 85, 247, 0.18) !important; border-color: #a855f7 !important; color: #d8b4fe !important; }
+        .drill-all-btn { width: 100%; margin-bottom: 1rem; padding: 0.6rem; background-color: var(--accent); color: #0d0c10; border: none; border-radius: 0.5rem; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
+        .drill-all-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .review-tabs { display: flex; justify-content: center; gap: 0.4rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; flex-wrap: wrap; }
+        .review-tab { background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 0.5rem 0.75rem; border-radius: 0.35rem; cursor: pointer; font-size: 0.8rem; transition: all 0.15s; }
+        .review-tab.active { background-color: var(--border); color: var(--text-main); font-weight: bold; }
+        .review-tab[data-bucket="known"].active { color: #86efac; }
+        .review-tab[data-bucket="active"].active { color: #cbd5e1; }
+        .review-tab[data-bucket="pending"].active { color: #fbbf24; }
+        .review-tab[data-bucket="pinned"].active { color: #ef4444; }
+        .review-header { color: var(--text-muted); font-size: 0.8rem; line-height: 1.5; padding: 0.5rem 0; margin-bottom: 0.5rem; text-align: left; }
+        .review-empty { color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 2rem 0; }
+        .review-table .prompt-cell { font-weight: bold; color: var(--warning); text-align: left; }
+        .review-table .correct-cell { color: var(--success); font-weight: bold; }
+        .review-table .wrong-cell { color: var(--error); font-style: italic; }
+        .review-table .fail-cell { color: var(--text-muted); font-size: 0.75rem; text-align: center; }
+        .review-table .actions-cell { white-space: nowrap; }
+        .review-table .actions-cell button { background: none; border: 1px solid var(--border); color: var(--text-muted); font-size: 0.85rem; padding: 0.2rem 0.4rem; border-radius: 0.25rem; cursor: pointer; margin: 0 0.1rem; }
+        .review-table .actions-cell button:hover { color: var(--text-main); border-color: var(--text-muted); }
+        .review-table th .pin-all-btn { margin: 0; padding: 0.15rem 0.4rem; font-size: 0.7rem; background-color: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.5); border-radius: 0.25rem; cursor: pointer; font-weight: bold; white-space: nowrap; }
+        .review-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
+        .review-actions button { flex: 1; padding: 0.6rem; border: none; border-radius: 0.5rem; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
+        #drill-bucket-btn { background-color: var(--accent); color: #0d0c10; }
+        #clear-bucket-btn { background-color: var(--border); color: var(--text-main); }
+        .review-actions button:disabled { opacity: 0.4; cursor: not-allowed; }
+        .progress-bar-container { width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; margin: 1rem 0 0.5rem 0; }
+        .progress-bar-fill { height: 100%; background: var(--success); transition: width 0.3s ease; }
+        .big-stat { font-size: 2.4rem; font-weight: bold; color: var(--text-main); margin: 0.5rem 0; text-align: center; }
+        .mode-hint { font-size: 0.7rem; color: var(--text-muted); margin: 0.25rem 0 0.5rem 0; line-height: 1.4; }
+        .hidden-during-feedback { display: none !important; }
+        .warning-badge { background-color: rgba(245, 158, 11, 0.15); border: 1px dashed var(--warning); color: #fbbf24; font-size: 0.75rem; padding: 0.25rem 0.6rem; border-radius: 0.25rem; font-weight: bold; margin-top: 0.4rem; text-transform: uppercase; letter-spacing: 0.5px; max-width: 95%; line-height: 1.35; }
     </style>
     <meta name="copyright" content="© 2026 Simon Reynolds · The Polyglot Gym · All rights reserved.">
 </head>
@@ -224,6 +271,10 @@
             <div class="score-item">Correct: <span id="score-correct">0</span></div>
             <div class="score-item">Checked: <span id="score-total">0</span></div>
             <div class="score-item">Streak: <span id="score-streak">0</span> <span id="streak-emoji">🐣</span></div>
+            <div class="score-item">Known: <span id="score-known">0</span> / <span id="score-known-total">0</span></div>
+            <div class="score-item">Deck: <span id="score-filtered">0</span></div>
+            <div class="drill-pill play-pill" id="play-mode-pill" style="display: none;">🎮 Play Mode</div>
+            <div class="drill-pill" id="drill-pill" style="display: none;">🎯 Drilling <span id="drill-count">0</span> · <a href="#" onclick="exitDrillToReview(); return false;">Exit</a></div>
         </div>
         <div class="score-board-progress-row">
             <div class="score-item" id="progress-box">Progress: <span id="deck-progress">0</span> / <span id="deck-total">--</span><span id="review-status-label"></span></div>
@@ -233,6 +284,7 @@
         <div class="question-box">
             <div class="prompt-main" id="num-prompt-display">Ready?</div>
             <div class="prompt-sub" id="num-sub-display">—</div>
+            <div id="warning-badge" class="warning-badge" style="display: none;">⚠️ Trap card</div>
             <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem; margin-bottom: 0.25rem;">
                 <button id="speak-btn" style="background-color: var(--border); color: var(--text-main); font-size: 0.8rem; padding: 0.35rem 0.75rem; border-radius: 0.25rem; border: none; cursor: pointer; display: none;" onclick="speakRussianPrompt();">Listen 🔊</button>
             </div>
@@ -242,6 +294,13 @@
         <div id="start-btn-container" style="display: none;">
             <div class="input-group">
                 <button id="start-btn" style="width: 100%; height: 2.8rem; background-color: var(--accent); color: #0d0c10; font-weight: bold; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 1rem;" onclick="startSession();">▶ Start Session →</button>
+            </div>
+        </div>
+
+        <div id="panel-read-mode" style="display: none;">
+            <div class="input-group">
+                <input type="text" class="text-input" id="user-input" placeholder="Type the Russian form..." autocomplete="off" onkeydown="if(event.key === 'Enter') { event.preventDefault(); event.stopPropagation(); checkAnswer(); }">
+                <button id="submit-btn" style="background-color: var(--accent); color: #0d0c10; font-weight: bold; border: none; border-radius: 0.5rem; padding: 0 1.5rem; cursor: pointer;" onclick="checkAnswer();">Check</button>
             </div>
         </div>
 
@@ -285,6 +344,14 @@
                 <label class="row-label selected" id="lbl-opt-prep"><input type="checkbox" id="chk-opt-prep" checked onchange="updateFilterSelection('prep')">Prepositional</label>
             </div>
 
+            <div class="grid-header-label">Card Set:</div>
+            <select id="card-set-selector" onchange="initSessionDeck()" style="width: 100%; padding: 0.45rem; background-color: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border); border-radius: 0.35rem; font-size: 0.85rem; outline: none; margin-top: 0.25rem; margin-bottom: 0.4rem;">
+                <option value="all" selected>All cards</option>
+                <option value="standard">Standard only (no traps)</option>
+                <option value="tricky">Tricky only (traps)</option>
+            </select>
+            <p class="mode-hint">Tricky cards: two-form numerals (40, 90, 100), compound 50–80, irregular stems 200–400, instrumental 500–900, feminine 2.</p>
+
             <div class="grid-header-label">Session Deck Size:</div>
             <select id="deck-size-selector" onchange="initSessionDeck()" style="width: 100%; padding: 0.45rem; background-color: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border); border-radius: 0.35rem; font-size: 0.85rem; outline: none; margin-top: 0.25rem; margin-bottom: 0.8rem;">
                 <option value="15" selected>15 cards (short drill)</option>
@@ -294,36 +361,159 @@
                 <option value="9999">Full set (no cap)</option>
             </select>
 
+            <div class="grid-header-label">Production Input Method:</div>
+            <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <label class="row-label selected" id="lbl-method-type"><input type="radio" name="rad-method" id="chk-method-type" checked onchange="updateProductionMethod('type')">Type answer</label>
+                <label class="row-label" id="lbl-method-honour"><input type="radio" name="rad-method" id="chk-method-honour" onchange="updateProductionMethod('honour')">Honour (self-assess)</label>
+            </div>
+            <p class="mode-hint">Applies only in Production direction.</p>
+
+            <div class="grid-header-label">Listening Input Method:</div>
+            <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <label class="row-label selected" id="lbl-write-method-type"><input type="radio" name="rad-write-method" id="chk-write-method-type" checked onchange="updateWriteMethod('type')">Type answer</label>
+                <label class="row-label" id="lbl-write-method-honour"><input type="radio" name="rad-write-method" id="chk-write-method-honour" onchange="updateWriteMethod('honour')">Honour (self-assess)</label>
+            </div>
+            <p class="mode-hint">Applies only in Listening direction. Type the digit you hear.</p>
+
+            <div class="grid-header-label">Known Cards Mode:</div>
+            <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <label class="row-label selected" id="lbl-known-adaptive"><input type="radio" name="rad-known-mode" id="chk-known-adaptive" checked onchange="updateKnownMode('adaptive')">Adaptive</label>
+                <label class="row-label" id="lbl-known-sweep"><input type="radio" name="rad-known-mode" id="chk-known-sweep" onchange="updateKnownMode('sweep')">Full Sweep</label>
+            </div>
+            <p class="mode-hint"><strong>Adaptive:</strong> active + pending + pinned (skips known).<br><strong>Sweep:</strong> every card, including known.</p>
+
+            <div class="grid-header-label">Card Behaviour:</div>
+            <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <label class="row-label" id="lbl-opt-play-mode"><input type="checkbox" id="chk-opt-play-mode" onchange="updatePlayMode()">🎮 Play mode</label>
+                <label class="row-label selected" id="lbl-opt-auto-speak"><input type="checkbox" id="chk-opt-auto-speak" checked onchange="updateAutoSpeak()">Auto-speak answers</label>
+            </div>
+            <div class="row-grid" style="grid-template-columns: repeat(1, 1fr);">
+                <div>
+                    <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.2rem;">Auto-pin after fails:</div>
+                    <select id="auto-pin-selector" onchange="setAutoPinThreshold(this.value)" style="width: 100%; padding: 0.45rem; background-color: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border); border-radius: 0.35rem; font-size: 0.85rem; outline: none;">
+                        <option value="0">Off</option>
+                        <option value="2">2 fails</option>
+                        <option value="3" selected>3 fails</option>
+                        <option value="5">5 fails</option>
+                    </select>
+                </div>
+            </div>
+
             <div class="grid-header-label">Progress:</div>
             <button onclick="resetAllProgress();" style="width: 100%; padding: 0.45rem; background-color: rgba(244, 63, 94, 0.15); color: var(--error); border: 1px solid var(--error); border-radius: 0.35rem; font-size: 0.8rem; cursor: pointer; font-weight: bold; margin-top: 0.25rem;">Reset all progress</button>
         </div>
     </div>
 
     <div id="view-guide" style="display: none; max-height: 55vh; overflow-y: auto; padding-right: 0.5rem;">
-        <h3 style="color: var(--accent); margin-top: 0; text-align: center;">Base Cardinal Mappings</h3>
-        <table class="ref-table">
-            <tr><th>Value</th><th>Cyrillic Print</th><th>Transliteration</th><th>Case Suffix Mutation Guide</th></tr>
-            <tr><td>1</td><td>один</td><td>odIn</td><td>Declines like a hard masculine adjective.</td></tr>
-            <tr><td>2</td><td>два</td><td>dva</td><td>Special Feminine Form is "две".</td></tr>
-            <tr><td>3</td><td>три</td><td>tri</td><td>Genitive: трёх / Dative: трём</td></tr>
-            <tr><td>4</td><td>четыре</td><td>chetYre</td><td>Genitive: четырёх / Dative: четырём</td></tr>
-            <tr><td>5</td><td>пять</td><td>pyat'</td><td>Base for 5-20 endings. Switches to -и suffix.</td></tr>
-            <tr><td>10</td><td>десять</td><td>dEsyat'</td><td>Soft-sign ending type. Gen/Dat/Prep match.</td></tr>
-            <tr><td>40</td><td>сорок</td><td>sOrok</td><td>Irregular. Only two forms: сорок vs сорока.</td></tr>
-            <tr><td>90</td><td>девяносто</td><td>devyanOsto</td><td>Only two forms: девяносто vs девяноста.</td></tr>
-            <tr><td>100</td><td>сто</td><td>sto</td><td>Plural switches to -ста / -сот paradigms.</td></tr>
+        <h3 style="color: var(--accent); margin-top: 0; text-align: center;">Declension Patterns</h3>
+
+        <h4 style="color: var(--accent); margin-top: 1.25rem; font-size: 0.9rem;">5–20, 30 — soft-sign type</h4>
+        <table class="ref-table" style="font-size: 0.78rem;">
+            <tr><th>Case</th><th>5</th><th>8</th><th>10</th><th>20</th></tr>
+            <tr><td>Nom</td><td>пять</td><td>восемь</td><td>десять</td><td>двадцать</td></tr>
+            <tr><td>Gen</td><td>пяти</td><td>восьми</td><td>десяти</td><td>двадцати</td></tr>
+            <tr><td>Dat</td><td>пяти</td><td>восьми</td><td>десяти</td><td>двадцати</td></tr>
+            <tr><td>Acc</td><td>пять</td><td>восемь</td><td>десять</td><td>двадцать</td></tr>
+            <tr><td>Ins</td><td>пятью</td><td>восьмью</td><td>десятью</td><td>двадцатью</td></tr>
+            <tr><td>Prep</td><td>пяти</td><td>восьми</td><td>десяти</td><td>двадцати</td></tr>
         </table>
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0.4rem 0 0.6rem 0;">Gen = Dat = Prep. Acc = Nom (inanimate).</p>
+
+        <h4 style="color: var(--accent); margin-top: 1.25rem; font-size: 0.9rem;">50, 60, 70, 80 — compound</h4>
+        <table class="ref-table" style="font-size: 0.78rem;">
+            <tr><th>Case</th><th>50</th><th>80</th></tr>
+            <tr><td>Nom</td><td>пятьдесят</td><td>восемьдесят</td></tr>
+            <tr><td>Gen</td><td>пятидесяти</td><td>восьмидесяти</td></tr>
+            <tr><td>Dat</td><td>пятидесяти</td><td>восьмидесяти</td></tr>
+            <tr><td>Acc</td><td>пятьдесят</td><td>восемьдесят</td></tr>
+            <tr><td>Ins</td><td>пятьюдесятью</td><td>восьмьюдесятью</td></tr>
+            <tr><td>Prep</td><td>пятидесяти</td><td>восьмидесяти</td></tr>
+        </table>
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0.4rem 0 0.6rem 0;">Both halves decline. Note the soft sign in instrumental: <em>пятьюдесятью</em>, not <em>пятидесятью</em>.</p>
+
+        <h4 style="color: var(--accent); margin-top: 1.25rem; font-size: 0.9rem;">40, 90, 100 — only two forms</h4>
+        <table class="ref-table" style="font-size: 0.78rem;">
+            <tr><th>Case</th><th>40</th><th>90</th><th>100</th></tr>
+            <tr><td>Nom / Acc</td><td>сорок</td><td>девяносто</td><td>сто</td></tr>
+            <tr><td>Gen / Dat / Ins / Prep</td><td>сорока</td><td>девяноста</td><td>ста</td></tr>
+        </table>
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0.4rem 0 0.6rem 0;">The only three numerals with just two forms each.</p>
+
+        <h4 style="color: var(--accent); margin-top: 1.25rem; font-size: 0.9rem;">200–400 — irregular stems</h4>
+        <table class="ref-table" style="font-size: 0.78rem;">
+            <tr><th>Case</th><th>200</th><th>300</th><th>400</th></tr>
+            <tr><td>Nom</td><td>двести</td><td>триста</td><td>четыреста</td></tr>
+            <tr><td>Gen</td><td>двухсот</td><td>трёхсот</td><td>четырёхсот</td></tr>
+            <tr><td>Dat</td><td>двумстам</td><td>трёмстам</td><td>четырёмстам</td></tr>
+            <tr><td>Acc</td><td>двести</td><td>триста</td><td>четыреста</td></tr>
+            <tr><td>Ins</td><td>двумястами</td><td>тремястами</td><td>четырьмястами</td></tr>
+            <tr><td>Prep</td><td>двухстах</td><td>трёхстах</td><td>четырёхстах</td></tr>
+        </table>
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0.4rem 0 0.6rem 0;">Singular stem in nom/acc; plural stems elsewhere.</p>
+
+        <h4 style="color: var(--accent); margin-top: 1.25rem; font-size: 0.9rem;">500–900 — the -сот pattern</h4>
+        <table class="ref-table" style="font-size: 0.78rem;">
+            <tr><th>Case</th><th>500</th><th>900</th></tr>
+            <tr><td>Nom</td><td>пятьсот</td><td>девятьсот</td></tr>
+            <tr><td>Gen</td><td>пятисот</td><td>девятисот</td></tr>
+            <tr><td>Dat</td><td>пятистам</td><td>девятистам</td></tr>
+            <tr><td>Acc</td><td>пятьсот</td><td>девятьсот</td></tr>
+            <tr><td>Ins</td><td>пятьюстами</td><td>девятьюстами</td></tr>
+            <tr><td>Prep</td><td>пятистах</td><td>девятистах</td></tr>
+        </table>
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0.4rem 0 0.6rem 0;">Instrumental in <em>-ьюстами</em>.</p>
+
+        <h4 style="color: var(--accent); margin-top: 1.25rem; font-size: 0.9rem;">1 — full adjectival declension</h4>
+        <table class="ref-table" style="font-size: 0.78rem;">
+            <tr><th>Case</th><th>Masc</th><th>Fem</th><th>Neut</th><th>Plural</th></tr>
+            <tr><td>Nom</td><td>один</td><td>одна</td><td>одно</td><td>одни</td></tr>
+            <tr><td>Gen</td><td>одного</td><td>одной</td><td>одного</td><td>одних</td></tr>
+            <tr><td>Dat</td><td>одному</td><td>одной</td><td>одному</td><td>одним</td></tr>
+            <tr><td>Acc (inan)</td><td>один</td><td>одну</td><td>одно</td><td>одни</td></tr>
+            <tr><td>Acc (anim)</td><td>одного</td><td>одну</td><td>одно</td><td>одних</td></tr>
+            <tr><td>Ins</td><td>одним</td><td>одной</td><td>одним</td><td>одними</td></tr>
+            <tr><td>Prep</td><td>одном</td><td>одной</td><td>одном</td><td>одних</td></tr>
+        </table>
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0.4rem 0 0.6rem 0;">Declines like a hard adjective. The app drills masculine forms.</p>
+
+        <h4 style="color: var(--accent); margin-top: 1.25rem; font-size: 0.9rem;">2 — feminine form две</h4>
+        <p style="font-size: 0.8rem; color: var(--text-main);">Nominative <em>два</em> is masculine/neuter; feminine is <em>две</em>. All other cases are the same across genders (<em>двух, двум, двумя, двух</em>). Accusative is animacy-dependent: <em>два / две</em> (inanimate) vs <em>двух</em> (animate).</p>
+
+        <h4 style="color: var(--accent); margin-top: 1.25rem; font-size: 0.9rem;">3, 4 — same pattern as 2</h4>
+        <p style="font-size: 0.8rem; color: var(--text-main);">No feminine variant in nominative. Accusative is animacy-dependent: <em>три / четыре</em> (inanimate) vs <em>трёх / четырёх</em> (animate).</p>
+
+        <h4 style="color: var(--accent); margin-top: 1.25rem; font-size: 0.9rem;">Animate accusative</h4>
+        <p style="font-size: 0.8rem; color: var(--text-main);">Numeral accusative is animacy-dependent. With <em>inanimate</em> nouns (books, tables) it matches nominative. With <em>animate</em> nouns (people, animals) it matches genitive. <strong>This app drills the inanimate accusative</strong> — the form you'll see most often in everyday reading.</p>
+
+        <h4 style="color: var(--accent); margin-top: 1.25rem; font-size: 0.9rem;">ё / е in numerals</h4>
+        <p style="font-size: 0.8rem; color: var(--text-main);">The forms <em>трёх, трём, трёмя, четырёх, четырём, четырьмя</em> contain ё. Because many writers omit ё in practice, the app treats ё and е as interchangeable — <em>трех</em> and <em>трёх</em> both pass. In formal writing, use ё.</p>
+
+        <h4 style="color: var(--accent); margin-top: 1.25rem; font-size: 0.9rem;">Traps, at a glance</h4>
+        <p style="font-size: 0.8rem; color: var(--text-main);"><strong>40 / 90 / 100</strong> — only two forms each.</p>
+        <p style="font-size: 0.8rem; color: var(--text-main);"><strong>50–80</strong> — both halves decline; instrumental in <em>-ьюдесятью</em>.</p>
+        <p style="font-size: 0.8rem; color: var(--text-main);"><strong>200–400</strong> — irregular stems in gen (двухсот, трёхсот, четырёхсот).</p>
+        <p style="font-size: 0.8rem; color: var(--text-main);"><strong>500–900</strong> — instrumental in <em>-ьюстами</em>.</p>
+        <p style="font-size: 0.8rem; color: var(--text-main);"><strong>2</strong> — nominative feminine is <em>две</em>.</p>
     </div>
 
     <div id="view-review" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <h3 style="color: var(--accent); margin: 0;">Mutations to Review</h3>
-            <button onclick="clearReviewLog();" style="background-color: var(--border); color: var(--text-main); font-size: 0.85rem; padding: 0.4rem 0.8rem; border-radius: 0.25rem; border: none; cursor: pointer;">Clear List 🗑️</button>
+        <button id="drill-all-btn" class="drill-all-btn" onclick="drillFromLog('all')">🎯 Drill All Reviews (Pending &amp; Pinned) (0)</button>
+
+        <div class="review-tabs">
+            <button class="review-tab" data-bucket="known" id="tab-known" onclick="setReviewTab('known')">💚 Known (<span id="count-known">0</span>)</button>
+            <button class="review-tab" data-bucket="active" id="tab-active" onclick="setReviewTab('active')">⚪ Active (<span id="count-active">0</span>)</button>
+            <button class="review-tab active" data-bucket="pending" id="tab-pending" onclick="setReviewTab('pending')">🟡 Pending (<span id="count-pending">0</span>)</button>
+            <button class="review-tab" data-bucket="pinned" id="tab-pinned" onclick="setReviewTab('pinned')">🔴 Pinned (<span id="count-pinned">0</span>)</button>
         </div>
-        <div id="review-placeholder" style="color: var(--text-muted); text-align: center; padding: 2rem 0;">🌟 <strong>Absolute Perfection!</strong> No numerical mismatches logged.</div>
+
+        <div id="review-header" class="review-header"></div>
         <div id="review-list-container" style="max-height: 40vh; overflow-y: auto;"></div>
+
+        <div class="review-actions">
+            <button id="drill-bucket-btn" onclick="drillActiveBucket()">🎯 Drill</button>
+            <button id="clear-bucket-btn" onclick="clearActiveBucket()">🗑️ Clear</button>
+        </div>
     </div>
-</div>
 
 <div class="portal-shortcut-bar">
     <a href="index.html">Return to Hub</a>
@@ -348,6 +538,179 @@
     var sessionBestStreak = 0;
     var sessionCurrentStreak = 0;
     var sessionComplete = false;
+    var productionMethod = "type";
+    var writeMethod = "type";
+    var autoSpeakSetting = true;
+    var autoPinThreshold = 3;
+    var knownMode = "adaptive";
+    var playMode = false;
+    var knownCards = {};
+    var sessionFirstAttempts = {};
+    var sessionRecoveredCount = 0;
+    var sessionKnownCount = 0;
+    var sessionMode = "normal";
+    var reviewTab = "pending";
+
+    function cardKey(card) { return (card.digit + "|" + card.caseKey).toLowerCase(); }
+    function entryKey(e) {
+        if (e.key) return e.key;
+        if (e.digit && e.caseKey) return (e.digit + "|" + e.caseKey).toLowerCase();
+        return null;
+    }
+    function findLogEntry(key) {
+        for (var i = 0; i < mistakeLog.length; i++) {
+            if (entryKey(mistakeLog[i]) === key) return mistakeLog[i];
+        }
+        return null;
+    }
+    function removeLogEntry(key) {
+        for (var i = 0; i < mistakeLog.length; i++) {
+            if (entryKey(mistakeLog[i]) === key) { mistakeLog.splice(i, 1); return; }
+        }
+    }
+    function graduateToKnown(key) {
+        if (!knownCards[key]) knownCards[key] = { firstKnownAt: Date.now() };
+    }
+    function normaliseWord(str) {
+        var s = str.toLowerCase().trim();
+        s = s.replace(/[-\s]+/g, " ");
+        s = s.replace(/ё/g, "е");
+        return s;
+    }
+    function checkAnswerMatch(userInput, expected) {
+        var variants = expected.split("/");
+        var userNorm = normaliseWord(userInput);
+        for (var i = 0; i < variants.length; i++) {
+            if (userNorm === normaliseWord(variants[i])) return true;
+        }
+        return false;
+    }
+    function isCorrectAnswer(userInput, card) {
+        return checkAnswerMatch(userInput, card.answer);
+    }
+    function makeLogEntry(card, yours) {
+        var caseLabel = caseNamesFullMap[card.caseKey];
+        return {
+            key: cardKey(card),
+            digit: card.digit,
+            caseKey: card.caseKey,
+            prompt: "Value: " + card.digit + " (" + caseLabel + ")",
+            correct: card.answer + " (Base: " + card.nominative + ")",
+            yours: yours,
+            status: "pending",
+            failCount: 1,
+            firstSeen: Date.now(),
+            lastSeen: Date.now()
+        };
+    }
+    function handleLogUpdate(card, isCorrect, userInput) {
+        if (playMode) return { mode: 'play' };
+        var key = cardKey(card);
+        var entry = findLogEntry(key);
+        var isKnown = !!knownCards[key];
+        var isFirstAttempt = !(key in sessionFirstAttempts);
+        if (!isFirstAttempt) return { mode: 'not-first-attempt' };
+        sessionFirstAttempts[key] = isCorrect;
+        var result = { mode: 'no-change' };
+        if (isCorrect) {
+            if (isKnown) { result.mode = 'still-known'; }
+            else if (entry) {
+                if (entry.status === "pinned") { entry.lastSeen = Date.now(); result.mode = 'still-pinned'; }
+                else if (entry.status === "pending") { entry.status = "active"; entry.lastSeen = Date.now(); sessionRecoveredCount++; result.mode = 'pending-to-active'; }
+                else if (entry.status === "active") { graduateToKnown(key); sessionKnownCount++; removeLogEntry(key); result.mode = 'active-to-known'; }
+            } else { graduateToKnown(key); sessionKnownCount++; result.mode = 'fresh-to-known'; }
+        } else {
+            if (isKnown) { delete knownCards[key]; mistakeLog.push(makeLogEntry(card, userInput)); result.mode = 'known-to-pending'; }
+            else if (entry) {
+                entry.failCount = (entry.failCount || 1) + 1;
+                entry.yours = userInput;
+                entry.lastSeen = Date.now();
+                if (entry.status === "pinned") { result.mode = 'still-pinned-wrong'; result.failCount = entry.failCount; }
+                else {
+                    entry.status = "pending";
+                    if (autoPinThreshold > 0 && entry.failCount >= autoPinThreshold) { entry.status = "pinned"; result.mode = 'auto-pinned'; result.failCount = entry.failCount; }
+                    else { result.mode = 'pending-wrong'; result.failCount = entry.failCount; }
+                }
+            } else { mistakeLog.push(makeLogEntry(card, userInput)); result.mode = 'fresh-to-pending'; }
+        }
+        updateLogBadges();
+        updateScoreboard();
+        return result;
+    }
+    function logUpdateMessage(result) {
+        if (!result) return '';
+        switch (result.mode) {
+            case 'pending-to-active': return '<br><small style="color:#fbbf24;">↩️ Moved back to Active deck</small>';
+            case 'active-to-known': return '<br><small style="color:#4ade80;">✨ Graduated to Known</small>';
+            case 'fresh-to-known': return '<br><small style="color:#4ade80;">✨ Added to Known deck</small>';
+            case 'known-to-pending': return '<br><small style="color:#fbbf24;">↪️ Demoted to Pending (was Known)</small>';
+            case 'auto-pinned': return '<br><small style="color:#ef4444;">🔴 Auto-pinned (fail #' + result.failCount + ')</small>';
+            case 'fresh-to-pending': return '<br><small style="color:#fbbf24;">🟡 Added to Pending</small>';
+            case 'still-pinned-wrong': return '<br><small style="color:#ef4444;">📌 Still pinned (fail #' + result.failCount + ')</small>';
+            case 'play': return '<br><small style="color:#d8b4fe;">🎮 Play mode — progress not recorded</small>';
+            default: return '';
+        }
+    }
+    function computeCounts() {
+        var counts = { known: 0, active: 0, pending: 0, pinned: 0, total: 0 };
+        var digits = Object.keys(masterNumberDictionary);
+        var caseKeys = ['nom', 'gen', 'dat', 'acc', 'ins', 'prep'];
+        for (var i = 0; i < digits.length; i++) {
+            var d = digits[i];
+            var item = masterNumberDictionary[d];
+            if (!selectedIntervals[item.range]) continue;
+            for (var c = 0; c < caseKeys.length; c++) {
+                if (!selectedIntervals[caseKeys[c]]) continue;
+                if (!cardMatchesSet({ digit: d, caseKey: caseKeys[c] })) continue;
+                counts.total++;
+                var key = (d + "|" + caseKeys[c]).toLowerCase();
+                if (knownCards[key]) { counts.known++; continue; }
+                var entry = findLogEntry(key);
+                if (entry) {
+                    if (entry.status === "pinned") counts.pinned++;
+                    else if (entry.status === "pending") counts.pending++;
+                    else counts.active++;
+                } else counts.active++;
+            }
+        }
+        return counts;
+    }
+    function getFilteredKnownKeys() {
+        var keys = [];
+        var digits = Object.keys(masterNumberDictionary);
+        var caseKeys = ['nom', 'gen', 'dat', 'acc', 'ins', 'prep'];
+        for (var i = 0; i < digits.length; i++) {
+            var d = digits[i];
+            var item = masterNumberDictionary[d];
+            if (!selectedIntervals[item.range]) continue;
+            for (var c = 0; c < caseKeys.length; c++) {
+                if (!selectedIntervals[caseKeys[c]]) continue;
+                if (!cardMatchesSet({ digit: d, caseKey: caseKeys[c] })) continue;
+                var key = (d + "|" + caseKeys[c]).toLowerCase();
+                if (knownCards[key]) keys.push(key);
+            }
+        }
+        return keys;
+    }
+    function updateLogBadges() {
+        var counts = computeCounts();
+        var e;
+        e = document.getElementById('review-count'); if (e) e.innerText = counts.pending;
+        e = document.getElementById('count-known'); if (e) e.innerText = counts.known;
+        e = document.getElementById('count-active'); if (e) e.innerText = counts.active;
+        e = document.getElementById('count-pending'); if (e) e.innerText = counts.pending;
+        e = document.getElementById('count-pinned'); if (e) e.innerText = counts.pinned;
+        var dall = document.getElementById('drill-all-btn');
+        if (dall) {
+            var drillable = counts.pending + counts.pinned;
+            dall.innerText = "🎯 Drill All Reviews (Pending & Pinned) (" + drillable + ")";
+            dall.disabled = drillable === 0;
+        }
+    }
+    function updatePlayModePill() {
+        var pill = document.getElementById('play-mode-pill');
+        if (pill) pill.style.display = playMode ? "inline-block" : "none";
+    }
 
     var selectedIntervals = {
         r1: true, r2: true, r3: true, r4: true,
@@ -395,39 +758,128 @@
 
     var caseNamesFullMap = { nom: "Nominative", gen: "Genitive", dat: "Dative", acc: "Accusative", ins: "Instrumental", prep: "Prepositional" };
 
+    var trapMap = {
+        "2": { nom: "Feminine form is две — use with feminine nouns" },
+        "40": {
+            gen: "Only two forms total: сорок (nom/acc) vs сорока (all others)",
+            dat: "Same as genitive — сорока",
+            ins: "Same as genitive — сорока",
+            prep: "Same as genitive — сорока"
+        },
+        "90": {
+            gen: "Only two forms: девяносто vs девяноста",
+            dat: "Same as genitive — девяноста",
+            ins: "Same as genitive — девяноста",
+            prep: "Same as genitive — девяноста"
+        },
+        "100": {
+            gen: "Only two forms: сто vs ста",
+            dat: "Same as genitive — ста",
+            ins: "Same as genitive — ста",
+            prep: "Same as genitive — ста"
+        },
+        "50": {
+            gen: "Compound: both halves decline — пятидесяти",
+            dat: "Compound: пятидесяти",
+            ins: "Compound, soft sign: пятьюдесятью",
+            prep: "Compound: пятидесяти"
+        },
+        "60": {
+            gen: "Compound: шестидесяти",
+            dat: "шестидесяти",
+            ins: "Compound, soft sign: шестьюдесятью",
+            prep: "шестидесяти"
+        },
+        "70": {
+            gen: "Compound: семидесяти",
+            dat: "семидесяти",
+            ins: "Compound, soft sign: семьюдесятью",
+            prep: "семидесяти"
+        },
+        "80": {
+            gen: "Compound: восьмидесяти",
+            dat: "восьмидесяти",
+            ins: "Compound, soft sign: восьмьюдесятью",
+            prep: "восьмидесяти"
+        },
+        "200": {
+            gen: "Irregular stem: двухсот",
+            dat: "двумстам",
+            ins: "двумястами",
+            prep: "двухстах"
+        },
+        "300": {
+            gen: "Irregular stem: трёхсот",
+            dat: "трёмстам",
+            ins: "тремястами",
+            prep: "трёхстах"
+        },
+        "400": {
+            gen: "Irregular stem: четырёхсот",
+            dat: "четырёмстам",
+            ins: "четырьмястами",
+            prep: "четырёхстах"
+        },
+        "500": { ins: "Instrumental ends in -ьюстами: пятьюстами (not пятистами)" },
+        "600": { ins: "Instrumental ends in -ьюстами: шестьюстами" },
+        "700": { ins: "Instrumental ends in -ьюстами: семьюстами" },
+        "800": { ins: "Instrumental ends in -ьюстами: восьмьюстами" },
+        "900": { ins: "Instrumental ends in -ьюстами: девятьюстами" }
+    };
+
+    function getTrapNote(digit, caseKey) {
+        var m = trapMap[digit];
+        return (m && m[caseKey]) ? m[caseKey] : null;
+    }
+
+    function trapNoteHtml(card) {
+        var note = getTrapNote(card.digit, card.caseKey);
+        return note ? "<br><small style='color:var(--warning);'>💡 " + note + "</small>" : "";
+    }
+
+    function cardMatchesSet(card) {
+        var sel = document.getElementById('card-set-selector');
+        var set = sel ? sel.value : "all";
+        if (set === 'all') return true;
+        var isTricky = !!getTrapNote(card.digit, card.caseKey);
+        if (set === 'tricky') return isTricky;
+        if (set === 'standard') return !isTricky;
+        return true;
+    }
+
     function computeFilteredCardCount() {
-        var count = 0;
-        var digits = Object.keys(masterNumberDictionary);
-        var caseKeys = ['nom', 'gen', 'dat', 'acc', 'ins', 'prep'];
-        for (var i = 0; i < digits.length; i++) {
-            var d = digits[i];
-            var item = masterNumberDictionary[d];
-            if (!selectedIntervals[item.range]) continue;
-            for (var c = 0; c < caseKeys.length; c++) {
-                if (selectedIntervals[caseKeys[c]]) count++;
-            }
-        }
-        return count;
+        return computeCounts().total;
     }
 
     function updateFilterStatusLine() {
         var el = document.getElementById('filter-status-line');
         if (!el) return;
-        var count = computeFilteredCardCount();
+        var counts = computeCounts();
         var sizeSel = document.getElementById('deck-size-selector');
         var deckSize = sizeSel ? sizeSel.value : "15";
         var deckLabel = (deckSize === "9999") ? "All" : deckSize;
-        el.innerText = count + " cards in pool · Deck: " + deckLabel;
+        var remaining = counts.active + counts.pending + counts.pinned;
+        el.innerText = counts.total + " cards in pool · " + counts.known + " mastered · " + remaining + " remaining · Deck: " + deckLabel;
     }
 
     function saveState() {
         try {
             var sizeSel = document.getElementById('deck-size-selector');
             var state = {
+                dataVersion: 2,
                 filters: selectedIntervals,
                 direction: currentQuizDirection,
                 deckSize: sizeSel ? sizeSel.value : "15",
+                cardSet: (document.getElementById('card-set-selector') || {}).value || "all",
+                productionMethod: productionMethod,
+                writeMethod: writeMethod,
+                autoSpeak: autoSpeakSetting,
+                autoPinThreshold: autoPinThreshold,
+                knownMode: knownMode,
+                playMode: playMode,
+                reviewTab: reviewTab,
                 stats: { correct: totalCorrect, total: totalQuestions, streak: currentStreak },
+                knownCards: knownCards,
                 mistakes: mistakeLog
             };
             localStorage.setItem('rus_numbers_state', JSON.stringify(state));
@@ -439,7 +891,6 @@
             var raw = localStorage.getItem('rus_numbers_state');
             if (!raw) return;
             var state = JSON.parse(raw);
-
             if (state.filters) {
                 for (var k in state.filters) {
                     if (state.filters.hasOwnProperty(k) && typeof selectedIntervals[k] !== 'undefined') {
@@ -448,30 +899,76 @@
                 }
                 applyFilterCheckboxes();
             }
-
             if (state.direction) {
                 currentQuizDirection = state.direction;
                 document.getElementById('dir-r').classList.remove('active');
                 document.getElementById('dir-w').classList.remove('active');
                 document.getElementById('dir-' + (state.direction === 'read' ? 'r' : 'w')).classList.add('active');
             }
-
             if (state.deckSize) {
                 var sizeSel = document.getElementById('deck-size-selector');
                 if (sizeSel) sizeSel.value = state.deckSize;
             }
-
+            if (state.cardSet) {
+                var setSel = document.getElementById('card-set-selector');
+                if (setSel) setSel.value = state.cardSet;
+            }
+            if (state.productionMethod === 'type' || state.productionMethod === 'honour') {
+                productionMethod = state.productionMethod;
+                document.getElementById('chk-method-type').checked = productionMethod === 'type';
+                document.getElementById('chk-method-honour').checked = productionMethod === 'honour';
+                document.getElementById('lbl-method-type').classList.toggle('selected', productionMethod === 'type');
+                document.getElementById('lbl-method-honour').classList.toggle('selected', productionMethod === 'honour');
+            }
+            if (state.writeMethod === 'type' || state.writeMethod === 'honour') {
+                writeMethod = state.writeMethod;
+                document.getElementById('chk-write-method-type').checked = writeMethod === 'type';
+                document.getElementById('chk-write-method-honour').checked = writeMethod === 'honour';
+                document.getElementById('lbl-write-method-type').classList.toggle('selected', writeMethod === 'type');
+                document.getElementById('lbl-write-method-honour').classList.toggle('selected', writeMethod === 'honour');
+            }
+            if (typeof state.autoSpeak !== 'undefined') {
+                autoSpeakSetting = state.autoSpeak;
+                var chk = document.getElementById('chk-opt-auto-speak');
+                if (chk) chk.checked = autoSpeakSetting;
+                var lbl = document.getElementById('lbl-opt-auto-speak');
+                if (lbl) lbl.classList.toggle('selected', autoSpeakSetting);
+            }
+            if (state.knownMode === 'sweep' || state.knownMode === 'adaptive') {
+                knownMode = state.knownMode;
+                document.getElementById('chk-known-adaptive').checked = knownMode === 'adaptive';
+                document.getElementById('chk-known-sweep').checked = knownMode === 'sweep';
+                document.getElementById('lbl-known-adaptive').classList.toggle('selected', knownMode === 'adaptive');
+                document.getElementById('lbl-known-sweep').classList.toggle('selected', knownMode === 'sweep');
+            }
+            if (typeof state.autoPinThreshold === "number") {
+                autoPinThreshold = state.autoPinThreshold;
+                var aps = document.getElementById('auto-pin-selector');
+                if (aps) aps.value = String(autoPinThreshold);
+            }
+            if (typeof state.playMode !== 'undefined') {
+                playMode = state.playMode;
+                document.getElementById('chk-opt-play-mode').checked = playMode;
+                document.getElementById('lbl-opt-play-mode').classList.toggle('selected', playMode);
+            }
+            if (state.knownCards && typeof state.knownCards === 'object') {
+                knownCards = state.knownCards;
+            }
+            if (state.reviewTab && ["known","active","pending","pinned"].indexOf(state.reviewTab) !== -1) {
+                reviewTab = state.reviewTab;
+                document.querySelectorAll('.review-tab').forEach(function(b) { b.classList.toggle('active', b.dataset.bucket === reviewTab); });
+            }
             if (state.stats) {
                 totalCorrect = state.stats.correct || 0;
                 totalQuestions = state.stats.total || 0;
                 currentStreak = state.stats.streak || 0;
-                updateScoreboard();
             }
-
             if (Array.isArray(state.mistakes)) {
                 mistakeLog = state.mistakes;
-                document.getElementById('review-count').innerText = mistakeLog.length;
             }
+            updateScoreboard();
+            updateLogBadges();
+            updatePlayModePill();
         } catch (e) {}
     }
 
@@ -490,56 +987,118 @@
     }
 
     function resetAllProgress() {
-        if (!confirm("Clear all progress, scores, and review log?")) return;
-
+        if (!confirm("Clear all progress, scores, review log, and known cards?")) return;
         try { localStorage.removeItem('rus_numbers_state'); } catch (e) {}
-
         totalCorrect = 0;
         totalQuestions = 0;
         currentStreak = 0;
         mistakeLog = [];
-        document.getElementById('review-count').innerText = "0";
-
+        knownCards = {};
+        reviewTab = "pending";
+        knownMode = "adaptive";
+        playMode = false;
+        autoPinThreshold = 3;
+        productionMethod = "type";
+        writeMethod = "type";
+        autoSpeakSetting = true;
         var defaults = { r1: true, r2: true, r3: true, r4: true,
                          nom: true, gen: true, dat: true, acc: true, ins: true, prep: true };
         for (var k in defaults) {
             if (defaults.hasOwnProperty(k)) selectedIntervals[k] = defaults[k];
         }
         applyFilterCheckboxes();
-
         var sizeSel = document.getElementById('deck-size-selector');
         if (sizeSel) sizeSel.value = "15";
-
+        document.getElementById('chk-method-type').checked = true;
+        document.getElementById('chk-method-honour').checked = false;
+        document.getElementById('lbl-method-type').classList.add('selected');
+        document.getElementById('lbl-method-honour').classList.remove('selected');
+        document.getElementById('chk-write-method-type').checked = true;
+        document.getElementById('chk-write-method-honour').checked = false;
+        document.getElementById('lbl-write-method-type').classList.add('selected');
+        document.getElementById('lbl-write-method-honour').classList.remove('selected');
+        document.getElementById('chk-known-adaptive').checked = true;
+        document.getElementById('chk-known-sweep').checked = false;
+        document.getElementById('lbl-known-adaptive').classList.add('selected');
+        document.getElementById('lbl-known-sweep').classList.remove('selected');
+        document.getElementById('chk-opt-play-mode').checked = false;
+        document.getElementById('lbl-opt-play-mode').classList.remove('selected');
+        document.getElementById('card-set-selector').value = "all";
+        document.getElementById('auto-pin-selector').value = "3";
+        document.getElementById('chk-opt-auto-speak').checked = true;
+        document.getElementById('lbl-opt-auto-speak').classList.add('selected');
         currentQuizDirection = "read";
         document.getElementById('dir-r').classList.add('active');
         document.getElementById('dir-w').classList.remove('active');
-
+        document.querySelectorAll('.review-tab').forEach(function(b) { b.classList.toggle('active', b.dataset.bucket === "pending"); });
         var drawer = document.getElementById('settings-drawer');
         var btn = document.getElementById('drawer-toggle-btn');
         if (drawer) drawer.style.display = "none";
         if (btn) btn.innerText = "⚙️ Options & Filters ▾";
-
         updateScoreboard();
+        updateLogBadges();
+        updatePlayModePill();
         initSessionDeck();
+    }
+
+    function updateProductionMethod(method) {
+        productionMethod = method;
+        document.getElementById('lbl-method-type').classList.toggle('selected', method === 'type');
+        document.getElementById('lbl-method-honour').classList.toggle('selected', method === 'honour');
+        saveState();
+        initSessionDeck();
+    }
+
+    function updateWriteMethod(method) {
+        writeMethod = method;
+        document.getElementById('lbl-write-method-type').classList.toggle('selected', method === 'type');
+        document.getElementById('lbl-write-method-honour').classList.toggle('selected', method === 'honour');
+        saveState();
+        initSessionDeck();
+    }
+
+    function updateKnownMode(mode) {
+        knownMode = mode;
+        document.getElementById('lbl-known-adaptive').classList.remove('selected');
+        document.getElementById('lbl-known-sweep').classList.remove('selected');
+        document.getElementById('lbl-known-' + mode).classList.add('selected');
+        saveState();
+        initSessionDeck();
+    }
+
+    function updatePlayMode() {
+        var chk = document.getElementById('chk-opt-play-mode');
+        var lbl = document.getElementById('lbl-opt-play-mode');
+        playMode = chk.checked;
+        if (lbl) lbl.classList.toggle('selected', playMode);
+        updatePlayModePill();
+        saveState();
+    }
+
+    function setAutoPinThreshold(val) {
+        autoPinThreshold = parseInt(val, 10) || 0;
+        saveState();
+    }
+
+    function updateAutoSpeak() {
+        autoSpeakSetting = document.getElementById('chk-opt-auto-speak').checked;
+        document.getElementById('lbl-opt-auto-speak').classList.toggle('selected', autoSpeakSetting);
+        saveState();
     }
 
     function switchView(target) {
         document.getElementById('view-quiz').style.display = target === 'quiz' ? 'block' : 'none';
         document.getElementById('view-guide').style.display = target === 'guide' ? 'block' : 'none';
         document.getElementById('view-review').style.display = target === 'review' ? 'block' : 'none';
-
         var btns = document.getElementsByClassName('nav-btn');
         for (var i = 0; i < btns.length; i++) { btns[i].classList.remove('active'); }
         document.getElementById('tab-' + target).classList.add('active');
-
         var drawer = document.getElementById('settings-drawer');
         var btn = document.getElementById('drawer-toggle-btn');
         if (drawer) drawer.style.display = "none";
         if (btn) btn.innerText = "⚙️ Options & Filters ▾";
-
         var shutter = document.getElementById('shutter-header-area');
         if (shutter) shutter.classList.remove('collapsed');
-
         if (target === 'review') renderReviewList();
     }
 
@@ -570,7 +1129,6 @@
         var btn = document.getElementById('drawer-toggle-btn');
         if (drawer) drawer.style.display = 'block';
         if (btn) btn.innerText = "Close Options ▴";
-
         setTimeout(function() {
             var drawer = document.getElementById('settings-drawer');
             if (drawer) {
@@ -593,13 +1151,10 @@
     function verifyAndReloadFilters() {
         var rangeKeys = ['r1', 'r2', 'r3', 'r4'];
         var caseKeys = ['nom', 'gen', 'dat', 'acc', 'ins', 'prep'];
-
         var rangeChecked = rangeKeys.some(k => selectedIntervals[k]);
         var caseChecked = caseKeys.some(k => selectedIntervals[k]);
-
         if (!rangeChecked) { selectedIntervals.r1 = true; document.getElementById('chk-opt-r1').checked = true; document.getElementById('lbl-opt-r1').classList.add('selected'); }
         if (!caseChecked) { selectedIntervals.nom = true; document.getElementById('chk-opt-nom').checked = true; document.getElementById('lbl-opt-nom').classList.add('selected'); }
-
         initSessionDeck();
     }
 
@@ -614,93 +1169,60 @@
         sessionBestStreak = 0;
         sessionCurrentStreak = 0;
         sessionComplete = false;
-
+        sessionFirstAttempts = {};
+        sessionRecoveredCount = 0;
+        sessionKnownCount = 0;
+        sessionMode = "normal";
         var digits = Object.keys(masterNumberDictionary);
         var caseKeys = ['nom', 'gen', 'dat', 'acc', 'ins', 'prep'];
-
+        var totalFiltered = 0;
         for (var i = 0; i < digits.length; i++) {
             var d = digits[i];
             var item = masterNumberDictionary[d];
-
             if (selectedIntervals[item.range]) {
                 for (var c = 0; c < caseKeys.length; c++) {
-                    var caseKey = caseKeys[c];
-                    if (selectedIntervals[caseKey]) {
+                    if (selectedIntervals[caseKeys[c]]) {
+                        if (!cardMatchesSet({ digit: d, caseKey: caseKeys[c] })) continue;
+                        totalFiltered++;
+                        var key = (d + "|" + caseKeys[c]).toLowerCase();
+                        if (knownMode === "adaptive" && knownCards[key]) continue;
                         currentSessionDeck.push({
                             digit: d,
                             range: item.range,
                             nominative: item.nom,
                             translit: item.tr,
-                            caseKey: caseKey,
-                            answer: item[caseKey]
+                            caseKey: caseKeys[c],
+                            answer: item[caseKeys[c]]
                         });
                     }
                 }
             }
         }
-
-        if (currentSessionDeck.length === 0) emptyReason = "no-match";
-
+        if (currentSessionDeck.length === 0) {
+            if (totalFiltered === 0) emptyReason = "no-match";
+            else if (knownMode === "adaptive") emptyReason = "all-known";
+            else emptyReason = "unknown";
+        }
         for (var i = currentSessionDeck.length - 1; i > 0; i--) {
             var j = Math.floor(Math.random() * (i + 1));
             var temp = currentSessionDeck[i];
             currentSessionDeck[i] = currentSessionDeck[j];
             currentSessionDeck[j] = temp;
         }
-
         var sizeSel = document.getElementById('deck-size-selector');
         var maxDeckSize = sizeSel ? parseInt(sizeSel.value, 10) : 15;
         if (currentSessionDeck.length > maxDeckSize) currentSessionDeck = currentSessionDeck.slice(0, maxDeckSize);
         coreDeckOriginalCount = currentSessionDeck.length;
         document.getElementById('deck-total').innerText = coreDeckOriginalCount;
-
         var pBox = document.getElementById('progress-box');
         if (pBox) pBox.className = "score-item";
         document.getElementById('review-status-label').innerText = "";
-
         var shutter = document.getElementById('shutter-header-area');
         if (shutter) shutter.classList.remove('collapsed');
-
         updateFilterStatusLine();
         saveState();
+        updateLogBadges();
         showStartScreen();
-    }
-
-    function showStartScreen() {
-        sessionStarted = false;
-
-        var promptDisplay = document.getElementById('num-prompt-display');
-        var subDisplay = document.getElementById('num-sub-display');
-        var trackBadge = document.getElementById('num-track-badge');
-
-        document.getElementById('speak-btn').style.display = "none";
-        document.getElementById('feedback-container').style.display = "none";
-        document.getElementById('btn-reveal-container').style.display = "none";
-        document.getElementById('honour-system-controls').style.display = "none";
-        document.getElementById('deck-progress').innerText = "0";
-
-        if (currentSessionDeck.length === 0) {
-            document.getElementById('start-btn-container').style.display = "none";
-            promptDisplay.style.fontSize = "1.6rem";
-            promptDisplay.style.color = "var(--accent)";
-            if (emptyReason === "no-match") {
-                promptDisplay.innerText = "No Cards";
-                subDisplay.innerText = "No cards match the current filters. Try enabling another range or case in Options.";
-            } else {
-                promptDisplay.innerText = "Ready?";
-                subDisplay.innerText = "Click Start to begin";
-            }
-            trackBadge.innerText = "";
-            return;
-        }
-
-        promptDisplay.innerText = "Ready?";
-        promptDisplay.style.fontSize = "2rem";
-        promptDisplay.style.color = "var(--accent)";
-        subDisplay.innerText = "Click Start to begin";
-        trackBadge.innerText = "";
-
-        document.getElementById('start-btn-container').style.display = "block";
     }
 
     function startSession() {
@@ -711,12 +1233,38 @@
         generateQuestion();
     }
 
+    function applyPanelVisibility() {
+        var readPanel = document.getElementById('panel-read-mode');
+        var writePanel = document.getElementById('panel-universal-controls');
+        var useType = (currentQuizDirection === 'read' && productionMethod === 'type')
+                   || (currentQuizDirection === 'write' && writeMethod === 'type');
+        if (useType) {
+            if (readPanel) readPanel.style.display = "block";
+            if (writePanel) writePanel.style.display = "none";
+        } else {
+            if (readPanel) readPanel.style.display = "none";
+            if (writePanel) writePanel.style.display = "block";
+        }
+    }
+
     function generateQuestion() {
         document.getElementById('feedback-container').style.display = "none";
-        document.getElementById('btn-reveal-container').style.display = "block";
+        document.getElementById('btn-reveal-container').style.display = "none";
         document.getElementById('honour-system-controls').style.display = "none";
         document.getElementById('deck-progress').innerText = activeCardIndex;
-
+        var inp = document.getElementById('user-input');
+        if (inp) {
+            inp.value = "";
+            inp.disabled = false;
+            inp.placeholder = (currentQuizDirection === 'write') ? "Type the digit you heard..." : "Type the Russian form...";
+        }
+        var sub = document.getElementById('submit-btn');
+        if (sub) sub.disabled = false;
+        var restoreIds = ['panel-read-mode', 'panel-universal-controls', 'honour-system-controls', 'btn-reveal-container'];
+        restoreIds.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.remove('hidden-during-feedback');
+        });
         var pBox = document.getElementById('progress-box');
         if (activeCardIndex >= coreDeckOriginalCount && activeCardIndex < currentSessionDeck.length) {
             if (pBox) pBox.className = "score-item review-phase-text";
@@ -725,47 +1273,70 @@
             if (pBox) pBox.className = "score-item";
             document.getElementById('review-status-label').innerText = "";
         }
-
         if (activeCardIndex >= currentSessionDeck.length) {
             var shutter = document.getElementById('shutter-header-area');
-            if (shutter) shutter.classList.remove('collapsed');
+            if (shutter) shutter.classList.add('collapsed');
             triggerCompletionState();
             return;
         }
-
         currentClockObj = currentSessionDeck[activeCardIndex];
         var promptDisplay = document.getElementById('num-prompt-display');
         var subDisplay = document.getElementById('num-sub-display');
         var trackBadge = document.getElementById('num-track-badge');
-
         var caseLabel = caseNamesFullMap[currentClockObj.caseKey];
-
         if (currentQuizDirection === 'read') {
             promptDisplay.innerText = currentClockObj.digit;
             subDisplay.innerText = "[" + caseLabel + " Case Drill]";
             promptDisplay.style.fontSize = "3.5rem";
             promptDisplay.style.color = "var(--text-main)";
-            trackBadge.innerText = "Recall Inflected Form";
+            if (productionMethod === 'honour') {
+                trackBadge.innerText = "Say the answer, then tap Reveal";
+                document.getElementById('btn-reveal-container').style.display = "block";
+            } else {
+                trackBadge.innerText = "Recall Inflected Form";
+                document.getElementById('btn-reveal-container').style.display = "none";
+            }
             document.getElementById('speak-btn').style.display = "none";
         } else {
             promptDisplay.innerText = "🔊 Listening...";
             subDisplay.innerText = "Identify: [" + caseLabel + "]";
             promptDisplay.style.fontSize = "2.2rem";
             promptDisplay.style.color = "var(--accent)";
-            trackBadge.innerText = "Acoustic Drill";
+            if (writeMethod === 'honour') {
+                trackBadge.innerText = "Acoustic Drill — tap Reveal";
+                document.getElementById('btn-reveal-container').style.display = "block";
+            } else {
+                trackBadge.innerText = "Type the digit you hear";
+                document.getElementById('btn-reveal-container').style.display = "none";
+            }
             document.getElementById('speak-btn').style.display = "block";
             setTimeout(speakRussianPrompt, 300);
         }
+        var warnEl = document.getElementById('warning-badge');
+        if (warnEl) {
+            if (getTrapNote(currentClockObj.digit, currentClockObj.caseKey)) {
+                warnEl.innerText = "⚠️ Trap card";
+                warnEl.style.display = "block";
+            } else {
+                warnEl.style.display = "none";
+            }
+        }
 
-        // Auto-scroll to the reveal button
+        applyPanelVisibility();
         setTimeout(function() {
-            var actionBtn = document.getElementById('btn-reveal-container');
-            if (actionBtn && actionBtn.style.display !== 'none') {
-                actionBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            var useType = (currentQuizDirection === 'read' && productionMethod === 'type')
+                       || (currentQuizDirection === 'write' && writeMethod === 'type');
+            if (useType) {
+                var inputField = document.getElementById('user-input');
+                if (inputField) { inputField.focus(); inputField.select(); }
+            } else {
+                var actionBtn = document.getElementById('btn-reveal-container');
+                if (actionBtn && actionBtn.style.display !== 'none') {
+                    actionBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
             }
         }, 50);
     }
-
 
     function speakRussianPrompt() {
         if (!currentClockObj) return;
@@ -777,33 +1348,97 @@
             window.speechSynthesis.speak(u);
         }
     }
+    function speakAnswer() { speakRussianPrompt(); }
+
+    function checkAnswer() {
+        var inputField = document.getElementById('user-input');
+        var userInput = inputField.value.trim();
+        if (userInput === "") return;
+        collapseHeaderShutter();
+        var feedbackContainer = document.getElementById('feedback-container');
+        var feedbackMessage = document.getElementById('feedback-message');
+        document.getElementById('submit-btn').disabled = true;
+        inputField.disabled = true;
+        totalQuestions++;
+        sessionTotal++;
+        var isCorrect;
+        if (currentQuizDirection === 'read') {
+            isCorrect = isCorrectAnswer(userInput, currentClockObj);
+        } else {
+            isCorrect = (userInput.replace(/[^\d]/g, '') === currentClockObj.digit);
+        }
+        userActionHistory.push({
+            streakBefore: currentStreak, correctBefore: totalCorrect, questionsBefore: totalQuestions - 1,
+            activeCardIndexBefore: activeCardIndex, wasCardPushed: !isCorrect,
+            cardObjectSnapshot: Object.assign({}, currentClockObj)
+        });
+        if (isCorrect) {
+            totalCorrect++; currentStreak++; sessionCorrect++; sessionCurrentStreak++;
+            if (sessionCurrentStreak > sessionBestStreak) sessionBestStreak = sessionCurrentStreak;
+        } else {
+            currentStreak = 0; sessionCurrentStreak = 0;
+        }
+        var logResult = handleLogUpdate(currentClockObj, isCorrect, userInput);
+        var caseLabel = caseNamesFullMap[currentClockObj.caseKey];
+        var answerLine;
+        if (currentQuizDirection === 'read') {
+            answerLine = "Answer: <strong>" + currentClockObj.answer + "</strong>";
+            if (currentClockObj.answer.indexOf("/") !== -1) answerLine += " (either form)";
+            answerLine += "<br><small>Digit: " + currentClockObj.digit + " · Case: " + caseLabel + "</small>";
+        } else {
+            answerLine = "Form: <strong>" + currentClockObj.answer + "</strong><br>Digit: <strong>" + currentClockObj.digit + "</strong> · Case: " + caseLabel;
+        }
+        var youTypedLine = "";
+        if (!isCorrect) {
+            youTypedLine = "<br><small style=\"color:var(--text-muted);\">You typed: \"" + userInput + "\"</small>";
+        }
+        if (isCorrect) {
+            feedbackMessage.className = "feedback correct-box";
+            feedbackMessage.innerHTML = "<strong>Correct!</strong> 🎉<br>" + answerLine + trapNoteHtml(currentClockObj) + logUpdateMessage(logResult);
+        } else {
+            feedbackMessage.className = "feedback incorrect-box";
+            feedbackMessage.innerHTML = "<strong>Incorrect.</strong><br>" + answerLine + youTypedLine + trapNoteHtml(currentClockObj) + logUpdateMessage(logResult);
+            currentSessionDeck.push(Object.assign({}, currentClockObj));
+            document.getElementById('deck-total').innerText = currentSessionDeck.length;
+        }
+        if (autoSpeakSetting) setTimeout(speakRussianPrompt, 200);
+        document.getElementById('speak-btn').style.display = "block";
+        activeCardIndex++;
+        document.getElementById('deck-progress').innerText = activeCardIndex;
+        updateScoreboard();
+        feedbackContainer.style.display = "block";
+        var hideIds = ['panel-read-mode', 'panel-universal-controls', 'honour-system-controls', 'btn-reveal-container'];
+        hideIds.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.add('hidden-during-feedback');
+        });
+        setTimeout(function() {
+            var nextBtn = document.getElementById('next-btn');
+            if (nextBtn) nextBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+        saveState();
+    }
 
     function revealNumberAnswer() {
         collapseHeaderShutter();
         document.getElementById('btn-reveal-container').style.display = "none";
         document.getElementById('honour-system-controls').style.display = "flex";
-
         var promptDisplay = document.getElementById('num-prompt-display');
         var subDisplay = document.getElementById('num-sub-display');
-
         promptDisplay.innerText = currentClockObj.answer;
         promptDisplay.style.fontSize = "3rem";
         promptDisplay.style.color = "var(--text-main)";
-
         var caseLabel = caseNamesFullMap[currentClockObj.caseKey];
         subDisplay.innerHTML = "Digit: " + currentClockObj.digit + " (" + currentClockObj.translit + ")<br>" +
                                "<span style='color:var(--text-muted);'>Nominative Base:</span> " + currentClockObj.nominative + "<br>" +
                                "<span style='color:var(--accent);'>Applied Mutation:</span> " + caseLabel;
-
         document.getElementById('speak-btn').style.display = "block";
         setTimeout(speakRussianPrompt, 150);
     }
 
     function collapseHeaderShutter() {
         var shutter = document.getElementById('shutter-header-area');
-        if (shutter && !shutter.classList.contains('collapsed')) {
-            shutter.classList.add('collapsed');
-        }
+        if (shutter && !shutter.classList.contains('collapsed')) shutter.classList.add('collapsed');
     }
 
     function assessHonour(isCorrect) {
@@ -812,48 +1447,42 @@
         var feedbackContainer = document.getElementById('feedback-container');
         var feedbackMessage = document.getElementById('feedback-message');
         document.getElementById('honour-system-controls').style.display = "none";
-
         userActionHistory.push({
             streakBefore: currentStreak, correctBefore: totalCorrect, questionsBefore: totalQuestions - 1,
-            activeCardIndexBefore: activeCardIndex, wasMistakeLogged: !isCorrect, wasCardPushed: !isCorrect,
+            activeCardIndexBefore: activeCardIndex, wasCardPushed: !isCorrect,
             cardObjectSnapshot: Object.assign({}, currentClockObj)
         });
-
         var caseLabel = caseNamesFullMap[currentClockObj.caseKey];
-
         if (isCorrect) {
-            totalCorrect++; currentStreak++;
-            sessionCorrect++;
-            sessionCurrentStreak++;
+            totalCorrect++; currentStreak++; sessionCorrect++; sessionCurrentStreak++;
             if (sessionCurrentStreak > sessionBestStreak) sessionBestStreak = sessionCurrentStreak;
-            feedbackMessage.className = "feedback correct-box";
-            feedbackMessage.innerHTML = "<strong>Marked Correct!</strong> 👍<br>Verified inflection: <strong>" + currentClockObj.answer + "</strong>.";
         } else {
-            currentStreak = 0;
-            sessionCurrentStreak = 0;
+            currentStreak = 0; sessionCurrentStreak = 0;
+        }
+        var yoursLabel = isCorrect ? "" : "[Honour Self-Assessed Miss]";
+        var logResult = handleLogUpdate(currentClockObj, isCorrect, yoursLabel);
+        if (isCorrect) {
+            feedbackMessage.className = "feedback correct-box";
+            feedbackMessage.innerHTML = "<strong>Marked Correct!</strong> 👍<br>Verified inflection: <strong>" + currentClockObj.answer + "</strong> (" + caseLabel + ")." + trapNoteHtml(currentClockObj) + logUpdateMessage(logResult);
+        } else {
             feedbackMessage.className = "feedback incorrect-box";
-            feedbackMessage.innerHTML = "<strong>Marked Incorrect.</strong> 📚<br>Practice this mutation! Target was <strong>" + currentClockObj.answer + "</strong> (Nom: " + currentClockObj.nominative + " ➔ " + caseLabel + ").";
-
-            mistakeLog.push({
-                prompt: "Value: " + currentClockObj.digit + " (" + caseLabel + ")",
-                correct: currentClockObj.answer + " (Base: " + currentClockObj.nominative + ")",
-                yours: "[Self-Assessed Miss]"
-            });
-            document.getElementById('review-count').innerText = mistakeLog.length;
+            feedbackMessage.innerHTML = "<strong>Marked Incorrect.</strong> 📚<br>Practice this mutation! Target was <strong>" + currentClockObj.answer + "</strong> (Nom: " + currentClockObj.nominative + " ➔ " + caseLabel + ")." + trapNoteHtml(currentClockObj) + logUpdateMessage(logResult);
             currentSessionDeck.push(Object.assign({}, currentClockObj));
             document.getElementById('deck-total').innerText = currentSessionDeck.length;
         }
-
         activeCardIndex++;
         document.getElementById('deck-progress').innerText = activeCardIndex;
         updateScoreboard();
         feedbackContainer.style.display = "block";
-
+        var hideIds = ['panel-read-mode', 'panel-universal-controls', 'honour-system-controls', 'btn-reveal-container'];
+        hideIds.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.add('hidden-during-feedback');
+        });
         setTimeout(function() {
             var nb = document.getElementById('next-btn');
             if (nb) nb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }, 100);
-
         saveState();
     }
 
@@ -861,12 +1490,18 @@
         document.getElementById('score-correct').innerText = totalCorrect;
         document.getElementById('score-total').innerText = totalQuestions;
         document.getElementById('score-streak').innerText = currentStreak;
+        var counts = computeCounts();
+        var el;
+        el = document.getElementById('score-known'); if (el) el.innerText = counts.known;
+        el = document.getElementById('score-known-total'); if (el) el.innerText = counts.total;
+        el = document.getElementById('score-filtered'); if (el) el.innerText = counts.total;
         updateStreakEmoji();
+        updatePlayModePill();
+        updateFilterStatusLine();
     }
 
     function executeUndoAction() {
         if (userActionHistory.length === 0) return;
-
         if (sessionComplete) {
             sessionComplete = false;
             sessionStarted = true;
@@ -878,18 +1513,12 @@
             var nb = document.getElementById('next-btn');
             if (nb) nb.style.display = "";
         }
-
-        var previousState = userActionHistory.pop();
-        currentStreak = previousState.streakBefore;
-        totalCorrect = previousState.correctBefore;
-        totalQuestions = previousState.questionsBefore;
-        activeCardIndex = previousState.activeCardIndexBefore;
-
-        if (previousState.wasMistakeLogged) {
-            mistakeLog.pop();
-            document.getElementById('review-count').innerText = mistakeLog.length;
-        }
-        if (previousState.wasCardPushed) {
+        var prev = userActionHistory.pop();
+        currentStreak = prev.streakBefore;
+        totalCorrect = prev.correctBefore;
+        totalQuestions = prev.questionsBefore;
+        activeCardIndex = prev.activeCardIndexBefore;
+        if (prev.wasCardPushed) {
             currentSessionDeck.pop();
             document.getElementById('deck-total').innerText = currentSessionDeck.length;
         }
@@ -901,9 +1530,8 @@
     function triggerCompletionState() {
         sessionComplete = true;
         sessionStarted = false;
-
         var accuracy = sessionTotal > 0 ? Math.round(sessionCorrect / sessionTotal * 100) : 0;
-
+        var remainingPending = mistakeLog.filter(function(e) { return e.status === "pending"; }).length;
         var promptDisplay = document.getElementById('num-prompt-display');
         var subDisplay = document.getElementById('num-sub-display');
         promptDisplay.innerHTML = "🎉 Отлично!";
@@ -911,43 +1539,57 @@
         promptDisplay.style.fontSize = "3rem";
         subDisplay.innerText = "All " + coreDeckOriginalCount + " cards cleared!";
         document.getElementById('num-track-badge').innerText = "";
-
         document.getElementById('btn-reveal-container').style.display = "none";
         document.getElementById('honour-system-controls').style.display = "none";
         document.getElementById('speak-btn').style.display = "none";
-
         var feedbackContainer = document.getElementById('feedback-container');
         var feedbackMessage = document.getElementById('feedback-message');
         feedbackMessage.className = "feedback correct-box";
-
+        var counts = computeCounts();
+        var knownStat = sessionKnownCount > 0
+            ? '<div><span class="completion-stat-label">Newly Known</span><span class="completion-stat-value" style="color:#4ade80;">+' + sessionKnownCount + '</span></div>' : '';
+        var recoveredStat = sessionRecoveredCount > 0
+            ? '<div><span class="completion-stat-label">Recovered</span><span class="completion-stat-value" style="color:#fbbf24;">' + sessionRecoveredCount + '</span></div>' : '';
         feedbackMessage.innerHTML =
             '<div style="text-align:center;">' +
                 '<div class="completion-stats">' +
                     '<div><span class="completion-stat-label">Accuracy</span><span class="completion-stat-value">' + accuracy + '%</span></div>' +
                     '<div><span class="completion-stat-label">Best Streak</span><span class="completion-stat-value">🔥 ' + sessionBestStreak + '</span></div>' +
                     '<div><span class="completion-stat-label">Checked</span><span class="completion-stat-value">' + sessionTotal + '</span></div>' +
+                    recoveredStat + knownStat +
                 '</div>' +
-                '<div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;">' + sessionCorrect + ' / ' + sessionTotal + ' correct this run</div>' +
-                '<div style="font-size:0.75rem; color:var(--text-muted);">' + coreDeckOriginalCount + ' cards in deck</div>' +
+                '<div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.25rem;">' + sessionCorrect + ' / ' + sessionTotal + ' correct this run</div>' +
+                '<div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.5rem;">' + counts.known + ' / ' + counts.total + ' known under current filters</div>' +
+                (playMode ? '<div style="font-size:0.75rem; color:#d8b4fe; margin-bottom:0.5rem;">🎮 Play mode active — progress not recorded</div>' : '') +
             '</div>';
-
         var nextBtn = document.getElementById('next-btn');
         if (nextBtn) nextBtn.style.display = "none";
-
         var existingBar = feedbackContainer.querySelector('.completion-actions');
         if (existingBar) existingBar.remove();
-
         var actionsHtml = '<div class="completion-actions">';
         actionsHtml += '<button class="completion-btn primary" onclick="startNewSessionFromComplete()">🔄 New Session</button>';
         actionsHtml += '<button class="completion-btn" onclick="switchView(\'review\')">📝 Reviews</button>';
+        if (sessionMode === "drill" && remainingPending > 0) {
+            actionsHtml += '<button class="completion-btn" style="background-color:var(--warning); color:#0d0c10;" onclick="drillFromLog(\'pending\')">🎯 Drill ' + remainingPending + ' Pending</button>';
+        }
         actionsHtml += '</div>';
         feedbackContainer.insertAdjacentHTML('beforeend', actionsHtml);
-
         feedbackContainer.style.display = "block";
-
+        updateDrillPill();
         setTimeout(function() {
             if (feedbackContainer) feedbackContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 450);
+    }
+
+    function updateDrillPill() {
+        var pill = document.getElementById('drill-pill');
+        if (!pill) return;
+        if (sessionMode === "drill" && sessionStarted) {
+            pill.style.display = "inline-block";
+            document.getElementById('drill-count').innerText = currentSessionDeck.length - activeCardIndex;
+        } else {
+            pill.style.display = "none";
+        }
     }
 
     function handleNextWorkflow() {
@@ -960,7 +1602,6 @@
         if (bar) bar.remove();
         var nb = document.getElementById('next-btn');
         if (nb) nb.style.display = "";
-
         sessionComplete = false;
         initSessionDeck();
     }
@@ -976,129 +1617,363 @@
         }
     }
 
-    function renderReviewList() {
-        var container = document.getElementById('review-list-container');
-        var placeholder = document.getElementById('review-placeholder');
-
-        if (!mistakeLog || mistakeLog.length === 0) {
-            if (placeholder) placeholder.style.display = "block";
-            if (container) container.innerHTML = "";
-            return;
-        }
-        if (placeholder) placeholder.style.display = "none";
-
-        var html = "<table class='ref-table'><tr><th>Numerical Prompt</th><th>Correct Inflected Paradigm</th><th>Your Attempt</th></tr>";
-        for (var i = 0; i < mistakeLog.length; i++) {
-            var item = mistakeLog[i];
-            html += "<tr>";
-            html += "<td style='font-weight:bold; color:var(--warning);'>" + item.prompt + "</td>";
-            html += "<td style='font-size:1.1rem; font-weight:bold; color:var(--success);'>" + item.correct + "</td>";
-            html += "<td style='color:var(--error); font-style:italic;'>" + item.yours + "</td>";
-            html += "</tr>";
-        }
-        html += "</table>";
-        if (container) container.innerHTML = html;
+    function setReviewTab(bucket) {
+        reviewTab = bucket;
+        document.querySelectorAll('.review-tab').forEach(function(b) { b.classList.toggle('active', b.dataset.bucket === bucket); });
+        saveState();
+        renderReviewList();
     }
 
-    function clearReviewLog() {
-        mistakeLog = [];
-        document.getElementById('review-count').innerText = "0";
-        renderReviewList();
+    function renderReviewList() {
+        var container = document.getElementById('review-list-container');
+        var headerEl = document.getElementById('review-header');
+        updateLogBadges();
+        var counts = computeCounts();
+        if (reviewTab === "known") {
+            if (counts.known === 0) {
+                headerEl.className = "review-empty";
+                headerEl.innerHTML = "💚 <strong>No known cards yet.</strong><br>Answer cards correctly to graduate them here.";
+                container.innerHTML = "";
+                updateReviewActions(0);
+                return;
+            }
+            headerEl.className = "review-header";
+            headerEl.innerHTML = "💚 <strong>" + counts.known + " of " + counts.total + " cards mastered</strong> under current filters.<br>These are skipped in Adaptive mode. Use <em>Forget Filtered Known</em> below to reset them.";
+            container.innerHTML = "";
+            updateReviewActions(counts.known);
+            return;
+        }
+        if (reviewTab === "active") {
+            if (counts.active === 0) {
+                headerEl.className = "review-empty";
+                headerEl.innerHTML = "⚪ <strong>No active cards under current filters.</strong>";
+                container.innerHTML = "";
+                updateReviewActions(0);
+                return;
+            }
+            var pct = counts.total > 0 ? Math.round((counts.known / counts.total) * 100) : 0;
+            headerEl.className = "review-header";
+            headerEl.innerHTML = "⚪ <strong>" + counts.active + " cards still learning</strong> under current filters.";
+            container.innerHTML =
+                '<div class="big-stat">' + counts.active + '</div>' +
+                '<div style="text-align:center; color:var(--text-muted); font-size:0.75rem;">' + counts.known + ' / ' + counts.total + ' mastered (' + pct + '%)</div>' +
+                '<div class="progress-bar-container"><div class="progress-bar-fill" style="width:' + pct + '%;"></div></div>';
+            updateReviewActions(counts.active);
+            return;
+        }
+        if (reviewTab === "pending") {
+            var pendingEntries = mistakeLog.filter(function(e) { return e.status === "pending"; });
+            if (pendingEntries.length === 0) {
+                headerEl.className = "review-empty";
+                headerEl.innerHTML = "🟡 <strong>Nothing pending.</strong><br>Every mistake has been corrected.";
+                container.innerHTML = "";
+                updateReviewActions(0);
+                return;
+            }
+            headerEl.className = "review-header";
+            headerEl.innerHTML = "🟡 <strong>" + pendingEntries.length + " cards you've recently missed.</strong><br>Correct one on first attempt to return it to Active. Miss the same card " + (autoPinThreshold > 0 ? autoPinThreshold + " times" : "(never auto-pin)") + " and it auto-pins.";
+            renderLogTable(container, pendingEntries, 'pending');
+            updateReviewActions(pendingEntries.length);
+            return;
+        }
+        if (reviewTab === "pinned") {
+            var pinnedEntries = mistakeLog.filter(function(e) { return e.status === "pinned"; });
+            if (pinnedEntries.length === 0) {
+                headerEl.className = "review-empty";
+                headerEl.innerHTML = "🔴 <strong>Nothing pinned.</strong>";
+                container.innerHTML = "";
+                updateReviewActions(0);
+                return;
+            }
+            headerEl.className = "review-header";
+            headerEl.innerHTML = "🔴 <strong>" + pinnedEntries.length + " cards in your watchlist.</strong><br>These stay in rotation indefinitely.";
+            renderLogTable(container, pinnedEntries, 'pinned');
+            updateReviewActions(pinnedEntries.length);
+            return;
+        }
+    }
+
+    function renderLogTable(container, entries, bucket) {
+        var actionHeader = "";
+        if (bucket === 'pending' && entries.length > 1) {
+            actionHeader = "<button class='pin-all-btn' onclick='pinAllPending()'>📌 All</button>";
+        }
+        var html = "<table class='ref-table review-table'><tr><th>Prompt</th><th>Correct</th><th>Last wrong</th><th>Fails</th><th>" + actionHeader + "</th></tr>";
+        for (var i = 0; i < entries.length; i++) {
+            var item = entries[i];
+            var entryIndex = mistakeLog.indexOf(item);
+            var isPinned = item.status === "pinned";
+            var pinIcon = isPinned ? "📌" : "📍";
+            html += "<tr>";
+            html += "<td class='prompt-cell'>" + item.prompt + "</td>";
+            html += "<td class='correct-cell'>" + item.correct + "</td>";
+            html += "<td class='wrong-cell'>" + (item.yours || "") + "</td>";
+            html += "<td class='fail-cell'>" + (item.failCount > 1 ? "×" + item.failCount : "") + "</td>";
+            html += "<td class='actions-cell'>";
+            html += "<button onclick='togglePin(" + entryIndex + ")'>" + pinIcon + "</button>";
+            html += "<button onclick='deleteEntry(" + entryIndex + ")'>✖</button>";
+            html += "</td></tr>";
+        }
+        html += "</table>";
+        container.innerHTML = html;
+    }
+
+    function updateReviewActions(count) {
+        var drillBtn = document.getElementById('drill-bucket-btn');
+        var clearBtn = document.getElementById('clear-bucket-btn');
+        if (reviewTab === "active") {
+            if (drillBtn) { drillBtn.innerText = "🎯 Drill"; drillBtn.disabled = true; }
+            if (clearBtn) { clearBtn.innerText = "🗑️ Clear"; clearBtn.disabled = true; }
+            return;
+        }
+        if (reviewTab === "known") {
+            if (drillBtn) { drillBtn.innerText = "🎯 Drill"; drillBtn.disabled = true; }
+            if (clearBtn) { clearBtn.innerText = "🗑️ Forget Filtered Known (" + count + ")"; clearBtn.disabled = count === 0; }
+            return;
+        }
+        var bucketLabels = { pending: "Pending", pinned: "Pinned" };
+        if (drillBtn) { drillBtn.innerText = "🎯 Drill " + bucketLabels[reviewTab] + " (" + count + ")"; drillBtn.disabled = count === 0; }
+        if (clearBtn) { clearBtn.innerText = "🗑️ Clear " + bucketLabels[reviewTab] + " (" + count + ")"; clearBtn.disabled = count === 0; }
+    }
+
+    function pinAllPending() {
+        var pendingEntries = mistakeLog.filter(function(e) { return e.status === "pending"; });
+        if (pendingEntries.length === 0) return;
+        if (!confirm("Move all " + pendingEntries.length + " pending cards to Pinned?")) return;
+        for (var i = 0; i < pendingEntries.length; i++) pendingEntries[i].status = "pinned";
+        saveState(); updateLogBadges(); updateScoreboard(); renderReviewList();
+    }
+
+    function togglePin(entryIndex) {
+        var e = mistakeLog[entryIndex];
+        if (!e) return;
+        if (e.status === "pinned") mistakeLog.splice(entryIndex, 1);
+        else e.status = "pinned";
+        saveState(); updateLogBadges(); updateScoreboard(); renderReviewList();
+    }
+
+    function deleteEntry(entryIndex) {
+        if (entryIndex < 0 || entryIndex >= mistakeLog.length) return;
+        mistakeLog.splice(entryIndex, 1);
+        saveState(); updateLogBadges(); updateScoreboard(); renderReviewList();
+    }
+
+    function clearActiveBucket() {
+        if (reviewTab === "known") {
+            var filteredKeys = getFilteredKnownKeys();
+            if (filteredKeys.length === 0) return;
+            if (!confirm("Forget " + filteredKeys.length + " known cards under current filters?")) return;
+            for (var i = 0; i < filteredKeys.length; i++) {
+                delete knownCards[filteredKeys[i]];
+            }
+            saveState(); updateScoreboard(); updateLogBadges(); renderReviewList();
+            return;
+        }
+        if (reviewTab === "active") return;
+        var filtered = mistakeLog.filter(function(e) { return e.status === reviewTab; });
+        if (filtered.length === 0) return;
+        var label = reviewTab.charAt(0).toUpperCase() + reviewTab.slice(1);
+        if (!confirm("Clear all " + filtered.length + " " + label + " entries?")) return;
+        for (var i = 0; i < filtered.length; i++) {
+            var idx = mistakeLog.indexOf(filtered[i]);
+            if (idx >= 0) mistakeLog.splice(idx, 1);
+        }
+        saveState(); updateLogBadges(); updateScoreboard(); renderReviewList();
+    }
+
+    function drillFromLog(bucket) {
+        var pool;
+        if (bucket === "pinned") pool = mistakeLog.filter(function(e) { return e.status === "pinned"; });
+        else if (bucket === "pending") pool = mistakeLog.filter(function(e) { return e.status === "pending"; });
+        else if (bucket === "all") pool = mistakeLog.filter(function(e) { return e.status === "pending" || e.status === "pinned"; });
+        else return;
+        if (pool.length === 0) return;
+        currentSessionDeck = [];
+        for (var i = 0; i < pool.length; i++) {
+            var entry = pool[i];
+            var item = masterNumberDictionary[entry.digit];
+            if (!item) continue;
+            currentSessionDeck.push({
+                digit: entry.digit,
+                range: item.range,
+                nominative: item.nom,
+                translit: item.tr,
+                caseKey: entry.caseKey,
+                answer: item[entry.caseKey]
+            });
+        }
+        if (currentSessionDeck.length === 0) return;
+        for (var i = currentSessionDeck.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var t = currentSessionDeck[i]; currentSessionDeck[i] = currentSessionDeck[j]; currentSessionDeck[j] = t;
+        }
+        activeCardIndex = 0;
+        userActionHistory = [];
+        sessionMode = "drill";
+        sessionFirstAttempts = {};
+        sessionCorrect = 0; sessionTotal = 0;
+        sessionCurrentStreak = 0; sessionBestStreak = 0;
+        sessionRecoveredCount = 0; sessionKnownCount = 0;
+        sessionComplete = false;
+        emptyReason = null;
+        coreDeckOriginalCount = currentSessionDeck.length;
+        document.getElementById('deck-total').innerText = coreDeckOriginalCount;
+        var pBox = document.getElementById('progress-box');
+        if (pBox) pBox.className = "score-item";
+        document.getElementById('review-status-label').innerText = "";
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter) shutter.classList.remove('collapsed');
         saveState();
+        switchView('quiz');
+        showStartScreen();
+        updateDrillPill();
+    }
+
+    function drillActiveBucket() {
+        if (reviewTab === "pending" || reviewTab === "pinned") drillFromLog(reviewTab);
+    }
+
+    function exitDrillToReview() { switchView('review'); }
+
+    function showStartScreen() {
+        sessionStarted = false;
+        sessionComplete = false;
+        var promptDisplay = document.getElementById('num-prompt-display');
+        var subDisplay = document.getElementById('num-sub-display');
+        var trackBadge = document.getElementById('num-track-badge');
+        document.getElementById('speak-btn').style.display = "none";
+        document.getElementById('feedback-container').style.display = "none";
+        document.getElementById('btn-reveal-container').style.display = "none";
+        document.getElementById('honour-system-controls').style.display = "none";
+        var readPanel = document.getElementById('panel-read-mode');
+        if (readPanel) readPanel.style.display = "none";
+        document.getElementById('deck-progress').innerText = "0";
+        var restoreIds = ['panel-read-mode', 'panel-universal-controls', 'honour-system-controls', 'btn-reveal-container'];
+        restoreIds.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.remove('hidden-during-feedback');
+        });
+        if (currentSessionDeck.length === 0) {
+            document.getElementById('start-btn-container').style.display = "none";
+            promptDisplay.style.fontSize = "1.6rem";
+            promptDisplay.style.color = "var(--accent)";
+            if (emptyReason === "all-known") {
+                promptDisplay.innerHTML = "🌟 All Known!";
+                promptDisplay.style.color = "var(--success)";
+                subDisplay.innerHTML = "All cards under these filters are known.<br><small>Switch to <strong>Full Sweep</strong> mode or change the card set.</small>";
+            } else if (emptyReason === "no-match") {
+                promptDisplay.innerText = "No Cards";
+                subDisplay.innerText = "No cards match the current filters. Try enabling another range or case in Options.";
+            } else {
+                promptDisplay.innerText = "Ready?";
+                subDisplay.innerText = "Click Start to begin";
+            }
+            trackBadge.innerText = "";
+            updateDrillPill();
+            return;
+        }
+        promptDisplay.innerText = "Ready?";
+        promptDisplay.style.fontSize = "2rem";
+        promptDisplay.style.color = "var(--accent)";
+        subDisplay.innerText = "Click Start to begin";
+        trackBadge.innerText = "";
+        document.getElementById('start-btn-container').style.display = "block";
+        var startBtn = document.getElementById('start-btn');
+        if (sessionMode === "drill") {
+            startBtn.innerText = "▶ Start Drill (" + currentSessionDeck.length + " cards) →";
+        } else {
+            startBtn.innerText = "▶ Start Session →";
+        }
+        updateDrillPill();
     }
 
     document.addEventListener('keydown', function(event) {
         var isFeedbackOpen = document.getElementById('feedback-container').style.display === 'block';
         var isHonourOpen = document.getElementById('honour-system-controls').style.display === 'flex';
-
+        var isTyping = (document.activeElement && document.activeElement.tagName === "INPUT");
+        var isQuizView = document.getElementById('view-quiz').style.display !== 'none';
         if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') {
             event.preventDefault();
             executeUndoAction();
             return;
         }
-
-        if (event.key === ' ' || event.code === 'Space' || event.key === 'Enter') {
-            event.preventDefault();
-
-            if (sessionComplete) {
-                startNewSessionFromComplete();
-                return;
-            }
-
-            if (!sessionStarted) {
+        if (!isQuizView) return;
+        if (!sessionStarted && !sessionComplete) {
+            if (event.key === ' ' || event.code === 'Space' || event.key === 'Enter') {
+                event.preventDefault();
                 startSession();
+            }
+            return;
+        }
+        if (sessionComplete) {
+            if (event.key === ' ' || event.code === 'Space' || event.key === 'Enter') {
+                event.preventDefault();
+                startNewSessionFromComplete();
+            }
+            return;
+        }
+        if (event.key === ' ' || event.code === 'Space' || event.key === 'Enter') {
+            var useType = (currentQuizDirection === 'read' && productionMethod === 'type')
+                       || (currentQuizDirection === 'write' && writeMethod === 'type');
+            if (isTyping && !isFeedbackOpen && useType) {
                 return;
             }
-
-            if (isFeedbackOpen) {
-                handleNextWorkflow();
-                return;
-            }
+            event.preventDefault();
+            if (isFeedbackOpen) { handleNextWorkflow(); return; }
+            if (useType) { checkAnswer(); return; }
             if (!isHonourOpen) { revealNumberAnswer(); return; }
             if (isHonourOpen) { assessHonour(true); return; }
         }
-
         if (isHonourOpen) {
             if (event.key === '1' || event.key.toLowerCase() === 'x') { event.preventDefault(); assessHonour(false); }
             if (event.key === '2') { event.preventDefault(); assessHonour(true); }
         }
     });
 
-    // --- SWIPE GESTURE SUPPORT ---
     var touchStartX = 0;
     var touchStartY = 0;
-
     document.addEventListener('touchstart', function(e) {
         touchStartX = e.changedTouches[0].screenX;
         touchStartY = e.changedTouches[0].screenY;
     }, { passive: true });
-
     document.addEventListener('touchend', function(e) {
         var touchEndX = e.changedTouches[0].screenX;
         var touchEndY = e.changedTouches[0].screenY;
-        
         var xDiff = touchEndX - touchStartX;
         var yDiff = touchEndY - touchStartY;
-
         if (Math.abs(xDiff) > 70 && Math.abs(xDiff) > Math.abs(yDiff)) {
-            
             var isFeedbackOpen = document.getElementById('feedback-container').style.display === 'block';
             var isHonourOpen = document.getElementById('honour-system-controls').style.display === 'flex';
-
-            // SWIPE RIGHT (Forward action)
+            var isTyping = (document.activeElement && document.activeElement.tagName === "INPUT");
             if (xDiff > 0) {
                 if (!sessionStarted && !sessionComplete) { startSession(); return; }
-            if (sessionComplete) {
-                var compBtn = document.querySelector('.completion-btn.primary');
-                if (compBtn) compBtn.click();
-                return;
-            }
-
-                if (isFeedbackOpen) {
-                    handleNextWorkflow(); // Next card
-                } else if (!isHonourOpen) {
-                    revealNumberAnswer(); // Reveal (fixed function name)
-                } else if (isHonourOpen) {
-                    assessHonour(true); // Mark correct
+                if (sessionComplete) {
+                    var compBtn = document.querySelector('.completion-btn.primary');
+                    if (compBtn) compBtn.click();
+                    return;
                 }
-            } 
-            // SWIPE LEFT (Backward action)
-            else {
+                var useType = (currentQuizDirection === 'read' && productionMethod === 'type')
+                           || (currentQuizDirection === 'write' && writeMethod === 'type');
+                if (isTyping && !isFeedbackOpen) return;
+                if (isFeedbackOpen) { handleNextWorkflow(); }
+                else if (useType) { checkAnswer(); }
+                else if (!isHonourOpen) { revealNumberAnswer(); }
+                else if (isHonourOpen) { assessHonour(true); }
+            } else {
                 if (!sessionStarted || sessionComplete) return;
-                
-                if (isFeedbackOpen) {
-                    executeUndoAction(); // Undo
-                } else if (isHonourOpen) {
-                    assessHonour(false); // Mark incorrect
-                }
+                if (isTyping && !isFeedbackOpen) { document.getElementById('user-input').value = ""; return; }
+                if (isFeedbackOpen) { executeUndoAction(); }
+                else if (isHonourOpen) { assessHonour(false); }
             }
         }
     }, { passive: true });
 
-
     window.onload = function() {
         loadState();
         initSessionDeck();
+        updateLogBadges();
+        updateScoreboard();
+        updatePlayModePill();
     };
 </script>
 <!-- polyglot-copyright -->
