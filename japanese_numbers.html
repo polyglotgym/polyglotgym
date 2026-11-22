@@ -347,6 +347,47 @@
             line-height: 1.4;
         }
 
+        /* === SRS / Reviews (Phase 1a) === */
+        .drill-pill { font-size: 0.75rem; background-color: rgba(245, 158, 11, 0.18); border: 1px solid var(--warning); color: var(--warning); padding: 0.25rem 0.6rem; border-radius: 1rem; font-weight: bold; }
+        .drill-pill a { color: var(--warning); text-decoration: underline; margin-left: 0.35rem; }
+        .play-pill { background-color: rgba(168, 85, 247, 0.18) !important; border-color: #a855f7 !important; color: #d8b4fe !important; }
+        .drill-all-btn { width: 100%; margin-bottom: 1rem; padding: 0.6rem; background-color: var(--accent); color: #0f172a; border: none; border-radius: 0.5rem; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
+        .drill-all-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .review-tabs { display: flex; justify-content: center; gap: 0.4rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; flex-wrap: wrap; }
+        .review-tab { background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 0.5rem 0.75rem; border-radius: 0.35rem; cursor: pointer; font-size: 0.8rem; transition: all 0.15s; }
+        .review-tab.active { background-color: var(--border); color: var(--text-main); font-weight: bold; }
+        .review-tab[data-bucket="known"].active { color: #86efac; }
+        .review-tab[data-bucket="active"].active { color: #cbd5e1; }
+        .review-tab[data-bucket="pending"].active { color: #fbbf24; }
+        .review-tab[data-bucket="pinned"].active { color: #ef4444; }
+        .review-header { color: var(--text-muted); font-size: 0.8rem; line-height: 1.5; padding: 0.5rem 0; margin-bottom: 0.5rem; text-align: left; }
+        .review-empty { color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 2rem 0; }
+        .review-table .prompt-cell { font-weight: bold; color: var(--warning); text-align: left; }
+        .review-table .correct-cell { color: var(--success); font-weight: bold; }
+        .review-table .wrong-cell { color: var(--error); font-style: italic; }
+        .review-table .fail-cell { color: var(--text-muted); font-size: 0.75rem; text-align: center; }
+        .review-table .actions-cell { white-space: nowrap; }
+        .review-table .actions-cell button { background: none; border: 1px solid var(--border); color: var(--text-muted); font-size: 0.85rem; padding: 0.2rem 0.4rem; border-radius: 0.25rem; cursor: pointer; margin: 0 0.1rem; }
+        .review-table .actions-cell button:hover { color: var(--text-main); border-color: var(--text-muted); }
+        .review-table th .pin-all-btn { margin: 0; padding: 0.15rem 0.4rem; font-size: 0.7rem; background-color: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.5); border-radius: 0.25rem; cursor: pointer; font-weight: bold; white-space: nowrap; }
+        .review-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
+        .review-actions button { flex: 1; padding: 0.6rem; border: none; border-radius: 0.5rem; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
+        #drill-bucket-btn { background-color: var(--accent); color: #0f172a; }
+        #clear-bucket-btn { background-color: var(--border); color: var(--text-main); }
+        .review-actions button:disabled { opacity: 0.4; cursor: not-allowed; }
+        .progress-bar-container { width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; margin: 1rem 0 0.5rem 0; }
+        .progress-bar-fill { height: 100%; background: var(--success); transition: width 0.3s ease; }
+        .big-stat { font-size: 2.4rem; font-weight: bold; color: var(--text-main); margin: 0.5rem 0; text-align: center; }
+        .warning-badge { background-color: rgba(245, 158, 11, 0.15); border: 1px dashed var(--warning); color: #fbbf24; font-size: 0.75rem; padding: 0.25rem 0.6rem; border-radius: 0.25rem; font-weight: bold; margin-top: 0.4rem; text-transform: uppercase; letter-spacing: 0.5px; max-width: 95%; line-height: 1.35; }
+
+        /* === Completion screen (matching suite) === */
+        .completion-actions { display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
+        .completion-btn { flex: 1; min-width: 120px; padding: 0.65rem; border: none; border-radius: 0.5rem; font-weight: bold; cursor: pointer; font-size: 0.85rem; background-color: var(--border); color: var(--text-main); }
+        .completion-btn.primary { background-color: var(--accent); color: #0f172a; }
+        .completion-stats { display: flex; justify-content: center; gap: 1.5rem; margin: 1rem 0 0.5rem 0; flex-wrap: wrap; }
+        .completion-stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; }
+        .completion-stat-value { font-size: 1.6rem; font-weight: bold; color: var(--text-main); }
+
         /* === MOBILE FIXES === */
         @media (max-width: 550px) {
             .container { padding: 1rem; }
@@ -441,6 +482,9 @@
             <div class="score-item">Correct: <span id="score-correct">0</span></div>
             <div class="score-item">Checked: <span id="score-total">0</span></div>
             <div class="score-item">Streak: <span id="score-streak">0</span> <span id="streak-emoji">🐣</span></div>
+            <div class="score-item">Known: <span id="score-known">0</span> / <span id="score-known-total">0</span></div>
+            <div class="drill-pill play-pill" id="play-mode-pill" style="display: none;">🎮 Play Mode</div>
+            <div class="drill-pill" id="drill-pill" style="display: none;">🎯 Drilling <span id="drill-count">0</span> · <a href="#" onclick="exitDrillToReview(); return false;">Exit</a></div>
         </div>
         <div class="score-board-progress-row">
             <div class="score-item" id="progress-box">Progress: <span id="deck-progress">0</span> / <span id="deck-total">15</span><span id="review-status-label"></span></div>
@@ -521,9 +565,29 @@
                 <option value="9999">Full set (no cap)</option>
             </select>
 
+            <div class="grid-header-label">Known Cards Mode:</div>
+            <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <label class="row-label selected" id="lbl-known-adaptive"><input type="radio" name="rad-known-mode" id="chk-known-adaptive" checked onchange="updateKnownMode('adaptive')">Adaptive</label>
+                <label class="row-label" id="lbl-known-sweep"><input type="radio" name="rad-known-mode" id="chk-known-sweep" onchange="updateKnownMode('sweep')">Full Sweep</label>
+            </div>
+            <p class="mode-hint"><strong>Adaptive:</strong> skips cards you've marked known.<br><strong>Sweep:</strong> every card in range, including known.</p>
+
             <div class="grid-header-label">Card Behaviour:</div>
-            <div class="row-grid" style="grid-template-columns: repeat(1, 1fr);">
-                <label class="row-label" id="lbl-endless"><input type="checkbox" id="chk-endless" onchange="updateEndlessMode()">Endless Loop Mode (Continuous drill)</label>
+            <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <label class="row-label" id="lbl-endless"><input type="checkbox" id="chk-endless" onchange="updateEndlessMode()">Endless Loop Mode</label>
+                <label class="row-label" id="lbl-opt-play-mode"><input type="checkbox" id="chk-opt-play-mode" onchange="updatePlayMode()">🎮 Play mode</label>
+            </div>
+            <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <label class="row-label selected" id="lbl-opt-auto-speak"><input type="checkbox" id="chk-opt-auto-speak" checked onchange="updateAutoSpeak()">Auto-speak answers</label>
+                <div>
+                    <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.2rem;">Auto-pin after fails:</div>
+                    <select id="auto-pin-selector" onchange="setAutoPinThreshold(this.value)" style="width: 100%; padding: 0.35rem; background-color: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border); border-radius: 0.35rem; font-size: 0.85rem; outline: none;">
+                        <option value="0">Off</option>
+                        <option value="2">2 fails</option>
+                        <option value="3" selected>3 fails</option>
+                        <option value="5">5 fails</option>
+                    </select>
+                </div>
             </div>
 
             <div class="grid-header-label">Progress:</div>
@@ -601,14 +665,26 @@
     </div>
 
     <div id="view-review" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <h3 style="color: var(--accent); margin: 0;">Numbers to Review</h3>
-            <button onclick="clearReviewLog();" style="background-color: #334155; color: var(--text-main); font-size: 0.85rem; padding: 0.4rem 0.8rem; border-radius: 0.25rem; border: none; cursor: pointer;">Clear List 🗑</button>
+        <button id="drill-all-btn" class="drill-all-btn" onclick="drillFromLog('all')">🎯 Drill All Reviews (Pending &amp; Pinned) (0)</button>
+
+        <div class="review-tabs">
+            <button class="review-tab" data-bucket="known" id="tab-known" onclick="setReviewTab('known')">💚 Known (<span id="count-known">0</span>)</button>
+            <button class="review-tab" data-bucket="active" id="tab-active" onclick="setReviewTab('active')">⚪ Active (<span id="count-active">0</span>)</button>
+            <button class="review-tab active" data-bucket="pending" id="tab-pending" onclick="setReviewTab('pending')">🟡 Pending (<span id="count-pending">0</span>)</button>
+            <button class="review-tab" data-bucket="pinned" id="tab-pinned" onclick="setReviewTab('pinned')">🔴 Pinned (<span id="count-pinned">0</span>)</button>
         </div>
 
-        <button class="drawer-toggle" id="review-drawer-toggle-btn" style="margin-top: 0; margin-bottom: 1.5rem;" onclick="toggleReviewDrawer();">Export or Paste Recovery Codes ▾</button>
+        <div id="review-header" class="review-header"></div>
+        <div id="review-list-container" style="max-height: 40vh; overflow-y: auto;"></div>
 
-        <div style="background-color: rgba(0,0,0,0.2); border: 1px dashed var(--border); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem; display: none;" id="review-code-drawer">
+        <div class="review-actions">
+            <button id="drill-bucket-btn" onclick="drillActiveBucket()">🎯 Drill</button>
+            <button id="clear-bucket-btn" onclick="clearActiveBucket()">🗑️ Clear</button>
+        </div>
+
+        <button class="drawer-toggle" id="review-drawer-toggle-btn" style="margin-top: 1.5rem; margin-bottom: 0.5rem;" onclick="toggleReviewDrawer();">Export or Paste Recovery Codes ▾</button>
+
+        <div style="background-color: rgba(0,0,0,0.2); border: 1px dashed var(--border); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; display: none;" id="review-code-drawer">
             <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: bold; margin-bottom: 0.5rem;">Session Recovery Code:</div>
             <div style="display: flex; gap: 0.5rem;">
                 <input type="text" id="session-code-io" placeholder="Finish cards to export codes or paste code lines here..." style="flex: 1; font-size: 0.85rem; padding: 0.5rem; text-align: left;" autocomplete="off">
@@ -616,13 +692,7 @@
             </div>
             <div id="code-feedback-alert" style="font-size: 0.75rem; margin-top: 0.4rem; font-weight: bold; display: none;"></div>
         </div>
-
-        <button id="drill-mistakes-btn" style="width: 100%; background-color: var(--warning); color: #0f172a; margin-bottom: 1.5rem; display: none; margin-top: -0.5rem;" onclick="drillMistakesOnly()">🎯 Drill These Saved Errors Only</button>
-
-        <div id="review-placeholder" style="color: var(--text-muted); text-align: center; padding: 2rem 0;">No saved errors yet. Keep practicing!</div>
-        <div id="review-list-container" style="max-height: 45vh; overflow-y: auto;"></div>
-    </div>
-</div>
+    </div></div>
 
 <div class="portal-shortcut-bar">
     <a href="index.html">Return to Hub</a>
@@ -654,6 +724,19 @@
     let sessionBestStreak = 0;
     let sessionCurrentStreak = 0;
     let sessionComplete = false;
+
+    // === Phase 1a: SRS state ===
+    let knownCards = {};
+    let sessionFirstAttempts = {};
+    let sessionRecoveredCount = 0;
+    let sessionKnownCount = 0;
+    let sessionMode = "normal";
+    let reviewTab = "pending";
+    let emptyReason = null;
+    let playMode = false;
+    let knownMode = "adaptive";
+    let autoPinThreshold = 3;
+    let autoSpeakSetting = true;
 
     const kanjiDigits = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
     const hiraganaDigits = ["", "いち", "に", "さん", "よん", "ご", "ろく", "なな", "はち", "きゅう"];
@@ -713,6 +796,16 @@
         var subBadge = document.getElementById('type-sub-display');
         var hintContainer = document.getElementById('hint-container');
 
+        if (emptyReason === "all-known") {
+            displayBox.innerText = "🌟 All Known!";
+            displayBox.style.color = "var(--success)";
+            document.getElementById('start-btn-container').style.display = "none";
+            var shutterEl = document.getElementById('shutter-header-area');
+            if (shutterEl) shutterEl.classList.remove('collapsed');
+            updateDrillPill();
+            return;
+        }
+
         displayBox.innerText = "Ready?";
         displayBox.style.color = "var(--accent)";
         subBadge.style.display = "none";
@@ -723,11 +816,20 @@
         document.getElementById('honour-system-controls').style.display = "none";
         document.getElementById('feedback-container').style.display = "none";
         document.getElementById('start-btn-container').style.display = "block";
+        var startBtn = document.getElementById('start-btn');
+        if (startBtn) {
+            if (sessionMode === "drill") {
+                startBtn.innerText = "▶ Start Drill (" + currentSessionDeck.length + " cards) →";
+            } else {
+                startBtn.innerText = "▶ Start Session →";
+            }
+        }
         document.getElementById('hint-btn').style.display = "none";
         document.getElementById('speak-btn').style.display = "none";
 
         var shutter = document.getElementById('shutter-header-area');
         if (shutter) shutter.classList.remove('collapsed');
+        updateDrillPill();
     }
 
     function startSession() {
@@ -856,6 +958,38 @@
         initQuizSession();
     }
 
+    function updateKnownMode(mode) {
+        knownMode = mode;
+        var kA = document.getElementById('lbl-known-adaptive');
+        var kS = document.getElementById('lbl-known-sweep');
+        if (kA) kA.classList.toggle('selected', mode === 'adaptive');
+        if (kS) kS.classList.toggle('selected', mode === 'sweep');
+        saveState();
+        initQuizSession();
+    }
+
+    function updatePlayMode() {
+        var chk = document.getElementById('chk-opt-play-mode');
+        var lbl = document.getElementById('lbl-opt-play-mode');
+        playMode = chk ? chk.checked : false;
+        if (lbl) lbl.classList.toggle('selected', playMode);
+        updatePlayModePill();
+        saveState();
+    }
+
+    function setAutoPinThreshold(val) {
+        autoPinThreshold = parseInt(val, 10) || 0;
+        saveState();
+    }
+
+    function updateAutoSpeak() {
+        var chk = document.getElementById('chk-opt-auto-speak');
+        var lbl = document.getElementById('lbl-opt-auto-speak');
+        autoSpeakSetting = chk ? chk.checked : true;
+        if (lbl) lbl.classList.toggle('selected', autoSpeakSetting);
+        saveState();
+    }
+
     function initQuizSession() {
         currentSessionDeck = [];
         activeCardIndex = 0;
@@ -874,12 +1008,21 @@
         var rangeSize = max - min + 1;
 
         if (rangeSize <= maxDeckSize) {
-            for (var n = min; n <= max; n++) currentSessionDeck.push(n);
+            for (var n = min; n <= max; n++) {
+                if (knownMode === "adaptive" && knownCards[cardKey(n)]) continue;
+                currentSessionDeck.push(n);
+            }
         } else {
             var seen = new Set();
-            while (seen.size < maxDeckSize) {
+            var attempts = 0;
+            var maxAttempts = maxDeckSize * 200;
+            while (seen.size < maxDeckSize && attempts < maxAttempts) {
+                attempts++;
                 var pick = min + Math.floor(Math.random() * rangeSize);
-                if (!seen.has(pick)) { seen.add(pick); currentSessionDeck.push(pick); }
+                if (seen.has(pick)) continue;
+                if (knownMode === "adaptive" && knownCards[cardKey(pick)]) continue;
+                seen.add(pick);
+                currentSessionDeck.push(pick);
             }
         }
 
@@ -887,6 +1030,16 @@
             var j = Math.floor(Math.random() * (i + 1));
             var t = currentSessionDeck[i]; currentSessionDeck[i] = currentSessionDeck[j]; currentSessionDeck[j] = t;
         }
+
+        if (currentSessionDeck.length === 0 && knownMode === "adaptive") {
+            emptyReason = "all-known";
+        } else {
+            emptyReason = null;
+        }
+
+        coreDeckOriginalCount = currentSessionDeck.length;
+        var deckTotalEl = document.getElementById('deck-total');
+        if (deckTotalEl) deckTotalEl.innerText = coreDeckOriginalCount;
 
         coreDeckOriginalCount = currentSessionDeck.length;
         var deckTotalEl = document.getElementById('deck-total');
@@ -901,6 +1054,8 @@
         if (shutter) shutter.classList.remove('collapsed');
 
         updateFilterStatusLine();
+        updateScoreboard();
+        updateLogBadges();
         saveState();
         showStartScreen();
     }
@@ -1137,53 +1292,50 @@
             correctBefore: totalCorrect,
             questionsBefore: totalQuestions - 1,
             activeCardIndexBefore: activeCardIndex,
+            sessionCorrectBefore: sessionCorrect,
+            sessionCurrentStreakBefore: sessionCurrentStreak,
             numberBefore: currentNumber,
             stringTargetBefore: currentStringTarget,
             kanaBefore: currentKanaPronunciation,
-            wasMistakeLogged: false,
-            wasCardPushed: false
+            wasCardPushed: false,
+            srsSnapshot: null,
+            wasCorrect: null
         });
 
         var answerDisplay = (currentQuizDirection === 'write') ? currentStringTarget : currentNumber.toLocaleString();
 
+        var srsSnapshot = {
+            mistakeLog: JSON.parse(JSON.stringify(mistakeLog)),
+            knownCards: JSON.parse(JSON.stringify(knownCards))
+        };
+        userActionHistory[userActionHistory.length - 1].srsSnapshot = srsSnapshot;
+        userActionHistory[userActionHistory.length - 1].wasCorrect = isCorrect;
+
+        var logResult = handleLogUpdate(currentNumber, isCorrect, isCorrect ? "" : "[Honour System Miss]");
+
         if (isCorrect) {
             totalCorrect++;
             currentStreak++;
+            sessionCorrect++;
+            sessionCurrentStreak++;
+            if (sessionCurrentStreak > sessionBestStreak) sessionBestStreak = sessionCurrentStreak;
             feedbackMessage.className = 'feedback correct-box';
-            feedbackMessage.innerHTML = '<strong>Marked Correct!</strong> 👍<br>Answer was <strong>' + answerDisplay + '</strong>.';
+            feedbackMessage.innerHTML = '<strong>Marked Correct!</strong> 👍<br>Answer was <strong>' + answerDisplay + '</strong>.' + logUpdateMessage(logResult);
         } else {
             currentStreak = 0;
+            sessionCurrentStreak = 0;
             feedbackMessage.className = 'feedback incorrect-box';
-            feedbackMessage.innerHTML = '<strong>Marked Incorrect.</strong> 📚<br>Answer was <strong>' + answerDisplay + '</strong>.';
-
-            var promptText, correctText;
-            if (currentQuizDirection === 'write') {
-                promptText = currentNumber.toLocaleString();
-                correctText = currentStringTarget;
-            } else if (currentQuizDirection === 'listen') {
-                promptText = '[Audio number]';
-                correctText = currentNumber.toLocaleString();
-            } else {
-                promptText = currentStringTarget;
-                correctText = currentNumber.toLocaleString();
-            }
-            mistakeLog.push({ prompt: promptText, correct: correctText, yours: '[Honour System Miss]' });
-            document.getElementById('review-count').innerText = mistakeLog.length;
+            feedbackMessage.innerHTML = '<strong>Marked Incorrect.</strong> 📚<br>Answer was <strong>' + answerDisplay + '</strong>.' + logUpdateMessage(logResult);
 
             currentSessionDeck.push(currentNumber);
             document.getElementById('deck-total').innerText = currentSessionDeck.length;
-
-            var snap = userActionHistory[userActionHistory.length - 1];
-            snap.wasMistakeLogged = true;
-            snap.wasCardPushed = true;
+            userActionHistory[userActionHistory.length - 1].wasCardPushed = true;
         }
 
         activeCardIndex++;
         document.getElementById('deck-progress').innerText = activeCardIndex;
-        document.getElementById('score-correct').innerText = totalCorrect;
-        document.getElementById('score-total').innerText = totalQuestions;
-        document.getElementById('score-streak').innerText = currentStreak;
-        updateStreakEmoji();
+        updateScoreboard();
+        updateDrillPill();
 
         feedbackContainer.style.display = 'block';
 
@@ -1238,6 +1390,15 @@
             if (cleanInput === commaStrippedTarget || normalizedInput === normalizedTarget) isCorrect = true;
         }
 
+        var srsSnapshot = {
+            mistakeLog: JSON.parse(JSON.stringify(mistakeLog)),
+            knownCards: JSON.parse(JSON.stringify(knownCards))
+        };
+        userActionHistory[userActionHistory.length - 1].srsSnapshot = srsSnapshot;
+        userActionHistory[userActionHistory.length - 1].wasCorrect = isCorrect;
+
+        var logResult = handleLogUpdate(currentNumber, isCorrect, inputField.value.trim());
+
         if (isCorrect) {
             totalCorrect++;
             currentStreak++;
@@ -1245,48 +1406,30 @@
             sessionCurrentStreak++;
             if (sessionCurrentStreak > sessionBestStreak) sessionBestStreak = sessionCurrentStreak;
             feedbackMessage.className = "feedback correct-box";
-            // ...
+            var answerDisplay = (currentQuizDirection === "write") ? currentStringTarget : currentNumber.toLocaleString();
+            feedbackMessage.innerHTML = "<strong>Correct!</strong> 🎉<br>Answer was: <strong>" + answerDisplay + "</strong>." + logUpdateMessage(logResult);
         } else {
             currentStreak = 0;
             sessionCurrentStreak = 0;
             feedbackMessage.className = "feedback incorrect-box";
             var answerDisplay = (currentQuizDirection === "write") ? currentStringTarget : currentNumber.toLocaleString();
-            feedbackMessage.innerHTML = "<strong>Incorrect.</strong><br>Correct answer was: <strong>" + answerDisplay + "</strong>.";
-
-            var promptText, correctText;
-            if (currentQuizDirection === "write") {
-                promptText = currentNumber.toLocaleString();
-                correctText = currentStringTarget;
-            } else if (currentQuizDirection === "listen") {
-                promptText = "[Audio number]";
-                correctText = currentNumber.toLocaleString();
-            } else {
-                promptText = currentStringTarget;
-                correctText = currentNumber.toLocaleString();
-            }
-            mistakeLog.push({ prompt: promptText, correct: correctText, yours: inputField.value.trim() });
-            document.getElementById('review-count').innerText = mistakeLog.length;
+            var youTypedLine = "<br><small style=\"color:var(--text-muted);\">You typed: \"" + inputField.value.trim() + "\"</small>";
+            feedbackMessage.innerHTML = "<strong>Incorrect.</strong><br>Correct answer was: <strong>" + answerDisplay + "</strong>." + youTypedLine + logUpdateMessage(logResult);
 
             currentSessionDeck.push(currentNumber);
             document.getElementById('deck-total').innerText = currentSessionDeck.length;
-
-            var snap = userActionHistory[userActionHistory.length - 1];
-            snap.wasMistakeLogged = true;
-            snap.wasCardPushed = true;
+            userActionHistory[userActionHistory.length - 1].wasCardPushed = true;
         }
-
         activeCardIndex++;
         document.getElementById('deck-progress').innerText = activeCardIndex;
-        document.getElementById('score-correct').innerText = totalCorrect;
-        document.getElementById('score-total').innerText = totalQuestions;
-        document.getElementById('score-streak').innerText = currentStreak;
-        updateStreakEmoji();
+        updateScoreboard();
+        updateLogBadges();
 
         feedbackContainer.style.display = "block";
 
         var speakBtn = document.getElementById('speak-btn');
         if (speakBtn) speakBtn.style.display = 'inline-block';
-        if (currentQuizDirection === 'write') setTimeout(speakCurrentNumber, 200);
+        if (autoSpeakSetting && currentQuizDirection === 'write') setTimeout(speakCurrentNumber, 200);
 
         hideInputsForFeedback();
 
@@ -1308,10 +1451,12 @@
         totalQuestions = previousState.questionsBefore;
         activeCardIndex = previousState.activeCardIndexBefore;
 
-        if (previousState.wasMistakeLogged) {
-            mistakeLog.pop();
-            document.getElementById('review-count').innerText = mistakeLog.length;
+        if (previousState.srsSnapshot) {
+            mistakeLog = previousState.srsSnapshot.mistakeLog;
+            knownCards = previousState.srsSnapshot.knownCards;
         }
+        if (typeof previousState.sessionCorrectBefore === "number") sessionCorrect = previousState.sessionCorrectBefore;
+        if (typeof previousState.sessionCurrentStreakBefore === "number") sessionCurrentStreak = previousState.sessionCurrentStreakBefore;
         if (previousState.wasCardPushed) {
             currentSessionDeck.pop();
             document.getElementById('deck-total').innerText = currentSessionDeck.length;
@@ -1362,15 +1507,6 @@
     }
 
     function handleNextWorkflow() {
-        if (sessionComplete) {
-                    var compBtn = document.querySelector('.completion-btn.primary');
-                    if (compBtn) compBtn.click();
-                    return;
-                }
-        if (activeCardIndex >= currentSessionDeck.length) {
-            triggerCompletionState();
-            return;
-        }
         generateQuestion();
     }
 
@@ -1408,44 +1544,426 @@
         }
     }
 
-    function renderReviewList() {
-        let container = document.getElementById('review-list-container');
-        let placeholder = document.getElementById('review-placeholder');
-        let drillBtn = document.getElementById('drill-mistakes-btn');
-        let inputCodeBox = document.getElementById('session-code-io');
+    // ============================================================
+    // SRS MACHINE (Phase 1a)
+    // ============================================================
+    function cardKey(n) { return "num_" + n; }
+    function entryKey(e) { return e.key || ("num_" + e.n); }
 
-        if (mistakeLog.length === 0) {
-            if (placeholder) placeholder.style.display = "block";
-            if (container) container.innerHTML = "";
-            if (drillBtn) drillBtn.style.display = "none";
-            if (inputCodeBox) inputCodeBox.value = "";
+    function findLogEntry(key) {
+        for (var i = 0; i < mistakeLog.length; i++) {
+            if (entryKey(mistakeLog[i]) === key) return mistakeLog[i];
+        }
+        return null;
+    }
+    function removeLogEntry(key) {
+        for (var i = 0; i < mistakeLog.length; i++) {
+            if (entryKey(mistakeLog[i]) === key) { mistakeLog.splice(i, 1); return; }
+        }
+    }
+    function graduateToKnown(key) {
+        if (!knownCards[key]) knownCards[key] = { firstKnownAt: Date.now() };
+    }
+
+    function isInCurrentRange(n) {
+        var bounds = { basics: [1,10], hundreds: [1,999], thousands: [1,9999], man: [1,99999999], oku: [1,999999999999] }[currentRange] || [1, 9999];
+        return n >= bounds[0] && n <= bounds[1];
+    }
+
+    function makeLogEntry(n, yours) {
+        return {
+            key: cardKey(n),
+            n: n,
+            kanji: convertNumberToJapaneseString(n, "kanji"),
+            romaji: convertNumberToJapaneseString(n, "romaji"),
+            yours: yours || "",
+            status: "pending",
+            failCount: 1,
+            firstSeen: Date.now(),
+            lastSeen: Date.now()
+        };
+    }
+
+    function handleLogUpdate(n, isCorrect, userInput) {
+        if (playMode) return { mode: 'play' };
+        var key = cardKey(n);
+        var entry = findLogEntry(key);
+        var isKnown = !!knownCards[key];
+        var isFirstAttempt = !(key in sessionFirstAttempts);
+        if (!isFirstAttempt) return { mode: 'not-first-attempt' };
+        sessionFirstAttempts[key] = isCorrect;
+
+        var result = { mode: 'no-change' };
+
+        if (isCorrect) {
+            if (isKnown) { result.mode = 'still-known'; }
+            else if (entry) {
+                if (entry.status === "pinned") { entry.lastSeen = Date.now(); result.mode = 'still-pinned'; }
+                else if (entry.status === "pending") { entry.status = "active"; entry.lastSeen = Date.now(); sessionRecoveredCount++; result.mode = 'pending-to-active'; }
+                else if (entry.status === "active") { graduateToKnown(key); sessionKnownCount++; removeLogEntry(key); result.mode = 'active-to-known'; }
+            } else { graduateToKnown(key); sessionKnownCount++; result.mode = 'fresh-to-known'; }
+        } else {
+            if (isKnown) {
+                delete knownCards[key];
+                mistakeLog.push(makeLogEntry(n, userInput));
+                result.mode = 'known-to-pending';
+            } else if (entry) {
+                entry.failCount = (entry.failCount || 1) + 1;
+                entry.yours = userInput;
+                entry.lastSeen = Date.now();
+                if (entry.status === "pinned") { result.mode = 'still-pinned-wrong'; result.failCount = entry.failCount; }
+                else {
+                    entry.status = "pending";
+                    if (autoPinThreshold > 0 && entry.failCount >= autoPinThreshold) { entry.status = "pinned"; result.mode = 'auto-pinned'; result.failCount = entry.failCount; }
+                    else { result.mode = 'pending-wrong'; result.failCount = entry.failCount; }
+                }
+            } else { mistakeLog.push(makeLogEntry(n, userInput)); result.mode = 'fresh-to-pending'; }
+        }
+        updateLogBadges();
+        updateScoreboard();
+        return result;
+    }
+
+    function logUpdateMessage(result) {
+        if (!result) return '';
+        switch (result.mode) {
+            case 'pending-to-active': return '<br><small style="color:#fbbf24;">↩️ Moved back to Active deck</small>';
+            case 'active-to-known': return '<br><small style="color:#4ade80;">✨ Graduated to Known</small>';
+            case 'fresh-to-known': return '<br><small style="color:#4ade80;">✨ Added to Known deck</small>';
+            case 'known-to-pending': return '<br><small style="color:#fbbf24;">↪️ Demoted to Pending (was Known)</small>';
+            case 'auto-pinned': return '<br><small style="color:#ef4444;">🔴 Auto-pinned (fail #' + result.failCount + ')</small>';
+            case 'fresh-to-pending': return '<br><small style="color:#fbbf24;">🟡 Added to Pending</small>';
+            case 'still-pinned-wrong': return '<br><small style="color:#ef4444;">📌 Still pinned (fail #' + result.failCount + ')</small>';
+            case 'play': return '<br><small style="color:#d8b4fe;">🎮 Play mode — progress not recorded</small>';
+            default: return '';
+        }
+    }
+
+    function computeCounts() {
+        var counts = { known: 0, active: 0, pending: 0, pinned: 0, total: 0 };
+        var bounds = { basics: [1,10], hundreds: [1,999], thousands: [1,9999], man: [1,99999999], oku: [1,999999999999] }[currentRange] || [1, 9999];
+        var min = bounds[0], max = bounds[1];
+        var rangeSize = max - min + 1;
+        // total in scope = rangeSize (all numbers)
+        counts.total = rangeSize;
+        // known: count knownCards entries in current range
+        for (var k in knownCards) {
+            if (!knownCards.hasOwnProperty(k)) continue;
+            var n = parseInt(k.replace("num_", ""), 10);
+            if (!isNaN(n) && n >= min && n <= max) counts.known++;
+        }
+        // pending/pinned from log (only in-range)
+        for (var i = 0; i < mistakeLog.length; i++) {
+            var e = mistakeLog[i];
+            if (e.n === undefined) continue;
+            if (e.n < min || e.n > max) continue;
+            if (e.status === "pinned") counts.pinned++;
+            else if (e.status === "pending") counts.pending++;
+        }
+        // active = total - known - pending - pinned
+        counts.active = Math.max(0, counts.total - counts.known - counts.pending - counts.pinned);
+        return counts;
+    }
+
+    function getFilteredKnownKeys() {
+        var keys = [];
+        var bounds = { basics: [1,10], hundreds: [1,999], thousands: [1,9999], man: [1,99999999], oku: [1,999999999999] }[currentRange] || [1, 9999];
+        for (var k in knownCards) {
+            if (!knownCards.hasOwnProperty(k)) continue;
+            var n = parseInt(k.replace("num_", ""), 10);
+            if (!isNaN(n) && n >= bounds[0] && n <= bounds[1]) keys.push(k);
+        }
+        return keys;
+    }
+
+    function updateLogBadges() {
+        var counts = computeCounts();
+        var e;
+        e = document.getElementById('review-count'); if (e) e.innerText = counts.pending;
+        e = document.getElementById('count-known'); if (e) e.innerText = counts.known;
+        e = document.getElementById('count-active'); if (e) e.innerText = counts.active;
+        e = document.getElementById('count-pending'); if (e) e.innerText = counts.pending;
+        e = document.getElementById('count-pinned'); if (e) e.innerText = counts.pinned;
+        var dall = document.getElementById('drill-all-btn');
+        if (dall) {
+            var drillable = counts.pending + counts.pinned;
+            dall.innerText = "🎯 Drill All Reviews (Pending & Pinned) (" + drillable + ")";
+            dall.disabled = drillable === 0;
+        }
+    }
+
+    function updateScoreboard() {
+        var e;
+        e = document.getElementById('score-correct'); if (e) e.innerText = totalCorrect;
+        e = document.getElementById('score-total'); if (e) e.innerText = totalQuestions;
+        e = document.getElementById('score-streak'); if (e) e.innerText = currentStreak;
+
+        var sizeSel = document.getElementById('deck-size-selector');
+        var deckCap = sizeSel ? parseInt(sizeSel.value, 10) : 15;
+        var deckCapLabel = (deckCap >= 9999) ? "∞" : deckCap;
+
+        var counts = computeCounts();
+        e = document.getElementById('score-known'); if (e) e.innerText = counts.known;
+        e = document.getElementById('score-known-total'); if (e) e.innerText = deckCapLabel;
+
+        updateStreakEmoji();
+        updatePlayModePill();
+        updateFilterStatusLine();
+    }
+
+    function updateDrillPill() {
+        var pill = document.getElementById('drill-pill');
+        if (!pill) return;
+        if (sessionMode === "drill" && sessionStarted) {
+            pill.style.display = "inline-block";
+            var dc = document.getElementById('drill-count');
+            if (dc) dc.innerText = currentSessionDeck.length - activeCardIndex;
+        } else {
+            pill.style.display = "none";
+        }
+    }
+
+    function updatePlayModePill() {
+        var pill = document.getElementById('play-mode-pill');
+        if (pill) pill.style.display = playMode ? "inline-block" : "none";
+    }
+
+    // ============================================================
+    // REVIEWS (Phase 1a — four-bucket SRS)
+    // ============================================================
+    function setReviewTab(bucket) {
+        reviewTab = bucket;
+        document.querySelectorAll('.review-tab').forEach(function(b) { b.classList.toggle('active', b.dataset.bucket === bucket); });
+        saveState();
+        renderReviewList();
+    }
+
+    function renderReviewList() {
+        var container = document.getElementById('review-list-container');
+        var headerEl = document.getElementById('review-header');
+        updateLogBadges();
+        var counts = computeCounts();
+
+        if (reviewTab === "known") {
+            if (counts.known === 0) {
+                headerEl.className = "review-empty";
+                headerEl.innerHTML = "💚 <strong>No known cards yet.</strong><br>Answer cards correctly to graduate them here.";
+                container.innerHTML = "";
+                updateReviewActions(0);
+                return;
+            }
+            headerEl.className = "review-header";
+            headerEl.innerHTML = "💚 <strong>" + counts.known + " numbers mastered</strong> in the current range.<br>These are skipped in Adaptive mode. Use <em>Forget Filtered Known</em> below to reset them to active.";
+            container.innerHTML =
+                '<div class="big-stat">' + counts.known + '</div>' +
+                '<div style="text-align:center; color:var(--text-muted); font-size:0.75rem;">mastered in ' + (RANGE_LABELS[currentRange] || currentRange) + '</div>';
+            updateReviewActions(counts.known);
             return;
         }
 
-        if (placeholder) placeholder.style.display = "none";
-        if (drillBtn) drillBtn.style.display = "block";
-
-        var codes = [];
-        for (var i = 0; i < mistakeLog.length; i++) {
-            var candidate = parseInt(mistakeLog[i].correct.replace(/,/g, ""), 10);
-            if (!isNaN(candidate) && candidate > 0) codes.push(candidate);
+        if (reviewTab === "active") {
+            if (counts.active === 0) {
+                headerEl.className = "review-empty";
+                headerEl.innerHTML = "⚪ <strong>No active cards under current range.</strong><br>Every card is either known, pending, or pinned.";
+                container.innerHTML = "";
+                updateReviewActions(0);
+                return;
+            }
+            var pct = counts.total > 0 ? Math.round((counts.known / counts.total) * 100) : 0;
+            headerEl.className = "review-header";
+            headerEl.innerHTML = "⚪ <strong>" + counts.active + " numbers still learning</strong> in the current range.";
+            container.innerHTML =
+                '<div class="big-stat">' + counts.active + '</div>' +
+                '<div style="text-align:center; color:var(--text-muted); font-size:0.75rem;">' + counts.known + ' / ' + counts.total + ' mastered (' + pct + '%)</div>' +
+                '<div class="progress-bar-container"><div class="progress-bar-fill" style="width:' + pct + '%;"></div></div>';
+            updateReviewActions(counts.active);
+            return;
         }
-        if (inputCodeBox) inputCodeBox.value = codes.join(";");
 
-        let html = "<table class='ref-table'><tr><th>Prompt</th><th>Correct Answer</th><th>Your Input</th></tr>";
-        for (let i = 0; i < mistakeLog.length; i++) {
-            html += "<tr><td style='font-weight:bold;'>" + mistakeLog[i].prompt + "</td><td style='color:var(--success); font-weight:bold;'>" + mistakeLog[i].correct + "</td><td style='color:var(--error);'>" + mistakeLog[i].yours + "</td></tr>";
+        if (reviewTab === "pending") {
+            var pendingEntries = mistakeLog.filter(function(e) { return e.status === "pending"; });
+            if (pendingEntries.length === 0) {
+                headerEl.className = "review-empty";
+                headerEl.innerHTML = "🟡 <strong>Nothing pending.</strong><br>Every mistake has been corrected.";
+                container.innerHTML = "";
+                updateReviewActions(0);
+                return;
+            }
+            headerEl.className = "review-header";
+            headerEl.innerHTML = "🟡 <strong>" + pendingEntries.length + " numbers you've recently missed.</strong><br>Correct one on first attempt to return it to Active. Miss the same number " + (autoPinThreshold > 0 ? autoPinThreshold + " times" : "(never auto-pin)") + " and it auto-pins.";
+            renderLogTable(container, pendingEntries, 'pending');
+            updateReviewActions(pendingEntries.length);
+            return;
+        }
+
+        if (reviewTab === "pinned") {
+            var pinnedEntries = mistakeLog.filter(function(e) { return e.status === "pinned"; });
+            if (pinnedEntries.length === 0) {
+                headerEl.className = "review-empty";
+                headerEl.innerHTML = "🔴 <strong>Nothing pinned.</strong><br>Miss a card " + (autoPinThreshold > 0 ? autoPinThreshold + " times" : "(off)") + ", or click 📍 on any row, to add it to your watchlist.";
+                container.innerHTML = "";
+                updateReviewActions(0);
+                return;
+            }
+            headerEl.className = "review-header";
+            headerEl.innerHTML = "🔴 <strong>" + pinnedEntries.length + " numbers in your watchlist.</strong><br>These stay in rotation indefinitely and require manual unpin to retire.";
+            renderLogTable(container, pinnedEntries, 'pinned');
+            updateReviewActions(pinnedEntries.length);
+            return;
+        }
+    }
+
+    function renderLogTable(container, entries, bucket) {
+        var actionHeader = "";
+        if (bucket === 'pending' && entries.length > 1) {
+            actionHeader = "<button class='pin-all-btn' title='Move all pending to Pinned' onclick='pinAllPending()'>📌 All</button>";
+        }
+        var html = "<table class='ref-table review-table'><tr><th>Number</th><th>Kanji</th><th>Rōmaji</th><th>Fails</th><th>" + actionHeader + "</th></tr>";
+        for (var i = 0; i < entries.length; i++) {
+            var item = entries[i];
+            var entryIndex = mistakeLog.indexOf(item);
+            var isPinned = item.status === "pinned";
+            var pinIcon = isPinned ? "📌" : "📍";
+            var pinTitle = isPinned ? "Unpin (→ Active)" : "Pin (permanent drill)";
+            html += "<tr>";
+            html += "<td class='prompt-cell'>" + item.n.toLocaleString() + "</td>";
+            html += "<td class='correct-cell'>" + (item.kanji || "") + "</td>";
+            html += "<td class='correct-cell'>" + (item.romaji || "") + "</td>";
+            html += "<td class='fail-cell'>" + (item.failCount > 1 ? "×" + item.failCount : "") + "</td>";
+            html += "<td class='actions-cell'>";
+            html += "<button onclick='speakLogEntry(" + entryIndex + ")' title='Hear answer'>🔊</button>";
+            html += "<button onclick='togglePin(" + entryIndex + ")' title='" + pinTitle + "'>" + pinIcon + "</button>";
+            html += "<button onclick='deleteEntry(" + entryIndex + ")' title='Clear'>✖</button>";
+            html += "</td>";
+            html += "</tr>";
         }
         html += "</table>";
-        if (container) container.innerHTML = html;
+        container.innerHTML = html;
     }
 
-    function clearReviewLog() {
-        mistakeLog = [];
-        document.getElementById('review-count').innerText = "0";
-        renderReviewList();
-        saveState();
+    function speakLogEntry(entryIndex) {
+        var entry = mistakeLog[entryIndex];
+        if (!entry || typeof entry.n === "undefined") return;
+        var textToSpeak = convertNumberToJapaneseString(entry.n, "kana");
+        if (textToSpeak === "zero" || textToSpeak === "〇") textToSpeak = "ゼロ";
+        window.speechSynthesis.cancel();
+        var u = new SpeechSynthesisUtterance(textToSpeak);
+        u.lang = "ja-JP";
+        u.rate = 0.85;
+        window.speechSynthesis.speak(u);
     }
+
+    function updateReviewActions(count) {
+        var drillBtn = document.getElementById('drill-bucket-btn');
+        var clearBtn = document.getElementById('clear-bucket-btn');
+        if (reviewTab === "active") {
+            if (drillBtn) { drillBtn.innerText = "🎯 Drill"; drillBtn.disabled = true; }
+            if (clearBtn) { clearBtn.innerText = "🗑️ Clear"; clearBtn.disabled = true; }
+            return;
+        }
+        if (reviewTab === "known") {
+            if (drillBtn) { drillBtn.innerText = "🎯 Drill"; drillBtn.disabled = true; }
+            if (clearBtn) { clearBtn.innerText = "🗑️ Forget Filtered Known (" + count + ")"; clearBtn.disabled = count === 0; }
+            return;
+        }
+        var bucketLabels = { pending: "Pending", pinned: "Pinned" };
+        if (drillBtn) { drillBtn.innerText = "🎯 Drill " + bucketLabels[reviewTab] + " (" + count + ")"; drillBtn.disabled = count === 0; }
+        if (clearBtn) { clearBtn.innerText = "🗑️ Clear " + bucketLabels[reviewTab] + " (" + count + ")"; clearBtn.disabled = count === 0; }
+    }
+
+    function pinAllPending() {
+        var pendingEntries = mistakeLog.filter(function(e) { return e.status === "pending"; });
+        if (pendingEntries.length === 0) return;
+        if (!confirm("Move all " + pendingEntries.length + " pending numbers to Pinned?")) return;
+        for (var i = 0; i < pendingEntries.length; i++) pendingEntries[i].status = "pinned";
+        saveState(); updateLogBadges(); updateScoreboard(); renderReviewList();
+    }
+
+    function togglePin(entryIndex) {
+        var e = mistakeLog[entryIndex];
+        if (!e) return;
+        if (e.status === "pinned") mistakeLog.splice(entryIndex, 1);
+        else e.status = "pinned";
+        saveState(); updateLogBadges(); updateScoreboard(); renderReviewList();
+    }
+
+    function deleteEntry(entryIndex) {
+        if (entryIndex < 0 || entryIndex >= mistakeLog.length) return;
+        mistakeLog.splice(entryIndex, 1);
+        saveState(); updateLogBadges(); updateScoreboard(); renderReviewList();
+    }
+
+    function clearActiveBucket() {
+        if (reviewTab === "known") {
+            var filteredKeys = getFilteredKnownKeys();
+            if (filteredKeys.length === 0) return;
+            if (!confirm("Forget " + filteredKeys.length + " known numbers in the current range? They'll return to Active.")) return;
+            for (var i = 0; i < filteredKeys.length; i++) delete knownCards[filteredKeys[i]];
+            saveState(); updateScoreboard(); updateLogBadges(); renderReviewList();
+            return;
+        }
+        if (reviewTab === "active") return;
+        var filtered = mistakeLog.filter(function(e) { return e.status === reviewTab; });
+        if (filtered.length === 0) return;
+        var label = reviewTab.charAt(0).toUpperCase() + reviewTab.slice(1);
+        if (!confirm("Clear all " + filtered.length + " " + label + " entries?")) return;
+        for (var i = 0; i < filtered.length; i++) {
+            var idx = mistakeLog.indexOf(filtered[i]);
+            if (idx >= 0) mistakeLog.splice(idx, 1);
+        }
+        saveState(); updateLogBadges(); updateScoreboard(); renderReviewList();
+    }
+
+    function drillFromLog(bucket) {
+        var pool;
+        if (bucket === "pinned") pool = mistakeLog.filter(function(e) { return e.status === "pinned"; });
+        else if (bucket === "pending") pool = mistakeLog.filter(function(e) { return e.status === "pending"; });
+        else if (bucket === "all") pool = mistakeLog.filter(function(e) { return e.status === "pending" || e.status === "pinned"; });
+        else return;
+        if (pool.length === 0) return;
+
+        currentSessionDeck = [];
+        for (var i = 0; i < pool.length; i++) {
+            if (typeof pool[i].n === "number" && pool[i].n > 0) currentSessionDeck.push(pool[i].n);
+        }
+        if (currentSessionDeck.length === 0) return;
+
+        for (var i = currentSessionDeck.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var t = currentSessionDeck[i]; currentSessionDeck[i] = currentSessionDeck[j]; currentSessionDeck[j] = t;
+        }
+
+        activeCardIndex = 0;
+        userActionHistory = [];
+        sessionMode = "drill";
+        sessionFirstAttempts = {};
+        sessionCorrect = 0; sessionTotal = 0;
+        sessionCurrentStreak = 0; sessionBestStreak = 0;
+        sessionRecoveredCount = 0; sessionKnownCount = 0;
+        sessionComplete = false;
+        emptyReason = null;
+        coreDeckOriginalCount = currentSessionDeck.length;
+        document.getElementById('deck-total').innerText = coreDeckOriginalCount;
+
+        var pBox = document.getElementById('progress-box');
+        if (pBox) pBox.className = "score-item";
+        var rsl = document.getElementById('review-status-label');
+        if (rsl) rsl.innerText = "";
+
+        var shutter = document.getElementById('shutter-header-area');
+        if (shutter) shutter.classList.remove('collapsed');
+
+        saveState();
+        switchView('quiz');
+        showStartScreen();
+        updateDrillPill();
+    }
+
+    function drillActiveBucket() {
+        if (reviewTab === "pending" || reviewTab === "pinned") drillFromLog(reviewTab);
+    }
+
+    function exitDrillToReview() { switchView('review'); }
 
     function toggleReviewDrawer() {
         var drawer = document.getElementById('review-code-drawer');
@@ -1470,20 +1988,24 @@
             var n = parseInt(tokens[i].trim(), 10);
             if (!isNaN(n) && n > 0 && n <= 999999999999) importedDeck.push(n);
         }
-
         if (importedDeck.length === 0) {
             alertBox.style.display = "block";
             alertBox.style.color = "var(--error)";
             alertBox.innerText = "❌ Invalid session code format.";
             return;
         }
-
         currentSessionDeck = importedDeck;
         activeCardIndex = 0;
         userActionHistory = [];
+        sessionMode = "drill";
+        sessionFirstAttempts = {};
+        sessionCorrect = 0; sessionTotal = 0;
+        sessionCurrentStreak = 0; sessionBestStreak = 0;
+        sessionRecoveredCount = 0; sessionKnownCount = 0;
+        sessionComplete = false;
+        emptyReason = null;
         coreDeckOriginalCount = currentSessionDeck.length;
         document.getElementById('deck-total').innerText = coreDeckOriginalCount;
-
         var pBox = document.getElementById('progress-box');
         if (pBox) pBox.className = "score-item";
         document.getElementById('review-status-label').innerText = "";
@@ -1496,30 +2018,8 @@
             alertBox.style.display = "none";
             switchView('quiz');
             showStartScreen();
+            updateDrillPill();
         }, 1200);
-    }
-
-    function drillMistakesOnly() {
-        if (mistakeLog.length === 0) return;
-        var numbers = [];
-        for (var i = 0; i < mistakeLog.length; i++) {
-            var candidate = parseInt(mistakeLog[i].correct.replace(/,/g, ""), 10);
-            if (!isNaN(candidate) && candidate > 0) numbers.push(candidate);
-        }
-        if (numbers.length === 0) return;
-
-        currentSessionDeck = numbers;
-        activeCardIndex = 0;
-        userActionHistory = [];
-        coreDeckOriginalCount = numbers.length;
-        document.getElementById('deck-total').innerText = coreDeckOriginalCount;
-
-        var pBox = document.getElementById('progress-box');
-        if (pBox) pBox.className = "score-item";
-        document.getElementById('review-status-label').innerText = "";
-
-        switchView('quiz');
-        showStartScreen();
     }
 
     function triggerCompletionState() {
@@ -1552,6 +2052,8 @@
                 '<div class="completion-stats">' +
                     '<div><span class="completion-stat-label">Accuracy</span><span class="completion-stat-value">' + accuracy + '%</span></div>' +
                     '<div><span class="completion-stat-label">Best Streak</span><span class="completion-stat-value">🔥 ' + sessionBestStreak + '</span></div>' +
+                    (sessionKnownCount > 0 ? '<div><span class="completion-stat-label">Newly Known</span><span class="completion-stat-value" style="color:#4ade80;">+' + sessionKnownCount + '</span></div>' : '') +
+                    (sessionRecoveredCount > 0 ? '<div><span class="completion-stat-label">Recovered</span><span class="completion-stat-value" style="color:#fbbf24;">' + sessionRecoveredCount + '</span></div>' : '') +
                     '<div><span class="completion-stat-label">Checked</span><span class="completion-stat-value">' + sessionTotal + '</span></div>' +
                 '</div>' +
                 '<div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;">' + sessionCorrect + ' / ' + sessionTotal + ' correct this run</div>' +
@@ -1566,11 +2068,15 @@
 
         var actionsHtml = '<div class="completion-actions">';
         actionsHtml += '<button class="completion-btn primary" onclick="startNewSessionFromComplete()">🔄 New Session</button>';
-        actionsHtml += '<button class="completion-btn" onclick="switchView(\'review\')">📝 Reviews</button>';
+        actionsHtml += '<button class="completion-btn" onclick="exitDrillToReview()">📝 Reviews</button>';
+        if (sessionMode === "drill" && (sessionKnownCount + sessionRecoveredCount) === 0) {
+            // no-op placeholder — refine when needed
+        }
         actionsHtml += '</div>';
         feedbackContainer.insertAdjacentHTML('beforeend', actionsHtml);
         feedbackContainer.style.display = "block";
 
+        updateDrillPill();
         setTimeout(function() {
             if (feedbackContainer) feedbackContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 450);
@@ -1585,17 +2091,25 @@
         sessionComplete = false;
         initQuizSession();
     }
+
     function saveState() {
         try {
             var sizeSel = document.getElementById('deck-size-selector');
             var state = {
+                dataVersion: 2,
                 direction: currentQuizDirection,
                 productionMethod: productionMethod,
                 range: currentRange,
                 textStyle: currentTextStyle,
                 deckSize: sizeSel ? sizeSel.value : "15",
                 endless: isEndlessMode,
+                knownMode: knownMode,
+                playMode: playMode,
+                autoPinThreshold: autoPinThreshold,
+                autoSpeak: autoSpeakSetting,
+                reviewTab: reviewTab,
                 stats: { correct: totalCorrect, total: totalQuestions, streak: currentStreak },
+                knownCards: knownCards,
                 mistakes: mistakeLog
             };
             localStorage.setItem('jap_numbers_state', JSON.stringify(state));
@@ -1662,11 +2176,73 @@
                 updateStreakEmoji();
             }
 
-            if (Array.isArray(state.mistakes)) {
-                mistakeLog = state.mistakes;
-                document.getElementById('review-count').innerText = mistakeLog.length;
+            if (state.knownCards && typeof state.knownCards === "object") {
+                knownCards = state.knownCards;
             }
 
+            if (state.knownMode === "adaptive" || state.knownMode === "sweep") {
+                knownMode = state.knownMode;
+                var kA = document.getElementById('chk-known-adaptive');
+                var kS = document.getElementById('chk-known-sweep');
+                var lA = document.getElementById('lbl-known-adaptive');
+                var lS = document.getElementById('lbl-known-sweep');
+                if (kA) kA.checked = knownMode === "adaptive";
+                if (kS) kS.checked = knownMode === "sweep";
+                if (lA) lA.classList.toggle('selected', knownMode === "adaptive");
+                if (lS) lS.classList.toggle('selected', knownMode === "sweep");
+            }
+
+            if (typeof state.playMode !== "undefined") {
+                playMode = state.playMode;
+                var pm = document.getElementById('chk-opt-play-mode');
+                var pml = document.getElementById('lbl-opt-play-mode');
+                if (pm) pm.checked = playMode;
+                if (pml) pml.classList.toggle('selected', playMode);
+            }
+
+            if (typeof state.autoPinThreshold === "number") {
+                autoPinThreshold = state.autoPinThreshold;
+                var aps = document.getElementById('auto-pin-selector');
+                if (aps) aps.value = String(autoPinThreshold);
+            }
+
+            if (typeof state.autoSpeak !== "undefined") {
+                autoSpeakSetting = state.autoSpeak;
+                var asb = document.getElementById('chk-opt-auto-speak');
+                var asl = document.getElementById('lbl-opt-auto-speak');
+                if (asb) asb.checked = autoSpeakSetting;
+                if (asl) asl.classList.toggle('selected', autoSpeakSetting);
+            }
+
+            if (state.reviewTab && ["known","active","pending","pinned"].indexOf(state.reviewTab) !== -1) {
+                reviewTab = state.reviewTab;
+                document.querySelectorAll('.review-tab').forEach(function(b) { b.classList.toggle('active', b.dataset.bucket === reviewTab); });
+            }
+
+            if (Array.isArray(state.mistakes)) {
+                mistakeLog = state.mistakes.map(function(e) {
+                    if (typeof e.n === "number" && e.status) return e;
+                    var candidate = parseInt(String(e.correct || "").replace(/[,\s]/g, ""), 10);
+                    if (!isNaN(candidate) && candidate > 0) {
+                        return {
+                            key: cardKey(candidate),
+                            n: candidate,
+                            kanji: convertNumberToJapaneseString(candidate, "kanji"),
+                            romaji: convertNumberToJapaneseString(candidate, "romaji"),
+                            yours: e.yours || "",
+                            status: "pending",
+                            failCount: 1,
+                            firstSeen: Date.now(),
+                            lastSeen: Date.now()
+                        };
+                    }
+                    return null;
+                }).filter(function(e) { return e !== null; });
+            }
+
+            updateLogBadges();
+            updateScoreboard();
+            updatePlayModePill();
             refreshTextStyleSection();
         } catch (e) {}
     }
@@ -1740,6 +2316,26 @@
         if (chkEndless) chkEndless.checked = false;
         if (lblEndless) lblEndless.classList.remove('selected');
 
+        knownCards = {};
+        knownMode = "adaptive";
+        playMode = false;
+        autoPinThreshold = 3;
+        autoSpeakSetting = true;
+        reviewTab = "pending";
+        var _kA = document.getElementById('chk-known-adaptive'); if (_kA) _kA.checked = true;
+        var _kS = document.getElementById('chk-known-sweep'); if (_kS) _kS.checked = false;
+        var _lkA = document.getElementById('lbl-known-adaptive'); if (_lkA) _lkA.classList.add('selected');
+        var _lkS = document.getElementById('lbl-known-sweep'); if (_lkS) _lkS.classList.remove('selected');
+        var _pm = document.getElementById('chk-opt-play-mode'); if (_pm) _pm.checked = false;
+        var _pml = document.getElementById('lbl-opt-play-mode'); if (_pml) _pml.classList.remove('selected');
+        var _asb = document.getElementById('chk-opt-auto-speak'); if (_asb) _asb.checked = true;
+        var _asl = document.getElementById('lbl-opt-auto-speak'); if (_asl) _asl.classList.add('selected');
+        var _aps = document.getElementById('auto-pin-selector'); if (_aps) _aps.value = "3";
+        document.querySelectorAll('.review-tab').forEach(function(b) { b.classList.toggle('active', b.dataset.bucket === "pending"); });
+        updateLogBadges();
+        updateScoreboard();
+        updatePlayModePill();
+
         var deckSel = document.getElementById('deck-size-selector');
         if (deckSel) deckSel.value = "15";
 
@@ -1801,18 +2397,18 @@
         touchStartX = e.changedTouches[0].screenX;
         touchStartY = e.changedTouches[0].screenY;
     }, { passive: true });
-    
+
     document.addEventListener('touchend', function(e) {
         var touchEndX = e.changedTouches[0].screenX;
         var touchEndY = e.changedTouches[0].screenY;
         var xDiff = touchEndX - touchStartX;
         var yDiff = touchEndY - touchStartY;
-        
+
         if (Math.abs(xDiff) > 70 && Math.abs(xDiff) > Math.abs(yDiff)) {
             var isFeedbackOpen = document.getElementById('feedback-container').style.display === 'block';
             var isHonourOpen = document.getElementById('honour-system-controls').style.display === 'flex';
             var isTyping = (document.activeElement && document.activeElement.tagName === "INPUT");
-            
+
             if (xDiff > 0) { // SWIPE RIGHT
                 if (!sessionStarted && !sessionComplete) { startSession(); return; }
                 if (sessionComplete) {
@@ -1820,16 +2416,16 @@
                     if (compBtn) compBtn.click();
                     return;
                 }
-                
+
                 if (isFeedbackOpen) { handleNextWorkflow(); }
                 else if (productionMethod === 'type') { checkAnswer(); }
                 else if (productionMethod === 'honour' && !isHonourOpen) { revealAnswer(); }
                 else if (productionMethod === 'honour' && isHonourOpen) { assessHonour(true); }
             } else { // SWIPE LEFT
                 if (!sessionStarted || sessionComplete) return;
-                
+
                 if (isTyping && !isFeedbackOpen) { document.getElementById('user-input').value = ""; return; }
-                
+
                 if (isFeedbackOpen) { executeUndoAction(); }
                 else if (productionMethod === 'honour' && isHonourOpen) { assessHonour(false); }
             }
@@ -1837,8 +2433,12 @@
     }, { passive: true });
 
     window.onload = function() {
+        try { window.speechSynthesis.getVoices(); } catch (e) {}
         loadState();
         initQuizSession();
+        updateLogBadges();
+        updateScoreboard();
+        updatePlayModePill();
     };
 </script>
 <!-- polyglot-copyright -->
