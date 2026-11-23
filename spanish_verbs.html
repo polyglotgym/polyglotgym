@@ -309,13 +309,16 @@
             <option value="30">30 cards</option>
             <option value="50">50 cards</option>
             <option value="100">100 cards</option>
-            <option value="9999">Full set (no cap)</option>
+            <option value="9999" id="deck-size-full-option">All selected cards</option>
         </select>
 
         <div class="grid-header-label">Card Behaviour:</div>
         <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
             <label class="row-label" id="lbl-opt-play-mode"><input type="checkbox" id="chk-opt-play-mode" onchange="updatePlayMode()">🎮 Play mode</label>
             <label class="row-label selected" id="lbl-opt-auto-speak-inf"><input type="checkbox" id="chk-opt-auto-speak-inf" checked onchange="updateAutoSpeakInfinitive()">Auto-speak infinitive</label>
+        </div>
+        <div class="row-grid" style="grid-template-columns: repeat(1, 1fr);">
+            <label class="row-label selected" id="lbl-opt-show-spanish"><input type="checkbox" id="chk-opt-show-spanish" checked onchange="updateShowSpanishOnCard()">Show verb/tense on question card</label>
         </div>
         <div class="grid-header-label">Hint Detail Level:</div>
         <div class="row-grid" style="grid-template-columns: repeat(3, 1fr);">
@@ -324,11 +327,13 @@
             <label class="row-label" id="lbl-hint-detailed"><input type="radio" name="rad-hint" id="chk-hint-detailed" onchange="updateHintLevel('detailed')">Detailed</label>
         </div>
         <p class="mode-hint">No hints: nothing shown. Basic: pattern only. Detailed: pattern + forms (spoiler).</p>
+        <p class="mode-hint"><strong>Show verb/tense on question card:</strong> when off, the Spanish metadata line (verb, tense, meaning) is hidden in Production mode. The English gloss and subject label stay. Auto-speak infinitive and hints still fire. Listening mode ignores this setting.</p>
         <div class="row-grid" style="grid-template-columns: repeat(1, 1fr);">
             <div>
                 <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.2rem;">Auto-pin after fails:</div>
                 <select id="auto-pin-selector" onchange="setAutoPinThreshold(this.value)" style="width: 100%; padding: 0.45rem; background-color: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border); border-radius: 0.35rem; font-size: 0.85rem; outline: none;">
                     <option value="0">Off</option>
+                    <option value="1">1 fail (immediate)</option>
                     <option value="2">2 fails</option>
                     <option value="3" selected>3 fails</option>
                     <option value="5">5 fails</option>
@@ -400,7 +405,7 @@
                 <div class="guide-subsection" style="margin-top: 0;">The four piles</div>
                 <p>The Reviews tab shows four piles. Each one has a purpose:</p>
                 <div class="guide-pile"><span class="guide-pile-label">⚪ Active</span><span class="guide-pile-desc">Cards you're still working through. These appear in every drill session. A card is Active if it's new (never shown) <em>or</em> if you've failed it once and corrected it. Both kinds live here because they need the same thing: one clean pass to graduate.</span></div>
-                <div class="guide-pile"><span class="guide-pile-label">🟡 Pending</span><span class="guide-pile-desc">Cards you've recently missed. These also appear in drill sessions, mixed in with Active, but they're called out separately because you can drill them deliberately. Pending cards are rare in the general rotation, so the <em>Drill Pending</em> button exists to bring them to the front. Pin individually with 📍, or use the <strong>📌 All</strong> button above the table to pin every pending card at once. Clicking ✖ on any row removes it from the log entirely — the card returns to Active.</span></div>
+                <div class="guide-pile"><span class="guide-pile-label">🟡 Pending</span><span class="guide-pile-desc">Cards you've recently missed. These also appear in drill sessions, mixed in with Active, but they're called out separately because you can drill them deliberately. Pending cards are rare in the general rotation, so the <em>Drill Pending</em> button exists to bring them to the front. Pin individually with 📍, or use the <strong>📌 All</strong> button above the table to pin every pending card at once. Clicking ✖ on any row removes it from the log entirely — the card returns to Active. If you set the auto-pin threshold to 1 in Options, Pending is skipped entirely — every mistake goes straight to Pinned.</span></div>
                 <div class="guide-pile"><span class="guide-pile-label">🔴 Pinned</span><span class="guide-pile-desc">Your watchlist. These stay in the deck indefinitely and <em>never</em> auto-clear. Add a card by clicking 📍 on any row, or let the auto-pin threshold do it (default: after 3 total fails). To retire a pinned card, correct it, then unpin it manually.</span></div>
                 <div class="guide-pile"><span class="guide-pile-label">💚 Known</span><span class="guide-pile-desc">Mastered. Once a card is Known, it's skipped in Adaptive mode. To see it again, switch to Full Sweep, or use Forget All to reset the whole known pile.</span></div>
 
@@ -415,6 +420,7 @@
                 </table>
                 <p style="margin-top: 0.75rem;">If you fail a card and then get it right later <em>in the same session</em>, that later correct answer doesn't count for state changes — it's just practice. The state already moved when you failed.</p>
                 <p>The feedback message after each answer tells you exactly what happened: <em>"↩️ Moved back to Active deck"</em>, <em>"✨ Graduated to Known"</em>, <em>"🔴 Auto-pinned (fail #3)"</em>, and so on.</p>
+                <p>With the auto-pin threshold set to 1, every "→ Pending" transition above becomes "→ Pinned", and the Pending pile stays empty.</p>
 
                 <div class="guide-section-header">The Settings</div>
 
@@ -442,6 +448,7 @@
 
                 <div class="guide-subsection">Deck size</div>
                 <p>Change the deck size in the drawer for shorter or longer sessions — 15 is a good default; 50 makes a focused study block.</p>
+                <p><strong>All selected cards (N)</strong> drills every card that matches your current filters, whatever the count. N updates as you change filters, so you can see the size of the drill before you start. In Adaptive mode, known cards are still skipped — the number you actually drill may be lower than N. Switch to Full Sweep if you want to see every one.</p>
 
                 <div class="guide-section-header">Drilling</div>
 
@@ -509,7 +516,7 @@
                     <tr><td>-ER / -IR</td><td>-ía</td><td>-ías</td><td>-ía</td><td>-íamos</td><td>-íais</td><td>-ían</td></tr>
                 </table>
                 <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem; text-align: center;">
-                    <strong>Note:</strong> Only three verbs are irregular in the imperfect — <em>ser</em> (era), <em>ir</em> (iba), and <em>ver</em> (veía). Everything else follows the endings above.
+                    <strong>Note:</strong> Only three verbs are irregular in the imperfect — <em>ser</em> (era), <em>ir</em> (iba), and <em>ver</em> (veía — not in this deck). Everything else follows the endings above.
                 </p>
 
                 <h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">Pretérito Perfecto (Compound)</h3>
@@ -633,6 +640,7 @@
     var productionMethod = "type";
     var accentMode = "lenient";
     var autoSpeakInfinitiveSetting = true;
+    var showSpanishOnCard = true;
     var hintLevel = "basic";
     var autoPinThreshold = 3;
     var knownMode = "adaptive";
@@ -1231,7 +1239,6 @@
         for (var i = 0; i < mistakeLog.length; i++) {
             var norm = normalizeEntry(mistakeLog[i]);
             if (!norm) continue;
-            if (norm.status === "active") continue; // drop — Active cards don't live in the log
             if (seen[norm.key]) {
                 seen[norm.key].failCount += norm.failCount;
                 seen[norm.key].yours = norm.yours || seen[norm.key].yours;
@@ -1286,8 +1293,14 @@
         } else {
             if (isKnown) {
                 delete knownCards[key];
-                mistakeLog.push(makeLogEntry(card, userInput));
-                result.mode = 'known-to-pending';
+                var knEntry = makeLogEntry(card, userInput);
+                if (autoPinThreshold === 1) {
+                    knEntry.status = "pinned";
+                    result.mode = 'known-to-pinned';
+                } else {
+                    result.mode = 'known-to-pending';
+                }
+                mistakeLog.push(knEntry);
             } else if (entry) {
                 entry.failCount = (entry.failCount || 1) + 1;
                 entry.yours = userInput;
@@ -1307,8 +1320,14 @@
                     }
                 }
             } else {
-                mistakeLog.push(makeLogEntry(card, userInput));
-                result.mode = 'fresh-to-pending';
+                var freshEntry = makeLogEntry(card, userInput);
+                if (autoPinThreshold === 1) {
+                    freshEntry.status = "pinned";
+                    result.mode = 'fresh-to-pinned';
+                } else {
+                    result.mode = 'fresh-to-pending';
+                }
+                mistakeLog.push(freshEntry);
             }
         }
         updateLogBadges();
@@ -1335,6 +1354,12 @@
                 return '<br><small style="color:#ef4444;">📌 Still pinned (fail #' + result.failCount + ')</small>';
             case 'play':
                 return '<br><small style="color:#d8b4fe;">🎮 Play mode — progress not recorded</small>';
+            case 'not-first-attempt':
+                return '<br><small style="color:var(--text-muted);">Already answered this session — pile unchanged</small>';
+            case 'fresh-to-pinned':
+                return '<br><small style="color:#ef4444;">🔴 Pinned immediately</small>';
+            case 'known-to-pinned':
+                return '<br><small style="color:#ef4444;">↪️ Demoted to Pinned (was Known)</small>';
             default:
                 return '';
         }
@@ -1395,7 +1420,7 @@
 
     function updateLogBadges() {
         var counts = computeCounts();
-        document.getElementById('review-count').innerText = counts.pending;
+        document.getElementById('review-count').innerText = counts.pending + counts.pinned;
         document.getElementById('count-known').innerText = counts.known;
         document.getElementById('count-active').innerText = counts.active;
         document.getElementById('count-pending').innerText = counts.pending;
@@ -1422,12 +1447,12 @@
             var sizeSel = document.getElementById('deck-size-selector');
             var isolateSel = document.getElementById('verb-isolate-selector');
             var state = {
-                dataVersion: 3,
                 filters: selectedIntervals,
                 direction: currentQuizDirection,
                 productionMethod: productionMethod,
                 accentMode: accentMode,
                 autoSpeakInfinitive: autoSpeakInfinitiveSetting,
+                showSpanishOnCard: showSpanishOnCard,
                 hintLevel: hintLevel,
                 knownMode: knownMode,
                 autoPinThreshold: autoPinThreshold,
@@ -1438,7 +1463,7 @@
                 guideTab: guideTab,
                 stats: { correct: totalCorrect, total: totalQuestions, streak: currentStreak },
                 knownCards: knownCards,
-                cardUniverseTotal: computeCounts().total,
+                cardUniverseTotal: masterVerbDictionary.length * 6 * subjectPronounsArray.length,
                 mistakes: mistakeLog
             };
             localStorage.setItem('spa_verbs_state', JSON.stringify(state));
@@ -1513,6 +1538,17 @@
                 if (lblAuto) {
                     if (autoSpeakInfinitiveSetting) lblAuto.classList.add('selected');
                     else lblAuto.classList.remove('selected');
+                }
+            }
+
+            if (typeof state.showSpanishOnCard !== 'undefined') {
+                showSpanishOnCard = state.showSpanishOnCard;
+                var chkShow = document.getElementById('chk-opt-show-spanish');
+                var lblShow = document.getElementById('lbl-opt-show-spanish');
+                if (chkShow) chkShow.checked = showSpanishOnCard;
+                if (lblShow) {
+                    if (showSpanishOnCard) lblShow.classList.add('selected');
+                    else lblShow.classList.remove('selected');
                 }
             }
 
@@ -1702,6 +1738,10 @@
         document.getElementById('chk-opt-auto-speak-inf').checked = true;
         document.getElementById('lbl-opt-auto-speak-inf').classList.add('selected');
 
+        showSpanishOnCard = true;
+        document.getElementById('chk-opt-show-spanish').checked = true;
+        document.getElementById('lbl-opt-show-spanish').classList.add('selected');
+
         hintLevel = "basic";
         document.getElementById('chk-hint-none').checked = false;
         document.getElementById('chk-hint-basic').checked = true;
@@ -1824,6 +1864,18 @@
         saveState();
     }
 
+    function updateShowSpanishOnCard() {
+        var chk = document.getElementById('chk-opt-show-spanish');
+        var lbl = document.getElementById('lbl-opt-show-spanish');
+        if (!chk) return;
+        showSpanishOnCard = chk.checked;
+        if (lbl) {
+            if (showSpanishOnCard) lbl.classList.add('selected');
+            else lbl.classList.remove('selected');
+        }
+        saveState();
+    }
+
     function updateHintLevel(level) {
         hintLevel = level;
         document.getElementById('lbl-hint-none').classList.toggle('selected', level === 'none');
@@ -1864,6 +1916,7 @@
 
         var promptDisplay = document.getElementById('verb-prompt-display');
         var subDisplay = document.getElementById('verb-sub-display');
+        subDisplay.style.display = "block";
 
         var subLabel = document.getElementById('verb-subject-display');
         if (subLabel) subLabel.style.display = "none";
@@ -2069,6 +2122,11 @@
         coreDeckOriginalCount = currentSessionDeck.length;
         document.getElementById('deck-total').innerText = coreDeckOriginalCount;
 
+        var fullOpt = document.getElementById('deck-size-full-option');
+        if (fullOpt) {
+            fullOpt.textContent = "All selected cards (" + totalFilteredCount + ")";
+        }
+
         var pBox = document.getElementById('progress-box');
         if (pBox) pBox.className = "score-item";
         document.getElementById('review-status-label').innerText = "";
@@ -2252,8 +2310,13 @@
             promptDisplay.innerText = buildEnglishGloss(currentClockObj);
             promptDisplay.style.fontSize = "2.2rem";
             promptDisplay.style.color = "var(--text-main)";
-            subDisplay.innerText = currentClockObj.verb + " • " + tenseNamesFullMap[currentClockObj.tense] + " • " + currentClockObj.meaning;
-            subDisplay.style.color = "var(--accent)";
+            if (showSpanishOnCard) {
+                subDisplay.innerText = currentClockObj.verb + " • " + tenseNamesFullMap[currentClockObj.tense] + " • " + currentClockObj.meaning;
+                subDisplay.style.color = "var(--accent)";
+                subDisplay.style.display = "block";
+            } else {
+                subDisplay.style.display = "none";
+            }
             if (productionMethod === 'honour') {
                 trackBadge.innerText = "Say the answer aloud, then tap Reveal";
             } else if (currentClockObj.tense === 'pp') {
@@ -2263,7 +2326,7 @@
             } else if (isCardIrregular(currentClockObj)) {
                 trackBadge.innerText = "Irregular form — type the full form";
             } else {
-                trackBadge.innerText = "Type the ending, the full form, or a transliteration";
+                trackBadge.innerText = "Type the ending or the full form";
             }
 
             cancelPendingInfinitive();
@@ -2283,6 +2346,7 @@
 
                 promptDisplay.innerText = "🔊 Listening...";
                 subDisplay.innerText = "Which person AND tense is this?";
+                subDisplay.style.display = "block";
                 promptDisplay.style.fontSize = "2.2rem";
                 promptDisplay.style.color = "var(--accent)";
                 trackBadge.innerText = "";
@@ -2322,11 +2386,14 @@
 
         if (card.tense === 'pres') {
             if (e.presOverride && e.presOverride[card.pronoun]) return pron + " " + e.presOverride[card.pronoun];
-            return pron + " " + (isThirdSg ? e.third : e.base);
+            var presWord = isThirdSg ? e.third : e.base;
+            var presTag = (!isThirdSg && e.base === e.past) ? " (present)" : "";
+            return pron + " " + presWord + presTag;
         }
         if (card.tense === 'pret') {
-            if (e.pastOverride && e.pastOverride[card.pronoun]) return pron + " " + e.pastOverride[card.pronoun];
-            return pron + " " + e.past;
+            var pretWord = (e.pastOverride && e.pastOverride[card.pronoun]) ? e.pastOverride[card.pronoun] : e.past;
+            var pretTag = (pretWord === e.base) ? " (past)" : "";
+            return pron + " " + pretWord + pretTag;
         }
         if (card.tense === 'impf') return pron + " used to " + (e.impfBase || e.base);
         if (card.tense === 'pp')   return pron + " " + (isThirdSg ? "has" : "have") + " " + (e.enPP || e.past);
@@ -2424,7 +2491,7 @@
         // Force the use of a Google Spanish voice if available
         var voices = window.speechSynthesis.getVoices();
         var googleSpanish = voices.find(function(v) { 
-            return v.name.includes('Google') && v.lang.startsWith('es'); 
+            return v.name.toLowerCase().includes('google') && v.lang.toLowerCase().startsWith('es'); 
         });
         if (googleSpanish) {
             utterance.voice = googleSpanish;
@@ -2555,6 +2622,7 @@
 
         var promptDisplay = document.getElementById('verb-prompt-display');
         var subDisplay = document.getElementById('verb-sub-display');
+        subDisplay.style.display = "block";
 
         var fullWord = computeFullWord(currentClockObj, currentClockObj.ending);
 
@@ -2696,24 +2764,38 @@
         document.getElementById('score-known-total').innerText = counts.total;
         document.getElementById('score-filtered').innerText = counts.total;
         updateStreakEmoji();
-        updatePlayModePill();
         updateFilterStatusLine();
     }
 
     function executeUndoAction() {
-        if (userActionHistory.length === 0) return;
-        var previousState = userActionHistory.pop();
-        currentStreak = previousState.streakBefore;
-        totalCorrect = previousState.correctBefore;
-        totalQuestions = previousState.questionsBefore;
-        activeCardIndex = previousState.activeCardIndexBefore;
-        if (previousState.wasCardPushed) {
-            currentSessionDeck.pop();
-            document.getElementById('deck-total').innerText = currentSessionDeck.length;
-        }
-        updateScoreboard(); generateQuestion();
-        saveState();
+    if (userActionHistory.length === 0) return;
+
+    // If we're on the completion screen, tear it down first
+    if (sessionComplete) {
+        sessionComplete = false;
+        sessionStarted = true;
+        var fbEl = document.getElementById('feedback-container');
+        var bar = fbEl ? fbEl.querySelector('.completion-actions') : null;
+        if (bar) bar.remove();
+        var nextBtnEl = document.getElementById('next-btn');
+        if (nextBtnEl) nextBtnEl.style.display = "";
+        var shutterEl = document.getElementById('shutter-header-area');
+        if (shutterEl) shutterEl.classList.remove('collapsed');
     }
+
+    var previousState = userActionHistory.pop();
+    currentStreak = previousState.streakBefore;
+    totalCorrect = previousState.correctBefore;
+    totalQuestions = previousState.questionsBefore;
+    activeCardIndex = previousState.activeCardIndexBefore;
+    if (previousState.wasCardPushed) {
+        currentSessionDeck.pop();
+        document.getElementById('deck-total').innerText = currentSessionDeck.length;
+    }
+    updateScoreboard();
+    generateQuestion();
+    saveState();
+}
 
     // ============================================================
     // COMPLETION SCREEN
@@ -2731,6 +2813,7 @@
         promptDisplay.style.color = "var(--success)";
         promptDisplay.style.fontSize = "2.2rem";
         subDisplay.innerText = "";
+        subDisplay.style.display = "block";
 
         var subLabel = document.getElementById('verb-subject-display');
         if (subLabel) subLabel.style.display = "none";
@@ -3084,24 +3167,6 @@
             if (event.key === '2') { event.preventDefault(); assessHonour(true); }
         }
     });
-
-    // --- SWIPE GESTURE SUPPORT ---
-    var touchStartX = 0;
-    var touchStartY = 0;
-
-    document.addEventListener('touchstart', function(e) {
-        touchStartX = e.changedTouches[0].screenX;
-        touchStartY = e.changedTouches[0].screenY;
-    }, { passive: true });
-
-    // --- SWIPE GESTURE SUPPORT ---
-    var touchStartX = 0;
-    var touchStartY = 0;
-
-    document.addEventListener('touchstart', function(e) {
-        touchStartX = e.changedTouches[0].screenX;
-        touchStartY = e.changedTouches[0].screenY;
-    }, { passive: true });
 
     // --- SWIPE GESTURE SUPPORT ---
     var touchStartX = 0;
