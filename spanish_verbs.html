@@ -30,7 +30,7 @@
             background-color: var(--card-bg); padding: 2rem; border-radius: 1rem;
             box-shadow: 0 10px 25px -5px var(--shadow); width: 100%; max-width: 550px;
             border: 1px solid var(--border); position: relative;
-            min-width: 0; /* <-- ADD THIS LINE */
+            min-width: 0;
         }
         #shutter-header-area { max-height: 2600px; opacity: 1; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.4s ease; }
         #shutter-header-area.collapsed { max-height: 0px; opacity: 0; margin-bottom: 0px !important; pointer-events: none; }
@@ -49,6 +49,8 @@
         .mode-btn.active { background-color: var(--accent); color: #0d0c10; font-weight: bold; }
         .drawer-toggle { background: none; border: none; color: var(--accent); font-size: 0.85rem; cursor: pointer; display: block; margin: -0.75rem auto 1rem auto; padding: 0.25rem 0.5rem; text-decoration: none; }
         .settings-drawer { background-color: rgba(0, 0, 0, 0.3); border: 1px dashed var(--border); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.5rem; display: none; }
+        .settings-section-header { font-size: 0.7rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px; font-weight: bold; margin: 1.25rem 0 0.5rem 0; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); }
+        .settings-section-header:first-child { margin-top: 0; }
         .grid-header-label { font-size: 0.8rem; color: var(--text-muted); font-weight: bold; margin-top: 0.5rem; }
         .row-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.4rem; margin-top: 0.3rem; margin-bottom: 0.8rem; }
         .row-label { display: flex; align-items: center; justify-content: center; background-color: rgba(255,255,255,0.01); border: 1px solid var(--border); border-radius: 0.35rem; padding: 0.45rem; font-size: 0.8rem; cursor: pointer; text-align: center; user-select: none; }
@@ -56,11 +58,7 @@
         .row-label.selected { background-color: rgba(245, 158, 11, 0.15); border-color: var(--accent); color: var(--text-main); font-weight: bold; }
         .question-box { background-color: rgba(0,0,0,0.5); padding: 2rem 1.5rem; border-radius: 0.5rem; text-align: center; margin-bottom: 1.5rem; border: 1px solid var(--border); min-height: 11rem; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 0.25rem; position: relative; }
         .prompt-main { font-size: 2.8rem; font-weight: bold; color: var(--text-main); line-height: 1.1; font-family: Georgia, serif; }
-        .prompt-sub { 
-            font-size: 1.15rem; color: var(--accent); font-weight: 500; 
-            margin-top: 0.25rem; min-height: 1.5rem; 
-            overflow-wrap: break-word; /* <-- ADD THIS LINE */
-        }
+        .prompt-sub { font-size: 1.15rem; color: var(--accent); font-weight: 500; margin-top: 0.25rem; min-height: 1.5rem; overflow-wrap: break-word; }
         .sub-badge { font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 0.5rem; }
         .input-group { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
         input.text-input { flex: 1; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid var(--border); background-color: rgba(0,0,0,0.4); color: var(--text-main); font-size: 1.1rem; outline: none; text-align: center; }
@@ -107,6 +105,7 @@
         #drill-bucket-btn { background-color: var(--accent); color: #0d0c10; }
         #clear-bucket-btn { background-color: var(--border); color: var(--text-main); }
         #clear-bucket-known-btn { background-color: var(--success); color: #0d0c10; }
+        #copy-pinned-btn { background-color: var(--border); color: var(--text-main); }
         .review-actions button:disabled { opacity: 0.4; cursor: not-allowed; }
         .completion-actions { display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
         .completion-btn { flex: 1; min-width: 120px; padding: 0.65rem; border: none; border-radius: 0.5rem; font-weight: bold; cursor: pointer; font-size: 0.85rem; background-color: var(--border); color: var(--text-main); }
@@ -135,68 +134,16 @@
         .guide-pile-label { font-weight: bold; color: var(--text-main); margin-right: 0.35rem; }
         .guide-pile-desc { color: var(--text-main); font-size: 0.88rem; }
 
-        /* === MOBILE FIXES === */
         @media (max-width: 550px) {
             .container { padding: 1rem; }
-            .score-board {
-                flex-wrap: wrap !important;
-                justify-content: center !important;
-                padding: 0.6rem 0.5rem !important;
-                gap: 0.4rem 1rem !important;
-                line-height: 1.4 !important;
-            }
-            .score-item {
-                font-size: 0.75rem !important; /* Shows the labels, but small */
-                white-space: nowrap !important;
-            }
-            .score-item span, .score-item a {
-                font-size: 0.85rem !important; /* Makes the numbers pop */
-            }
-            .score-board-progress-row {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                background-color: rgba(0,0,0,0.4);
-                padding: 0.6rem 0.75rem;
-                border-radius: 0 0 0.5rem 0.5rem;
-                margin-top: 0;
-                margin-bottom: 1rem;
-                border: 1px solid var(--border);
-                border-top: 1px solid rgba(255,255,255,0.05);
-                font-size: 0.85rem;
-                position: relative;
-            }
-            .score-board-progress-row .score-item {
-                font-size: 0.9rem !important;
-                text-align: center;
-            }
-            .score-board-gear-btn {
-                font-size: 1rem;
-                background: none;
-                color: var(--text-main);
-                padding: 0.2rem 0.5rem;
-                cursor: pointer;
-                border: none;
-                position: absolute;
-                right: 0.75rem;
-                top: 50%;
-                transform: translateY(-50%);
-            }
-            #review-status-label {
-                display: block !important;
-                width: 100% !important;
-                text-align: center !important;
-                font-size: 0.75rem !important;
-                color: var(--warning) !important;
-                margin-top: 0.25rem !important;
-                font-style: italic !important;
-            }
-            .question-box {
-                padding: 1.25rem 1rem !important;
-                min-height: auto !important;
-                justify-content: flex-start !important;
-                padding-top: 1.5rem !important;
-            }
+            .score-board { flex-wrap: wrap !important; justify-content: center !important; padding: 0.6rem 0.5rem !important; gap: 0.4rem 1rem !important; line-height: 1.4 !important; }
+            .score-item { font-size: 0.75rem !important; white-space: nowrap !important; }
+            .score-item span, .score-item a { font-size: 0.85rem !important; }
+            .score-board-progress-row { display: flex; justify-content: center; align-items: center; background-color: rgba(0,0,0,0.4); padding: 0.6rem 0.75rem; border-radius: 0 0 0.5rem 0.5rem; margin-top: 0; margin-bottom: 1rem; border: 1px solid var(--border); border-top: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; position: relative; }
+            .score-board-progress-row .score-item { font-size: 0.9rem !important; text-align: center; }
+            .score-board-gear-btn { font-size: 1rem; background: none; color: var(--text-main); padding: 0.2rem 0.5rem; cursor: pointer; border: none; position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); }
+            #review-status-label { display: block !important; width: 100% !important; text-align: center !important; font-size: 0.75rem !important; color: var(--warning) !important; margin-top: 0.25rem !important; font-style: italic !important; }
+            .question-box { padding: 1.25rem 1rem !important; min-height: auto !important; justify-content: flex-start !important; padding-top: 1.5rem !important; }
             .prompt-main { font-size: 1.8rem !important; }
         }
 
@@ -278,69 +225,8 @@
     <button class="drawer-toggle" id="drawer-toggle-btn" onclick="toggleSettingsDrawer();" style="width: 100%; padding: 0.75rem; margin-top: 1rem; font-size: 0.95rem; background: none; border: 1px solid var(--border); border-radius: 0.5rem; color: var(--text-muted); cursor: pointer; text-align: center;">⚙️ Options & Filters ▾</button>
     <div id="filter-status-line" style="text-align:center; font-size:0.72rem; color:var(--text-muted); margin:-0.5rem 0 1rem 0; letter-spacing:0.3px;"></div>
     <div class="settings-drawer" id="settings-drawer">
-        <div class="grid-header-label">Production Input Method:</div>
-        <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
-            <label class="row-label selected" id="lbl-method-type"><input type="radio" name="rad-method" id="chk-method-type" checked onchange="updateProductionMethod('type')">Type answer</label>
-            <label class="row-label" id="lbl-method-honour"><input type="radio" name="rad-method" id="chk-method-honour" onchange="updateProductionMethod('honour')">Self-assess (honour)</label>
-        </div>
 
-        <div class="grid-header-label">Known Cards Mode:</div>
-        <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
-            <label class="row-label selected" id="lbl-known-adaptive"><input type="radio" name="rad-known-mode" id="chk-known-adaptive" checked onchange="updateKnownMode('adaptive')">Adaptive</label>
-            <label class="row-label" id="lbl-known-sweep"><input type="radio" name="rad-known-mode" id="chk-known-sweep" onchange="updateKnownMode('sweep')">Full Sweep</label>
-        </div>
-        <p class="mode-hint">
-            <strong>Adaptive:</strong> active + pending + pinned (skips known).<br>
-            <strong>Sweep:</strong> every card, including known.
-        </p>
-
-        <div class="grid-header-label">Accent Handling:</div>
-        <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
-            <label class="row-label selected" id="lbl-accent-lenient"><input type="radio" name="rad-accent" id="chk-accent-lenient" checked onchange="updateAccentMode('lenient')">Lenient (forgiven)</label>
-            <label class="row-label" id="lbl-accent-strict"><input type="radio" name="rad-accent" id="chk-accent-strict" onchange="updateAccentMode('strict')">Strict (required)</label>
-        </div>
-        <p class="mode-hint">
-            <strong>Lenient:</strong> hablo passes for habló.<br>
-            <strong>Strict:</strong> accent marks must match exactly.
-        </p>
-
-        <div class="grid-header-label">Session Deck Size:</div>
-        <select id="deck-size-selector" onchange="initSessionDeck()" style="width: 100%; padding: 0.45rem; background-color: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border); border-radius: 0.35rem; font-size: 0.85rem; outline: none; margin-top: 0.25rem; margin-bottom: 0.8rem;">
-            <option value="15" selected>15 cards (short drill)</option>
-            <option value="30">30 cards</option>
-            <option value="50">50 cards</option>
-            <option value="100">100 cards</option>
-            <option value="9999" id="deck-size-full-option">All selected cards</option>
-        </select>
-
-        <div class="grid-header-label">Card Behaviour:</div>
-        <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
-            <label class="row-label" id="lbl-opt-play-mode"><input type="checkbox" id="chk-opt-play-mode" onchange="updatePlayMode()">🎮 Play mode</label>
-            <label class="row-label selected" id="lbl-opt-auto-speak-inf"><input type="checkbox" id="chk-opt-auto-speak-inf" checked onchange="updateAutoSpeakInfinitive()">Auto-speak infinitive</label>
-        </div>
-        <div class="row-grid" style="grid-template-columns: repeat(1, 1fr);">
-            <label class="row-label selected" id="lbl-opt-show-spanish"><input type="checkbox" id="chk-opt-show-spanish" checked onchange="updateShowSpanishOnCard()">Show verb/tense on question card</label>
-        </div>
-        <div class="grid-header-label">Hint Detail Level:</div>
-        <div class="row-grid" style="grid-template-columns: repeat(3, 1fr);">
-            <label class="row-label" id="lbl-hint-none"><input type="radio" name="rad-hint" id="chk-hint-none" onchange="updateHintLevel('none')">No hints</label>
-            <label class="row-label selected" id="lbl-hint-basic"><input type="radio" name="rad-hint" id="chk-hint-basic" checked onchange="updateHintLevel('basic')">Basic</label>
-            <label class="row-label" id="lbl-hint-detailed"><input type="radio" name="rad-hint" id="chk-hint-detailed" onchange="updateHintLevel('detailed')">Detailed</label>
-        </div>
-        <p class="mode-hint">No hints: nothing shown. Basic: pattern only. Detailed: pattern + forms (spoiler).</p>
-        <p class="mode-hint"><strong>Show verb/tense on question card:</strong> when off, the Spanish metadata line (verb, tense, meaning) is hidden in Production mode. The English gloss and subject label stay. Auto-speak infinitive and hints still fire. Listening mode ignores this setting.</p>
-        <div class="row-grid" style="grid-template-columns: repeat(1, 1fr);">
-            <div>
-                <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.2rem;">Auto-pin after fails:</div>
-                <select id="auto-pin-selector" onchange="setAutoPinThreshold(this.value)" style="width: 100%; padding: 0.45rem; background-color: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border); border-radius: 0.35rem; font-size: 0.85rem; outline: none;">
-                    <option value="0">Off</option>
-                    <option value="1">1 fail (immediate)</option>
-                    <option value="2">2 fails</option>
-                    <option value="3" selected>3 fails</option>
-                    <option value="5">5 fails</option>
-                </select>
-            </div>
-        </div>
+        <div class="settings-section-header">Deck Content</div>
 
         <div class="grid-header-label">Active Verb Classes:</div>
         <div class="row-grid" style="grid-template-columns: repeat(3, 1fr);">
@@ -377,7 +263,77 @@
             <option value="all">-- Drill All Verbs (Active Filter Set) --</option>
         </select>
 
-        <div class="grid-header-label">Progress:</div>
+        <div class="grid-header-label">Session Deck Size:</div>
+        <select id="deck-size-selector" onchange="initSessionDeck()" style="width: 100%; padding: 0.45rem; background-color: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border); border-radius: 0.35rem; font-size: 0.85rem; outline: none; margin-top: 0.25rem; margin-bottom: 0.8rem;">
+            <option value="15" selected>15 cards (short drill)</option>
+            <option value="30">30 cards</option>
+            <option value="50">50 cards</option>
+            <option value="100">100 cards</option>
+            <option value="9999" id="deck-size-full-option">All selected cards</option>
+        </select>
+
+        <div class="settings-section-header">Answering</div>
+
+        <div class="grid-header-label">Production Input Method:</div>
+        <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <label class="row-label selected" id="lbl-method-type"><input type="radio" name="rad-method" id="chk-method-type" checked onchange="updateProductionMethod('type')">Type answer</label>
+            <label class="row-label" id="lbl-method-honour"><input type="radio" name="rad-method" id="chk-method-honour" onchange="updateProductionMethod('honour')">Self-assess (honour)</label>
+        </div>
+
+        <div class="grid-header-label">Accent Handling:</div>
+        <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <label class="row-label selected" id="lbl-accent-lenient"><input type="radio" name="rad-accent" id="chk-accent-lenient" checked onchange="updateAccentMode('lenient')">Lenient (forgiven)</label>
+            <label class="row-label" id="lbl-accent-strict"><input type="radio" name="rad-accent" id="chk-accent-strict" onchange="updateAccentMode('strict')">Strict (required)</label>
+        </div>
+        <p class="mode-hint"><strong>Lenient:</strong> hablo passes for habló.<br><strong>Strict:</strong> accent marks must match exactly.</p>
+
+        <div class="grid-header-label">Hint Detail Level:</div>
+        <div class="row-grid" style="grid-template-columns: repeat(3, 1fr);">
+            <label class="row-label" id="lbl-hint-none"><input type="radio" name="rad-hint" id="chk-hint-none" onchange="updateHintLevel('none')">No hints</label>
+            <label class="row-label selected" id="lbl-hint-basic"><input type="radio" name="rad-hint" id="chk-hint-basic" checked onchange="updateHintLevel('basic')">Basic</label>
+            <label class="row-label" id="lbl-hint-detailed"><input type="radio" name="rad-hint" id="chk-hint-detailed" onchange="updateHintLevel('detailed')">Detailed</label>
+        </div>
+        <p class="mode-hint">No hints: nothing shown. Basic: pattern only. Detailed: pattern + forms (spoiler).</p>
+
+        <div class="row-grid" style="grid-template-columns: repeat(1, 1fr);">
+            <label class="row-label selected" id="lbl-opt-show-spanish"><input type="checkbox" id="chk-opt-show-spanish" checked onchange="updateShowSpanishOnCard()">Show verb/tense on question card</label>
+        </div>
+        <p class="mode-hint"><strong>Show verb/tense on question card:</strong> when off, the Spanish metadata line (verb, tense, meaning) is hidden in Production mode. The English gloss and subject label stay. Auto-speak infinitive and hints still fire. Listening mode ignores this setting.</p>
+
+        <div class="row-grid" style="grid-template-columns: repeat(1, 1fr);">
+            <label class="row-label selected" id="lbl-opt-auto-speak-inf"><input type="checkbox" id="chk-opt-auto-speak-inf" checked onchange="updateAutoSpeakInfinitive()">Auto-speak infinitive</label>
+        </div>
+
+        <div class="settings-section-header">Session Piles</div>
+
+        <div class="grid-header-label">Known Cards Mode:</div>
+        <div class="row-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <label class="row-label selected" id="lbl-known-adaptive"><input type="radio" name="rad-known-mode" id="chk-known-adaptive" checked onchange="updateKnownMode('adaptive')">Adaptive</label>
+            <label class="row-label" id="lbl-known-sweep"><input type="radio" name="rad-known-mode" id="chk-known-sweep" onchange="updateKnownMode('sweep')">Full Sweep</label>
+        </div>
+        <p class="mode-hint"><strong>Adaptive:</strong> active + pending + pinned (skips known).<br><strong>Sweep:</strong> every card, including known — toggle notwithstanding.</p>
+
+        <div class="row-grid" style="grid-template-columns: repeat(1, 1fr);">
+            <label class="row-label" id="lbl-opt-play-mode"><input type="checkbox" id="chk-opt-play-mode" onchange="updatePlayMode()">🎮 Play mode</label>
+        </div>
+
+        <div class="grid-header-label">Auto-pin after fails:</div>
+        <select id="auto-pin-selector" onchange="setAutoPinThreshold(this.value)" style="width: 100%; padding: 0.45rem; background-color: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border); border-radius: 0.35rem; font-size: 0.85rem; outline: none; margin-bottom: 0.4rem;">
+            <option value="0">Off</option>
+            <option value="1">1 fail (immediate)</option>
+            <option value="2">2 fails</option>
+            <option value="3" selected>3 fails</option>
+            <option value="5">5 fails</option>
+        </select>
+        <p class="mode-hint" id="auto-pin-hint" style="display:none; color:var(--warning);">⚠️ Pinned rotation is off — auto-pinned cards won't reappear in sessions.</p>
+
+        <div class="row-grid" style="grid-template-columns: repeat(1, 1fr);">
+            <label class="row-label selected" id="lbl-opt-pinned-in-rotation"><input type="checkbox" id="chk-opt-pinned-in-rotation" checked onchange="updatePinnedInRotation()">Pinned cards in rotation</label>
+        </div>
+        <p class="mode-hint"><strong>Pinned cards in rotation:</strong> when off, pinned cards are excluded from Adaptive sessions. Explicit drills (Drill Pinned, Drill All Reviews) still work. Full Sweep includes everything, toggle notwithstanding.</p>
+
+        <div class="settings-section-header">Progress</div>
+
         <button onclick="resetAllProgress();" style="width: 100%; padding: 0.45rem; background-color: rgba(239, 68, 68, 0.15); color: var(--error); border: 1px solid var(--error); border-radius: 0.35rem; font-size: 0.8rem; cursor: pointer; font-weight: bold; margin-top: 0.25rem;">Reset all progress</button>
     </div>
 
@@ -407,7 +363,7 @@
                 <p>The Reviews tab shows four piles. Each one has a purpose:</p>
                 <div class="guide-pile"><span class="guide-pile-label">⚪ Active</span><span class="guide-pile-desc">Cards you're still working through. These appear in every drill session. A card is Active if it's new (never shown) <em>or</em> if you've failed it once and corrected it. Both kinds live here because they need the same thing: one clean pass to graduate.</span></div>
                 <div class="guide-pile"><span class="guide-pile-label">🟡 Pending</span><span class="guide-pile-desc">Cards you've recently missed. These also appear in drill sessions, mixed in with Active, but they're called out separately because you can drill them deliberately. Pending cards are rare in the general rotation, so the <em>Drill Pending</em> button exists to bring them to the front. Pin individually with 📍, or use the <strong>📌 All</strong> button above the table to pin every pending card at once. Clicking ✖ on any row removes it from the log entirely — the card returns to Active. If you set the auto-pin threshold to 1 in Options, Pending is skipped entirely — every mistake goes straight to Pinned.</span></div>
-                <div class="guide-pile"><span class="guide-pile-label">🔴 Pinned</span><span class="guide-pile-desc">Your watchlist. These stay in the deck indefinitely and <em>never</em> auto-clear. Add a card by clicking 📍 on any row, or let the auto-pin threshold do it (default: after 3 total fails). To retire a pinned card, choose one of two row actions: <strong>📤</strong> returns it to Active (one correct first attempt will graduate it to Known), or <strong>✅</strong> retires it straight to Known if you already know it. The bulk buttons below the table apply the same two actions to every pinned card at once.</span></div>
+                <div class="guide-pile"><span class="guide-pile-label">🔴 Pinned</span><span class="guide-pile-desc">Your watchlist. These stay in the deck indefinitely and <em>never</em> auto-clear. Add a card by clicking 📍 on any row, or let the auto-pin threshold do it (default: after 3 total fails). To retire a pinned card, choose one of two row actions: <strong>📤</strong> returns it to Active (one correct first attempt will graduate it to Known), or <strong>✅</strong> retires it straight to Known if you already know it. The bulk buttons below the table apply the same two actions to every pinned card at once, and <strong>📋 Copy</strong> dumps the whole pinned list to your clipboard as tab-separated text — handy for pasting into a spreadsheet.</span></div>
                 <div class="guide-pile"><span class="guide-pile-label">💚 Known</span><span class="guide-pile-desc">Mastered. Once a card is Known, it's skipped in Adaptive mode. To see it again, switch to Full Sweep, or use Forget All to reset the whole known pile.</span></div>
 
                 <div class="guide-subsection">How cards move between piles</div>
@@ -423,11 +379,16 @@
                 <p>The feedback message after each answer tells you exactly what happened: <em>"↩️ Moved back to Active deck"</em>, <em>"✨ Graduated to Known"</em>, <em>"🔴 Auto-pinned (fail #3)"</em>, and so on.</p>
                 <p>With the auto-pin threshold set to 1, every "→ Pending" transition above becomes "→ Pinned", and the Pending pile stays empty.</p>
 
+                <div class="guide-subsection">Pinned cards in rotation</div>
+                <p>By default, pinned cards appear in Adaptive sessions just like Active and Pending cards. If you'd rather complete the main deck without the watchlist taking up session slots, turn off <strong>Pinned cards in rotation</strong> in Options. Pinned cards will then be excluded from Adaptive sessions until you re-enable the toggle.</p>
+                <p><strong>Full Sweep is unaffected</strong> — it remains literally everything, pinned or not, so the toggle never hides a card from a check-up drill. Explicit drills (Drill Pinned, Drill All Reviews, or the Pinned-tab Drill) also ignore the toggle: they always draw what you asked for.</p>
+                <p><strong>⚠️ Caveat with auto-pin.</strong> If pinned rotation is off and auto-pin is enabled, wrong answers will silently disappear into the Pinned pile after the threshold. Watch the Reviews badge, or re-enable the toggle periodically.</p>
+
                 <div class="guide-section-header">The Settings</div>
 
                 <div class="guide-subsection" style="margin-top: 0;">The two modes</div>
                 <p><strong>Adaptive</strong> (default) — draws only from Active + Pending + Pinned. Skips Known. This is the mode you'll use most of the time; it's how you grind through the deck.</p>
-                <p><strong>Full Sweep</strong> — draws from every card, including Known. Use it for a check-up, or to see how much you've retained. Failing a Known card in Sweep demotes it back to Pending.</p>
+                <p><strong>Full Sweep</strong> — draws from every card, including Known and Pinned. Use it for a check-up, or to see how much you've retained. Failing a Known card in Sweep demotes it back to Pending.</p>
                 <p>If in doubt, leave it on Adaptive, and check your Pending pile every so often.</p>
 
                 <div class="guide-subsection">Production vs acoustic</div>
@@ -439,6 +400,15 @@
                 <p>The app does <strong>not</strong> distinguish between the two for progress tracking. A card is one card: if you get <em>hablo</em> right in production, it counts the same as getting it right acoustically. One mental form, one card. A miss in either mode counts as a miss. You can type the ending in Production or use the "Honour" mode (self-assessment — be honest!). Acoustic is honour mode only.</p>
                 <p>If you want to test a specific modality only — say acoustically — switch to Acoustic Lane, turn on Play Mode, and drill. Nothing is recorded, but you get the practice.</p>
 
+                <div class="guide-subsection">Ambiguous English glosses</div>
+                <p>Some English verbs have identical present and past forms ("I put" covers both). For these, the gloss adds a <strong>(present)</strong> or <strong>(past)</strong> tag so you can tell which tense is being asked. In this deck, <em>poner</em> is the main case.</p>
+                <p>Some preterite glosses are more specific than a simple past, because Spanish makes semantic distinctions English doesn't:</p>
+                <ul style="margin: 0.5rem 0 0.75rem 0; padding-left: 1.2rem;">
+                    <li><em>poder</em> — <em>pude</em> = "I managed to" (not "could"; <em>podía</em> = I could / was able)</li>
+                    <li><em>querer</em> — <em>quise</em> = "I tried to" (not just "wanted")</li>
+                    <li><em>saber</em> — <em>supe</em> = "I found out" (not just "knew")</li>
+                </ul>
+
                 <div class="guide-subsection">Accent handling</div>
                 <p>Spanish's accent marks are load-bearing — <em>hablo</em> (presente yo) and <em>habló</em> (pretérito él) are different forms. Two modes are available:</p>
                 <ul style="margin: 0.5rem 0 0.75rem 0; padding-left: 1.2rem;">
@@ -447,9 +417,12 @@
                 </ul>
                 <p>The homograph warning ("⚠️ Same form also: …") always compares strict forms — so <em>hablo</em> and <em>habló</em> are correctly distinguished.</p>
 
+                <div class="guide-subsection">Show verb/tense on card</div>
+                <p>When off, the Spanish metadata line (verb, tense, meaning) is hidden in Production mode. The English gloss and subject label stay visible. Listening mode ignores this setting.</p>
+
                 <div class="guide-subsection">Deck size</div>
                 <p>Change the deck size in the drawer for shorter or longer sessions — 15 is a good default; 50 makes a focused study block.</p>
-                <p><strong>All selected cards (N)</strong> drills every card that matches your current filters, whatever the count. N updates as you change filters, so you can see the size of the drill before you start. In Adaptive mode, known cards are still skipped — the number you actually drill may be lower than N. Switch to Full Sweep if you want to see every one.</p>
+                <p><strong>All selected cards (N)</strong> drills every card that matches your current filters, whatever the count. N updates as you change filters, so you can see the size of the drill before you start. In Adaptive mode, known cards are skipped — the number you actually drill may be lower than N. If pinned rotation is off, pinned cards are skipped too. Switch to Full Sweep if you want to see every one.</p>
 
                 <div class="guide-section-header">Drilling</div>
 
@@ -465,6 +438,12 @@
                 <div class="guide-subsection">Hotkeys</div>
                 <p><strong>Space</strong> or <strong>Enter</strong> for move on / correct, <strong>X</strong> (or <strong>1</strong>) for incorrect, <strong>2</strong> for correct (honour mode).</p>
                 <p><strong>Ctrl+Z</strong> undoes the last answer for the scoreboard and session queue. It does not reverse log changes (Pending/Pinned/Known) — those stay as recorded.</p>
+
+                <div class="guide-subsection">Unpinning inline</div>
+                <p>When a pinned card appears in a session and you answer it (first attempt), the feedback line carries a small <strong>📌 Unpin?</strong> link. Click it to remove the card from your watchlist without leaving the drill — the label flips to <strong>✅ Unpinned!</strong>, the card returns to Active, and you can keep going. Undo does <em>not</em> re-pin the card (log changes aren't undone, by design).</p>
+
+                <div class="guide-subsection">Copying the Pinned list</div>
+                <p>On the Pinned tab in Reviews, the <strong>📋 Copy</strong> button dumps the whole pinned list to your clipboard as tab-separated text (headers + one row per card: Prompt, Correct, Last wrong, Fails). Paste into any spreadsheet for offline study.</p>
 
                 <div class="guide-section-header">Suggested Workflow</div>
 
@@ -486,6 +465,7 @@
 
                 <div class="guide-section-header">Final Note</div>
                 <p>Regarding the compound tenses, this app covers the auxiliary verb <em>haber</em> in the pretérito perfecto (he hablado, has hablado, etc.), but does not include: 1) other compound tenses (these are relatively simple once you have mastered haber + participles) or 2) the subjunctive forms. Adding all the compound tenses would have increased the deck size to an unreasonable degree. The subjunctive will probably require another app.</p>
+                <p><strong>Complete the deck</strong> — all 936 cards known, nothing pending, nothing pinned — and the app shows a special mastery screen, with a suggestion to reset or try another trainer in the series.</p>
             </div>
 
             <div id="guide-conj-content" style="display: none;">
@@ -496,9 +476,7 @@
                     <tr><td>-ER</td><td>-o</td><td>-es</td><td>-e</td><td>-emos</td><td>-éis</td><td>-en</td></tr>
                     <tr><td>-IR</td><td>-o</td><td>-es</td><td>-e</td><td>-imos</td><td>-ís</td><td>-en</td></tr>
                 </table>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem; text-align: center;">
-                    <strong>Note:</strong> Stem-changing verbs follow the "boot" pattern — the stem changes in all forms <em>except</em> nosotros and vosotros.
-                </p>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem; text-align: center;"><strong>Note:</strong> Stem-changing verbs follow the "boot" pattern — the stem changes in all forms <em>except</em> nosotros and vosotros.</p>
 
                 <h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">Pretérito Indefinido (Preterite)</h3>
                 <table class="ref-table">
@@ -506,9 +484,7 @@
                     <tr><td>-AR</td><td>-é</td><td>-aste</td><td>-ó</td><td>-amos</td><td>-asteis</td><td>-aron</td></tr>
                     <tr><td>-ER / -IR</td><td>-í</td><td>-iste</td><td>-ió</td><td>-imos</td><td>-isteis</td><td>-ieron</td></tr>
                 </table>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem; text-align: center;">
-                    <strong>Note:</strong> Ser and Ir share <em>identical</em> preterite forms — fui, fuiste, fue, fuimos, fuisteis, fueron.
-                </p>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem; text-align: center;"><strong>Note:</strong> Ser and Ir share <em>identical</em> preterite forms — fui, fuiste, fue, fuimos, fuisteis, fueron.</p>
 
                 <h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">Pretérito Imperfecto</h3>
                 <table class="ref-table">
@@ -516,39 +492,29 @@
                     <tr><td>-AR</td><td>-aba</td><td>-abas</td><td>-aba</td><td>-ábamos</td><td>-abais</td><td>-aban</td></tr>
                     <tr><td>-ER / -IR</td><td>-ía</td><td>-ías</td><td>-ía</td><td>-íamos</td><td>-íais</td><td>-ían</td></tr>
                 </table>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem; text-align: center;">
-                    <strong>Note:</strong> Only three verbs are irregular in the imperfect — <em>ser</em> (era), <em>ir</em> (iba), and <em>ver</em> (veía — not in this deck). Everything else follows the endings above.
-                </p>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem; text-align: center;"><strong>Note:</strong> Only three verbs are irregular in the imperfect — <em>ser</em> (era), <em>ir</em> (iba), and <em>ver</em> (veía — not in this deck). Everything else follows the endings above.</p>
 
                 <h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">Pretérito Perfecto (Compound)</h3>
                 <table class="ref-table">
                     <tr><th>Auxiliary</th><th>yo</th><th>tú</th><th>él / ella</th><th>nosotros</th><th>vosotros</th><th>ellos / ellas</th></tr>
                     <tr><td>haber</td><td>he</td><td>has</td><td>ha</td><td>hemos</td><td>habéis</td><td>han</td></tr>
                 </table>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem; text-align: center;">
-                    <strong>Formation:</strong> haber + past participle. -AR verbs take <strong>-ado</strong> (hablado); -ER / -IR verbs take <strong>-ido</strong> (comido, vivido). The participle is invariable — it always ends in <strong>-o</strong>.
-                </p>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem; text-align: center;">
-                    <strong>Irregular participles in this deck:</strong> hacer → <em>hecho</em>, decir → <em>dicho</em>, poner → <em>puesto</em>, escribir → <em>escrito</em>, ser → <em>sido</em>.
-                </p>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem; text-align: center;"><strong>Formation:</strong> haber + past participle. -AR verbs take <strong>-ado</strong> (hablado); -ER / -IR verbs take <strong>-ido</strong> (comido, vivido). The participle is invariable — it always ends in <strong>-o</strong>.</p>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem; text-align: center;"><strong>Irregular participles in this deck:</strong> hacer → <em>hecho</em>, decir → <em>dicho</em>, poner → <em>puesto</em>, escribir → <em>escrito</em>, ser → <em>sido</em>.</p>
 
                 <h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">Futuro Simple</h3>
                 <table class="ref-table">
                     <tr><th>Paradigm</th><th>yo</th><th>tú</th><th>él / ella</th><th>nosotros</th><th>vosotros</th><th>ellos / ellas</th></tr>
                     <tr><td>All verbs</td><td>-é</td><td>-ás</td><td>-á</td><td>-emos</td><td>-éis</td><td>-án</td></tr>
                 </table>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem; text-align: center;">
-                    <strong>Note:</strong> Endings attach to the <em>full infinitive</em> — hablar → hablaré, comer → comeré, vivir → viviré.
-                </p>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem; text-align: center;"><strong>Note:</strong> Endings attach to the <em>full infinitive</em> — hablar → hablaré, comer → comeré, vivir → viviré.</p>
 
                 <h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">Condicional</h3>
                 <table class="ref-table">
                     <tr><th>Paradigm</th><th>yo</th><th>tú</th><th>él / ella</th><th>nosotros</th><th>vosotros</th><th>ellos / ellas</th></tr>
                     <tr><td>All verbs</td><td>-ía</td><td>-ías</td><td>-ía</td><td>-íamos</td><td>-íais</td><td>-ían</td></tr>
                 </table>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem; text-align: center;">
-                    <strong>Note:</strong> The conditional uses the same stem as the future.
-                </p>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem; text-align: center;"><strong>Note:</strong> The conditional uses the same stem as the future.</p>
 
                 <h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">Irregular Future / Conditional Stems</h3>
                 <table class="ref-table">
@@ -573,9 +539,7 @@
                     <tr><td>decir / venir</td><td>e → i / ie + go-yo</td><td>Irregular present (digo, dices… / vengo, vienes…)</td></tr>
                     <tr><td>dormir</td><td>o → u</td><td>Only 3rd person preterite (durmió, durmieron)</td></tr>
                 </table>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem; text-align: center;">
-                    <strong>Drill rule:</strong> When a stem change applies, the answer must be the <em>full form</em> — typing only the ending wouldn't demonstrate that you know the change.
-                </p>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem; text-align: center;"><strong>Drill rule:</strong> When a stem change applies, the answer must be the <em>full form</em> — typing only the ending wouldn't demonstrate that you know the change.</p>
 
                 <h3 style="color: var(--accent); margin-top: 1.5rem; text-align: center;">"Go" Verbs</h3>
                 <table class="ref-table">
@@ -627,6 +591,7 @@
             <button id="drill-bucket-btn" onclick="drillActiveBucket()">🎯 Drill</button>
             <button id="clear-bucket-btn" onclick="clearActiveBucket()">🗑️ Clear</button>
             <button id="clear-bucket-known-btn" onclick="clearPinnedToKnown()" style="display: none;">✅ Clear → Known</button>
+            <button id="copy-pinned-btn" onclick="copyPinnedToClipboard()" style="display: none;">📋 Copy</button>
         </div>
     </div>
 
@@ -643,6 +608,7 @@
     var accentMode = "lenient";
     var autoSpeakInfinitiveSetting = true;
     var showSpanishOnCard = true;
+    var pinnedInRotation = true;
     var hintLevel = "basic";
     var autoPinThreshold = 3;
     var knownMode = "adaptive";
@@ -688,13 +654,9 @@
         }
     }
 
-    // ============================================================
-    // PRETÉRITO PERFECTO — shared haber paradigm
-    // ============================================================
     var PP_PARADIGM = { yo: "he", tu: "has", el: "ha", nosotros: "hemos", vosotros: "habéis", ellos: "han" };
 
     var masterVerbDictionary = [
-        // ==================== -AR REGULARS ====================
         { verb: "Hablar", types: ["ar"], stem: "habl", participle: "hablado", meaning: "to speak",
           english: { base: "speak", third: "speaks", past: "spoke", enPP: "spoken" }, tenseHints: {},
           paradigms: {
@@ -731,8 +693,6 @@
             fut:  { yo: "é", tu: "ás", el: "á", nosotros: "emos", vosotros: "éis", ellos: "án" },
             cond: { yo: "ía", tu: "ías", el: "ía", nosotros: "íamos", vosotros: "íais", ellos: "ían" }
         }},
-
-        // ==================== -ER REGULARS ====================
         { verb: "Comer", types: ["er"], stem: "com", participle: "comido", meaning: "to eat",
           english: { base: "eat", third: "eats", past: "ate", enPP: "eaten" }, tenseHints: {},
           paradigms: {
@@ -760,8 +720,6 @@
             fut:  { yo: "é", tu: "ás", el: "á", nosotros: "emos", vosotros: "éis", ellos: "án" },
             cond: { yo: "ía", tu: "ías", el: "ía", nosotros: "íamos", vosotros: "íais", ellos: "ían" }
         }},
-
-        // ==================== -IR REGULARS ====================
         { verb: "Vivir", types: ["ir"], stem: "viv", participle: "vivido", meaning: "to live",
           english: { base: "live", third: "lives", past: "lived", enPP: "lived" }, tenseHints: {},
           paradigms: {
@@ -789,14 +747,10 @@
             fut:  { yo: "é", tu: "ás", el: "á", nosotros: "emos", vosotros: "éis", ellos: "án" },
             cond: { yo: "ía", tu: "ías", el: "ía", nosotros: "íamos", vosotros: "íais", ellos: "ían" }
         }},
-
-        // ==================== STEM-CHANGERS ====================
         { verb: "Pensar", types: ["ar", "stemchange"], stem: "pens", stressedStem: "piens", participle: "pensado",
           meaning: "to think", english: { base: "think", third: "thinks", past: "thought", enPP: "thought" },
           tenseHints: { pres: "Boot stem change (e → ie)" },
-          tenseDetails: {
-            pres: "piens- in yo/tú/él/ellos (pienso, piensas, piensa, piensan); pens- unchanged in nosotros/vosotros (pensamos, pensáis)"
-          },
+          tenseDetails: { pres: "piens- in yo/tú/él/ellos (pienso, piensas, piensa, piensan); pens- unchanged in nosotros/vosotros (pensamos, pensáis)" },
           paradigms: {
             pres: { yo: "ie-o", tu: "ie-as", el: "ie-a", nosotros: "amos", vosotros: "áis", ellos: "ie-an" },
             pret: { yo: "é", tu: "aste", el: "ó", nosotros: "amos", vosotros: "asteis", ellos: "aron" },
@@ -807,9 +761,7 @@
         { verb: "Entender", types: ["er", "stemchange"], stem: "entend", stressedStem: "entiend", participle: "entendido",
           meaning: "to understand", english: { base: "understand", third: "understands", past: "understood", enPP: "understood" },
           tenseHints: { pres: "Boot stem change (e → ie)" },
-          tenseDetails: {
-            pres: "entiend- in yo/tú/él/ellos (entiendo, entiendes, entiende, entienden); entend- unchanged in nosotros/vosotros (entendemos, entendéis)"
-          },
+          tenseDetails: { pres: "entiend- in yo/tú/él/ellos (entiendo, entiendes, entiende, entienden); entend- unchanged in nosotros/vosotros (entendemos, entendéis)" },
           paradigms: {
             pres: { yo: "ie-o", tu: "ie-es", el: "ie-e", nosotros: "emos", vosotros: "éis", ellos: "ie-en" },
             pret: { yo: "í", tu: "iste", el: "ió", nosotros: "imos", vosotros: "isteis", ellos: "ieron" },
@@ -819,20 +771,10 @@
         }},
         { verb: "Poder", types: ["er", "stemchange"], stem: "pod", stressedStem: "pued", participle: "podido",
           meaning: "to be able to / can",
-          english: { base: "can", third: "can", past: "could", enPP: "been able to", impfBase: "be able to", futBase: "be able to", condBase: "be able to" },
+          english: { base: "can", third: "can", past: "could", enPP: "been able to", impfBase: "be able to", futBase: "be able to", condBase: "be able to", pretBase: "managed to" },
           stemChangeTenses: ["pres"], irregularTenses: ["pret", "fut", "cond"],
-          tenseHints: {
-            pres: "Boot stem change (o → ue)",
-            pret: "Strong preterite",
-            fut: "Irregular future stem",
-            cond: "Irregular conditional stem"
-          },
-          tenseDetails: {
-            pres: "pued- in yo/tú/él/ellos (puedo, puedes, puede, pueden); pod- unchanged in nosotros/vosotros (podemos, podéis)",
-            pret: "pudieron → pud- (pude, pudo, etc.)",
-            fut: "podr-",
-            cond: "podr-"
-          },
+          tenseHints: { pres: "Boot stem change (o → ue)", pret: "Strong preterite", fut: "Irregular future stem", cond: "Irregular conditional stem" },
+          tenseDetails: { pres: "pued- in yo/tú/él/ellos (puedo, puedes, puede, pueden); pod- unchanged in nosotros/vosotros (podemos, podéis)", pret: "pudieron → pud- (pude, pudo, etc.)", fut: "podr-", cond: "podr-" },
           paradigms: {
             pres: { yo: "ue-o", tu: "ue-es", el: "ue-e", nosotros: "emos", vosotros: "éis", ellos: "ue-en" },
             pret: { yo: "pude", tu: "pudiste", el: "pudo", nosotros: "pudimos", vosotros: "pudisteis", ellos: "pudieron" },
@@ -842,20 +784,10 @@
         }},
         { verb: "Querer", types: ["er", "stemchange"], stem: "quer", stressedStem: "quier", participle: "querido",
           meaning: "to want / to love",
-          english: { base: "want", third: "wants", past: "wanted", enPP: "wanted" },
+          english: { base: "want", third: "wants", past: "wanted", enPP: "wanted", pretBase: "tried to" },
           stemChangeTenses: ["pres"], irregularTenses: ["pret", "fut", "cond"],
-          tenseHints: {
-            pres: "Boot stem change (e → ie)",
-            pret: "Strong preterite",
-            fut: "Irregular future stem",
-            cond: "Irregular conditional stem"
-          },
-          tenseDetails: {
-            pres: "quier- in yo/tú/él/ellos (quiero, quieres, quiere, quieren); quer- unchanged in nosotros/vosotros (queremos, queréis)",
-            pret: "quisieron → quis- (quise, quiso, etc.)",
-            fut: "querr-",
-            cond: "querr-"
-          },
+          tenseHints: { pres: "Boot stem change (e → ie)", pret: "Strong preterite", fut: "Irregular future stem", cond: "Irregular conditional stem" },
+          tenseDetails: { pres: "quier- in yo/tú/él/ellos (quiero, quieres, quiere, quieren); quer- unchanged in nosotros/vosotros (queremos, queréis)", pret: "quisieron → quis- (quise, quiso, etc.)", fut: "querr-", cond: "querr-" },
           paradigms: {
             pres: { yo: "ie-o", tu: "ie-es", el: "ie-e", nosotros: "emos", vosotros: "éis", ellos: "ie-en" },
             pret: { yo: "quise", tu: "quisiste", el: "quiso", nosotros: "quisimos", vosotros: "quisisteis", ellos: "quisieron" },
@@ -866,14 +798,8 @@
         { verb: "Dormir", types: ["ir", "stemchange"], stem: "dorm", stressedStem: "duerm", participle: "dormido",
           meaning: "to sleep", english: { base: "sleep", third: "sleeps", past: "slept", enPP: "slept" },
           stemChangeTenses: ["pres"], irregularTenses: ["pret"],
-          tenseHints: {
-            pres: "Boot stem change (o → ue)",
-            pret: "Third-person stem shift (o → u)"
-          },
-          tenseDetails: {
-            pres: "duerm- in yo/tú/él/ellos (duermo, duermes, duerme, duermen); dorm- unchanged in nosotros/vosotros (dormimos, dormís)",
-            pret: "durmió, durmieron (3sg and 3pl only)"
-          },
+          tenseHints: { pres: "Boot stem change (o → ue)", pret: "Third-person stem shift (o → u)" },
+          tenseDetails: { pres: "duerm- in yo/tú/él/ellos (duermo, duermes, duerme, duermen); dorm- unchanged in nosotros/vosotros (dormimos, dormís)", pret: "durmió, durmieron (3sg and 3pl only)" },
           paradigms: {
             pres: { yo: "ue-o", tu: "ue-es", el: "ue-e", nosotros: "imos", vosotros: "ís", ellos: "ue-en" },
             pret: { yo: "dormí", tu: "dormiste", el: "durmió", nosotros: "dormimos", vosotros: "dormisteis", ellos: "durmieron" },
@@ -881,23 +807,11 @@
             fut:  { yo: "é", tu: "ás", el: "á", nosotros: "emos", vosotros: "éis", ellos: "án" },
             cond: { yo: "ía", tu: "ías", el: "ía", nosotros: "íamos", vosotros: "íais", ellos: "ían" }
         }},
-
-        // ==================== IRREGULAR GIANTS ====================
         { verb: "Tener", types: ["er", "stemchange", "go"], stem: "ten", participle: "tenido",
           meaning: "to have", english: { base: "have", third: "has", past: "had", enPP: "had" },
           irregularTenses: ["pres", "pret", "fut", "cond"],
-          tenseHints: {
-            pres: "Irregular yo (tengo) + boot stem change (e → ie)",
-            pret: "Strong preterite (tuv-)",
-            fut: "Irregular stem (tendr-)",
-            cond: "Irregular stem (tendr-)"
-          },
-          tenseDetails: {
-            pres: "tengo (yo-form); tien- stressed stem elsewhere (tienes, tiene, tienen); ten- unchanged in nosotros/vosotros (tenemos, tenéis)",
-            pret: "tuvieron → tuv- (tuve, tuvo, etc.)",
-            fut: "tendr-",
-            cond: "tendr-"
-          },
+          tenseHints: { pres: "Irregular yo (tengo) + boot stem change (e → ie)", pret: "Strong preterite (tuv-)", fut: "Irregular stem (tendr-)", cond: "Irregular stem (tendr-)" },
+          tenseDetails: { pres: "tengo (yo-form); tien- stressed stem elsewhere (tienes, tiene, tienen); ten- unchanged in nosotros/vosotros (tenemos, tenéis)", pret: "tuvieron → tuv- (tuve, tuvo, etc.)", fut: "tendr-", cond: "tendr-" },
           paradigms: {
             pres: { yo: "tengo", tu: "tienes", el: "tiene", nosotros: "tenemos", vosotros: "tenéis", ellos: "tienen" },
             pret: { yo: "tuve", tu: "tuviste", el: "tuvo", nosotros: "tuvimos", vosotros: "tuvisteis", ellos: "tuvieron" },
@@ -908,18 +822,8 @@
         { verb: "Hacer", types: ["er", "go"], stem: "hac", participle: "hecho",
           meaning: "to do / make", english: { base: "do", third: "does", past: "did", enPP: "done" },
           irregularTenses: ["pres", "pret", "fut", "cond"],
-          tenseHints: {
-            pres: "Irregular yo-form",
-            pret: "Strong preterite",
-            fut: "Irregular future stem",
-            cond: "Irregular conditional stem"
-          },
-          tenseDetails: {
-            pres: "hago",
-            pret: "hicieron → hic-; hiz- before o (hizo)",
-            fut: "har-",
-            cond: "har-"
-          },
+          tenseHints: { pres: "Irregular yo-form", pret: "Strong preterite", fut: "Irregular future stem", cond: "Irregular conditional stem" },
+          tenseDetails: { pres: "hago", pret: "hicieron → hic-; hiz- before o (hizo)", fut: "har-", cond: "har-" },
           paradigms: {
             pres: { yo: "hago", tu: "haces", el: "hace", nosotros: "hacemos", vosotros: "hacéis", ellos: "hacen" },
             pret: { yo: "hice", tu: "hiciste", el: "hizo", nosotros: "hicimos", vosotros: "hicisteis", ellos: "hicieron" },
@@ -928,20 +832,10 @@
             cond: { yo: "haría", tu: "harías", el: "haría", nosotros: "haríamos", vosotros: "haríais", ellos: "harían" }
         }},
         { verb: "Saber", types: ["er", "go"], stem: "sab", participle: "sabido",
-          meaning: "to know (facts)", english: { base: "know", third: "knows", past: "knew", enPP: "known" },
+          meaning: "to know (facts)", english: { base: "know", third: "knows", past: "knew", enPP: "known", pretBase: "found out" },
           irregularTenses: ["pres", "pret", "fut", "cond"],
-          tenseHints: {
-            pres: "Irregular yo-form",
-            pret: "Strong preterite",
-            fut: "Irregular future stem",
-            cond: "Irregular conditional stem"
-          },
-          tenseDetails: {
-            pres: "sé",
-            pret: "supieron → sup- (supe, supo, etc.)",
-            fut: "sabr-",
-            cond: "sabr-"
-          },
+          tenseHints: { pres: "Irregular yo-form", pret: "Strong preterite", fut: "Irregular future stem", cond: "Irregular conditional stem" },
+          tenseDetails: { pres: "sé", pret: "supieron → sup- (supe, supo, etc.)", fut: "sabr-", cond: "sabr-" },
           paradigms: {
             pres: { yo: "sé", tu: "sabes", el: "sabe", nosotros: "sabemos", vosotros: "sabéis", ellos: "saben" },
             pret: { yo: "supe", tu: "supiste", el: "supo", nosotros: "supimos", vosotros: "supisteis", ellos: "supieron" },
@@ -952,18 +846,8 @@
         { verb: "Decir", types: ["ir", "stemchange", "go"], stem: "dec", participle: "dicho",
           meaning: "to say / tell", english: { base: "say", third: "says", past: "said", enPP: "said" },
           irregularTenses: ["pres", "pret", "fut", "cond"],
-          tenseHints: {
-            pres: "Irregular yo-form + boot stem change (e → i)",
-            pret: "Strong preterite",
-            fut: "Irregular future stem",
-            cond: "Irregular conditional stem"
-          },
-          tenseDetails: {
-            pres: "digo (yo-form); dic- elsewhere except 3pl dij-",
-            pret: "dijeron → dij- (dije, dijo, etc.)",
-            fut: "dir-",
-            cond: "dir-"
-          },
+          tenseHints: { pres: "Irregular yo-form + boot stem change (e → i)", pret: "Strong preterite", fut: "Irregular future stem", cond: "Irregular conditional stem" },
+          tenseDetails: { pres: "digo (yo-form); dic- elsewhere except 3pl dij-", pret: "dijeron → dij- (dije, dijo, etc.)", fut: "dir-", cond: "dir-" },
           paradigms: {
             pres: { yo: "digo", tu: "dices", el: "dice", nosotros: "decimos", vosotros: "decís", ellos: "dicen" },
             pret: { yo: "dije", tu: "dijiste", el: "dijo", nosotros: "dijimos", vosotros: "dijisteis", ellos: "dijeron" },
@@ -974,18 +858,8 @@
         { verb: "Venir", types: ["ir", "stemchange", "go"], stem: "ven", participle: "venido",
           meaning: "to come", english: { base: "come", third: "comes", past: "came", enPP: "come" },
           irregularTenses: ["pres", "pret", "fut", "cond"],
-          tenseHints: {
-            pres: "Irregular yo-form + boot stem change (e → ie)",
-            pret: "Strong preterite",
-            fut: "Irregular future stem",
-            cond: "Irregular conditional stem"
-          },
-          tenseDetails: {
-            pres: "vengo (yo-form); vien- stressed stem elsewhere",
-            pret: "vinieron → vin- (vine, vino, etc.)",
-            fut: "vendr-",
-            cond: "vendr-"
-          },
+          tenseHints: { pres: "Irregular yo-form + boot stem change (e → ie)", pret: "Strong preterite", fut: "Irregular future stem", cond: "Irregular conditional stem" },
+          tenseDetails: { pres: "vengo (yo-form); vien- stressed stem elsewhere", pret: "vinieron → vin- (vine, vino, etc.)", fut: "vendr-", cond: "vendr-" },
           paradigms: {
             pres: { yo: "vengo", tu: "vienes", el: "viene", nosotros: "venimos", vosotros: "venís", ellos: "vienen" },
             pret: { yo: "vine", tu: "viniste", el: "vino", nosotros: "vinimos", vosotros: "vinisteis", ellos: "vinieron" },
@@ -996,18 +870,8 @@
         { verb: "Poner", types: ["er", "go"], stem: "pon", participle: "puesto",
           meaning: "to put / place", english: { base: "put", third: "puts", past: "put", enPP: "put" },
           irregularTenses: ["pres", "pret", "fut", "cond"],
-          tenseHints: {
-            pres: "Irregular yo-form",
-            pret: "Strong preterite",
-            fut: "Irregular future stem",
-            cond: "Irregular conditional stem"
-          },
-          tenseDetails: {
-            pres: "pongo",
-            pret: "pusieron → pus- (puse, puso, etc.)",
-            fut: "pondr-",
-            cond: "pondr-"
-          },
+          tenseHints: { pres: "Irregular yo-form", pret: "Strong preterite", fut: "Irregular future stem", cond: "Irregular conditional stem" },
+          tenseDetails: { pres: "pongo", pret: "pusieron → pus- (puse, puso, etc.)", fut: "pondr-", cond: "pondr-" },
           paradigms: {
             pres: { yo: "pongo", tu: "pones", el: "pone", nosotros: "ponemos", vosotros: "ponéis", ellos: "ponen" },
             pret: { yo: "puse", tu: "pusiste", el: "puso", nosotros: "pusimos", vosotros: "pusisteis", ellos: "pusieron" },
@@ -1018,16 +882,8 @@
         { verb: "Salir", types: ["ir", "go"], stem: "sal", participle: "salido",
           meaning: "to leave / go out", english: { base: "leave", third: "leaves", past: "left", enPP: "left" },
           irregularTenses: ["pres", "fut", "cond"],
-          tenseHints: {
-            pres: "Irregular yo-form",
-            fut: "Irregular future stem",
-            cond: "Irregular conditional stem"
-          },
-          tenseDetails: {
-            pres: "salgo",
-            fut: "saldr-",
-            cond: "saldr-"
-          },
+          tenseHints: { pres: "Irregular yo-form", fut: "Irregular future stem", cond: "Irregular conditional stem" },
+          tenseDetails: { pres: "salgo", fut: "saldr-", cond: "saldr-" },
           paradigms: {
             pres: { yo: "salgo", tu: "sales", el: "sale", nosotros: "salimos", vosotros: "salís", ellos: "salen" },
             pret: { yo: "í", tu: "iste", el: "ió", nosotros: "imos", vosotros: "isteis", ellos: "ieron" },
@@ -1038,14 +894,8 @@
         { verb: "Dar", types: ["ar", "go"], stem: "d", participle: "dado",
           meaning: "to give", english: { base: "give", third: "gives", past: "gave", enPP: "given" },
           irregularTenses: ["pres", "pret"],
-          tenseHints: {
-            pres: "Irregular yo-form",
-            pret: "Irregular preterite — no accents"
-          },
-          tenseDetails: {
-            pres: "doy",
-            pret: "di, dio (no accents — distinct from dijo)"
-          },
+          tenseHints: { pres: "Irregular yo-form", pret: "Irregular preterite — no accents" },
+          tenseDetails: { pres: "doy", pret: "di, dio (no accents — distinct from dijo)" },
           paradigms: {
             pres: { yo: "doy", tu: "das", el: "da", nosotros: "damos", vosotros: "dais", ellos: "dan" },
             pret: { yo: "di", tu: "diste", el: "dio", nosotros: "dimos", vosotros: "disteis", ellos: "dieron" },
@@ -1059,16 +909,8 @@
                      presOverride: { yo: "am", tu: "are", el: "is", nosotros: "are", vosotros: "are", ellos: "are" },
                      pastOverride: { yo: "was", tu: "were", el: "was", nosotros: "were", vosotros: "were", ellos: "were" } },
           irregularTenses: ["pres", "pret", "impf"],
-          tenseHints: {
-            pres: "Fully irregular",
-            pret: "Shares forms with ir",
-            impf: "Irregular imperfect"
-          },
-          tenseDetails: {
-            pres: "soy, eres, es, somos, sois, son",
-            pret: "fui, fuiste, fue, fuimos, fuisteis, fueron (same as ir)",
-            impf: "era, eras, era, éramos, erais, eran"
-          },
+          tenseHints: { pres: "Fully irregular", pret: "Shares forms with ir", impf: "Irregular imperfect" },
+          tenseDetails: { pres: "soy, eres, es, somos, sois, son", pret: "fui, fuiste, fue, fuimos, fuisteis, fueron (same as ir)", impf: "era, eras, era, éramos, erais, eran" },
           paradigms: {
             pres: { yo: "soy", tu: "eres", el: "es", nosotros: "somos", vosotros: "sois", ellos: "son" },
             pret: { yo: "fui", tu: "fuiste", el: "fue", nosotros: "fuimos", vosotros: "fuisteis", ellos: "fueron" },
@@ -1082,14 +924,8 @@
                      presOverride: { yo: "am", tu: "are", el: "is", nosotros: "are", vosotros: "are", ellos: "are" },
                      pastOverride: { yo: "was", tu: "were", el: "was", nosotros: "were", vosotros: "were", ellos: "were" } },
           irregularTenses: ["pres", "pret"],
-          tenseHints: {
-            pres: "Irregular present",
-            pret: "Strong preterite"
-          },
-          tenseDetails: {
-            pres: "estoy, estás, está, estamos, estáis, están",
-            pret: "estuvieron → estuv- (estuve, estuvo, etc.)"
-          },
+          tenseHints: { pres: "Irregular present", pret: "Strong preterite" },
+          tenseDetails: { pres: "estoy, estás, está, estamos, estáis, están", pret: "estuvieron → estuv- (estuve, estuvo, etc.)" },
           paradigms: {
             pres: { yo: "estoy", tu: "estás", el: "está", nosotros: "estamos", vosotros: "estáis", ellos: "están" },
             pret: { yo: "estuve", tu: "estuviste", el: "estuvo", nosotros: "estuvimos", vosotros: "estuvisteis", ellos: "estuvieron" },
@@ -1100,16 +936,8 @@
         { verb: "Ir", types: ["irreg"], stem: "[irregular]", participle: "ido",
           meaning: "to go", english: { base: "go", third: "goes", past: "went", enPP: "gone" },
           irregularTenses: ["pres", "pret", "impf"],
-          tenseHints: {
-            pres: "Fully irregular",
-            pret: "Shares forms with ser",
-            impf: "Irregular imperfect"
-          },
-          tenseDetails: {
-            pres: "voy, vas, va, vamos, vais, van",
-            pret: "fui, fuiste, fue, fuimos, fuisteis, fueron (same as ser)",
-            impf: "iba, ibas, iba, íbamos, ibais, iban"
-          },
+          tenseHints: { pres: "Fully irregular", pret: "Shares forms with ser", impf: "Irregular imperfect" },
+          tenseDetails: { pres: "voy, vas, va, vamos, vais, van", pret: "fui, fuiste, fue, fuimos, fuisteis, fueron (same as ser)", impf: "iba, ibas, iba, íbamos, ibais, iban" },
           paradigms: {
             pres: { yo: "voy", tu: "vas", el: "va", nosotros: "vamos", vosotros: "vais", ellos: "van" },
             pret: { yo: "fui", tu: "fuiste", el: "fue", nosotros: "fuimos", vosotros: "fuisteis", ellos: "fueron" },
@@ -1119,125 +947,65 @@
         }}
     ];
 
-    // Attach shared pp paradigm to every verb
     masterVerbDictionary.forEach(function(v) { v.paradigms.pp = PP_PARADIGM; });
 
     var tenseNamesFullMap = { pres: "Presente", pret: "Pretérito Indefinido", impf: "Pretérito Imperfecto", pp: "Pretérito Perfecto", fut: "Futuro Simple", cond: "Condicional" };
     var subjectPronounsArray = ["yo", "tu", "el", "nosotros", "vosotros", "ellos"];
     var subjectLabelsFullMap = { yo: "Yo (I)", tu: "Tú (You)", el: "Él / Ella (He/She)", nosotros: "Nosotros (We)", vosotros: "Vosotros (You pl.)", ellos: "Ellos / Ellas (They)" };
 
-    // ============================================================
-    // CORE HELPERS
-    // ============================================================
-    function cardKey(card) {
-        return (card.verb + "|" + card.tense + "|" + card.pronoun).toLowerCase();
-    }
-    function entryKey(entry) {
-        if (entry.key) return entry.key;
-        return (entry.verb + "|" + entry.tense + "|" + entry.pronoun).toLowerCase();
-    }
-    function findLogEntry(key) {
-        for (var i = 0; i < mistakeLog.length; i++) {
-            if (entryKey(mistakeLog[i]) === key) return mistakeLog[i];
-        }
-        return null;
-    }
-    function removeLogEntry(key) {
-        for (var i = 0; i < mistakeLog.length; i++) {
-            if (entryKey(mistakeLog[i]) === key) {
-                mistakeLog.splice(i, 1);
-                return;
-            }
-        }
-    }
-    function graduateToKnown(key) {
-        if (!knownCards[key]) {
-            knownCards[key] = { firstKnownAt: Date.now() };
-        }
-    }
-    function verbMatchesFilter(item) {
-        for (var i = 0; i < item.types.length; i++) {
-            if (selectedIntervals[item.types[i]] !== false) return true;
-        }
-        return false;
-    }
+    function cardKey(card) { return (card.verb + "|" + card.tense + "|" + card.pronoun).toLowerCase(); }
+    function entryKey(entry) { if (entry.key) return entry.key; return (entry.verb + "|" + entry.tense + "|" + entry.pronoun).toLowerCase(); }
+    function findLogEntry(key) { for (var i = 0; i < mistakeLog.length; i++) { if (entryKey(mistakeLog[i]) === key) return mistakeLog[i]; } return null; }
+    function removeLogEntry(key) { for (var i = 0; i < mistakeLog.length; i++) { if (entryKey(mistakeLog[i]) === key) { mistakeLog.splice(i, 1); return; } } }
+    function graduateToKnown(key) { if (!knownCards[key]) { knownCards[key] = { firstKnownAt: Date.now() }; } }
+    function verbMatchesFilter(item) { for (var i = 0; i < item.types.length; i++) { if (selectedIntervals[item.types[i]] !== false) return true; } return false; }
 
     function makeLogEntry(card, yours) {
-        return {
-            key: cardKey(card),
-            verb: card.verb,
-            tense: card.tense,
-            pronoun: card.pronoun,
+        return { key: cardKey(card), verb: card.verb, tense: card.tense, pronoun: card.pronoun,
             prompt: card.verb + " (" + tenseNamesFullMap[card.tense] + " • " + card.pronoun + ")",
-            correct: computeFullWord(card, card.ending),
-            yours: yours,
-            status: "pending",
-            failCount: 1,
-            firstSeen: Date.now(),
-            lastSeen: Date.now()
-        };
+            correct: computeFullWord(card, card.ending), yours: yours, status: "pending", failCount: 1,
+            firstSeen: Date.now(), lastSeen: Date.now() };
     }
 
     function normalizeEntry(e) {
         if (!e) return null;
-        // Current-format entries
         if (e.key && e.verb && e.tense && e.pronoun) {
-            // Migration from old statuses
             var newStatus = "pending";
             if (e.pinned === true) newStatus = "pinned";
             else if (e.status === "pinned") newStatus = "pinned";
             else if (e.status === "active") newStatus = "active";
             else if (e.status === "pending") newStatus = "pending";
-            else if (e.status === "redeemed") newStatus = "active"; // redeemed → active (dropped in migrateLog)
+            else if (e.status === "redeemed") newStatus = "active";
             e.status = newStatus;
-            delete e.pinned;
-            delete e.redeemStreak;
+            delete e.pinned; delete e.redeemStreak;
             if (typeof e.failCount !== "number") e.failCount = 1;
             if (!e.firstSeen) e.firstSeen = Date.now();
             if (!e.lastSeen) e.lastSeen = Date.now();
             return e;
         }
-        // Old minimal format {prompt, correct, yours}
         if (!e.prompt) return null;
         var m = e.prompt.match(/^(.+?)\s*\((.+?)\s*•\s*(.+?)\)$/);
         if (!m) return null;
-        var verb = m[1].trim();
-        var tenseName = m[2].trim();
-        var pronoun = m[3].trim();
+        var verb = m[1].trim(); var tenseName = m[2].trim(); var pronoun = m[3].trim();
         var tenseKey = null;
-        for (var tk in tenseNamesFullMap) {
-            if (tenseNamesFullMap[tk] === tenseName) { tenseKey = tk; break; }
-        }
+        for (var tk in tenseNamesFullMap) { if (tenseNamesFullMap[tk] === tenseName) { tenseKey = tk; break; } }
         if (!tenseKey) return null;
         var computedCorrect = "";
         for (var i = 0; i < masterVerbDictionary.length; i++) {
             var v = masterVerbDictionary[i];
             if (v.verb === verb && v.paradigms[tenseKey] && v.paradigms[tenseKey][pronoun] !== undefined) {
-                var cardForCompute = {
-                    verb: v.verb, stem: v.stem, stressedStem: v.stressedStem,
-                    irregularTenses: v.irregularTenses, participle: v.participle,
-                    tense: tenseKey, pronoun: pronoun
-                };
+                var cardForCompute = { verb: v.verb, stem: v.stem, stressedStem: v.stressedStem, irregularTenses: v.irregularTenses, participle: v.participle, tense: tenseKey, pronoun: pronoun };
                 computedCorrect = computeFullWord(cardForCompute, v.paradigms[tenseKey][pronoun]);
                 break;
             }
         }
-        return {
-            key: (verb + "|" + tenseKey + "|" + pronoun).toLowerCase(),
-            verb: verb, tense: tenseKey, pronoun: pronoun,
-            prompt: e.prompt,
-            correct: computedCorrect || e.correct || "",
-            yours: e.yours || "",
-            status: "pending",
-            failCount: 1,
-            firstSeen: Date.now(),
-            lastSeen: Date.now()
-        };
+        return { key: (verb + "|" + tenseKey + "|" + pronoun).toLowerCase(), verb: verb, tense: tenseKey, pronoun: pronoun,
+            prompt: e.prompt, correct: computedCorrect || e.correct || "", yours: e.yours || "", status: "pending", failCount: 1,
+            firstSeen: Date.now(), lastSeen: Date.now() };
     }
 
     function migrateLog() {
-        var migrated = [];
-        var seen = {};
+        var migrated = []; var seen = {};
         for (var i = 0; i < mistakeLog.length; i++) {
             var norm = normalizeEntry(mistakeLog[i]);
             if (!norm) continue;
@@ -1247,132 +1015,140 @@
                 if (norm.lastSeen > seen[norm.key].lastSeen) seen[norm.key].lastSeen = norm.lastSeen;
                 continue;
             }
-            seen[norm.key] = norm;
-            migrated.push(norm);
+            seen[norm.key] = norm; migrated.push(norm);
         }
         mistakeLog = migrated;
     }
 
-    // ============================================================
-    // LOG UPDATE — four-pile state machine
-    // ============================================================
     function handleLogUpdate(card, isCorrect, userInput) {
         if (playMode) return { mode: 'play' };
-
         var key = cardKey(card);
         var entry = findLogEntry(key);
         var isKnown = !!knownCards[key];
         var isFirstAttempt = !(key in sessionFirstAttempts);
-
         if (!isFirstAttempt) return { mode: 'not-first-attempt' };
         sessionFirstAttempts[key] = isCorrect;
-
         var result = { mode: 'no-change' };
-
         if (isCorrect) {
-            if (isKnown) {
-                result.mode = 'still-known';
-            } else if (entry) {
-                if (entry.status === "pinned") {
-                    entry.lastSeen = Date.now();
-                    result.mode = 'still-pinned';
-                } else if (entry.status === "pending") {
-                    entry.status = "active";
-                    entry.lastSeen = Date.now();
-                    sessionRecoveredCount++;
-                    result.mode = 'pending-to-active';
-                } else if (entry.status === "active") {
-                    graduateToKnown(key);
-                    sessionKnownCount++;
-                    removeLogEntry(key);
-                    result.mode = 'active-to-known';
-                }
-            } else {
-                graduateToKnown(key);
-                sessionKnownCount++;
-                result.mode = 'fresh-to-known';
-            }
+            if (isKnown) { result.mode = 'still-known'; }
+            else if (entry) {
+                if (entry.status === "pinned") { entry.lastSeen = Date.now(); result.mode = 'still-pinned'; }
+                else if (entry.status === "pending") { entry.status = "active"; entry.lastSeen = Date.now(); sessionRecoveredCount++; result.mode = 'pending-to-active'; }
+                else if (entry.status === "active") { graduateToKnown(key); sessionKnownCount++; removeLogEntry(key); result.mode = 'active-to-known'; }
+            } else { graduateToKnown(key); sessionKnownCount++; result.mode = 'fresh-to-known'; }
         } else {
             if (isKnown) {
                 delete knownCards[key];
                 var knEntry = makeLogEntry(card, userInput);
-                if (autoPinThreshold === 1) {
-                    knEntry.status = "pinned";
-                    result.mode = 'known-to-pinned';
-                } else {
-                    result.mode = 'known-to-pending';
-                }
+                if (autoPinThreshold === 1) { knEntry.status = "pinned"; result.mode = 'known-to-pinned'; }
+                else { result.mode = 'known-to-pending'; }
                 mistakeLog.push(knEntry);
             } else if (entry) {
-                entry.failCount = (entry.failCount || 1) + 1;
-                entry.yours = userInput;
-                entry.lastSeen = Date.now();
-                if (entry.status === "pinned") {
-                    result.mode = 'still-pinned-wrong';
-                    result.failCount = entry.failCount;
-                } else {
+                entry.failCount = (entry.failCount || 1) + 1; entry.yours = userInput; entry.lastSeen = Date.now();
+                if (entry.status === "pinned") { result.mode = 'still-pinned-wrong'; result.failCount = entry.failCount; }
+                else {
                     entry.status = "pending";
-                    if (autoPinThreshold > 0 && entry.failCount >= autoPinThreshold) {
-                        entry.status = "pinned";
-                        result.mode = 'auto-pinned';
-                        result.failCount = entry.failCount;
-                    } else {
-                        result.mode = 'pending-wrong';
-                        result.failCount = entry.failCount;
-                    }
+                    if (autoPinThreshold > 0 && entry.failCount >= autoPinThreshold) { entry.status = "pinned"; result.mode = 'auto-pinned'; result.failCount = entry.failCount; }
+                    else { result.mode = 'pending-wrong'; result.failCount = entry.failCount; }
                 }
             } else {
                 var freshEntry = makeLogEntry(card, userInput);
-                if (autoPinThreshold === 1) {
-                    freshEntry.status = "pinned";
-                    result.mode = 'fresh-to-pinned';
-                } else {
-                    result.mode = 'fresh-to-pending';
-                }
+                if (autoPinThreshold === 1) { freshEntry.status = "pinned"; result.mode = 'fresh-to-pinned'; }
+                else { result.mode = 'fresh-to-pending'; }
                 mistakeLog.push(freshEntry);
             }
         }
-        updateLogBadges();
-        updateScoreboard();
+        updateLogBadges(); updateScoreboard();
         return result;
     }
 
     function logUpdateMessage(result) {
         if (!result) return '';
         switch (result.mode) {
-            case 'pending-to-active':
-                return '<br><small style="color:#fbbf24;">↩️ Moved back to Active deck</small>';
-            case 'active-to-known':
-                return '<br><small style="color:#4ade80;">✨ Graduated to Known</small>';
-            case 'fresh-to-known':
-                return '<br><small style="color:#4ade80;">✨ Added to Known deck</small>';
-            case 'known-to-pending':
-                return '<br><small style="color:#fbbf24;">↪️ Demoted to Pending (was Known)</small>';
-            case 'auto-pinned':
-                return '<br><small style="color:#ef4444;">🔴 Auto-pinned (fail #' + result.failCount + ')</small>';
-            case 'fresh-to-pending':
-                return '<br><small style="color:#fbbf24;">🟡 Added to Pending</small>';
-            case 'still-pinned-wrong':
-                return '<br><small style="color:#ef4444;">📌 Still pinned (fail #' + result.failCount + ')</small>';
-            case 'play':
-                return '<br><small style="color:#d8b4fe;">🎮 Play mode — progress not recorded</small>';
-            case 'not-first-attempt':
-                return '<br><small style="color:var(--text-muted);">Already answered this session — pile unchanged</small>';
-            case 'fresh-to-pinned':
-                return '<br><small style="color:#ef4444;">🔴 Pinned immediately</small>';
-            case 'known-to-pinned':
-                return '<br><small style="color:#ef4444;">↪️ Demoted to Pinned (was Known)</small>';
-            case 'still-known':
-                return '<br><small style="color:#4ade80;">💚 Stays Known</small>';
-            case 'still-pinned':
-                return '<br><small style="color:#ef4444;">📌 Stays Pinned (still on watchlist)</small>';
-            case 'pending-wrong':
-                return '<br><small style="color:#fbbf24;">🟡 Still Pending (fail #' + result.failCount + ')</small>';
-            case 'no-change':
-                return '<br><small style="color:var(--text-muted);">— no state change</small>';
-            default:
-                return '';
+            case 'pending-to-active': return '<br><small style="color:#fbbf24;">↩️ Moved back to Active deck</small>';
+            case 'active-to-known': return '<br><small style="color:#4ade80;">✨ Graduated to Known</small>';
+            case 'fresh-to-known': return '<br><small style="color:#4ade80;">✨ Added to Known deck</small>';
+            case 'known-to-pending': return '<br><small style="color:#fbbf24;">↪️ Demoted to Pending (was Known)</small>';
+            case 'known-to-pinned': return '<br><small style="color:#ef4444;">↪️ Demoted to Pinned (was Known)</small>';
+            case 'auto-pinned': return '<br><small style="color:#ef4444;">🔴 Auto-pinned (fail #' + result.failCount + ')</small>';
+            case 'fresh-to-pending': return '<br><small style="color:#fbbf24;">🟡 Added to Pending</small>';
+            case 'fresh-to-pinned': return '<br><small style="color:#ef4444;">🔴 Pinned immediately</small>';
+            case 'still-pinned-wrong': return '<br><small style="color:#ef4444;">📌 Still pinned (fail #' + result.failCount + ')</small>';
+            case 'still-known': return '<br><small style="color:#4ade80;">💚 Stays Known</small>';
+            case 'still-pinned': return '<br><small style="color:#ef4444;">📌 Stays Pinned (still on watchlist)</small>';
+            case 'pending-wrong': return '<br><small style="color:#fbbf24;">🟡 Still Pending (fail #' + result.failCount + ')</small>';
+            case 'no-change': return '<br><small style="color:var(--text-muted);">— no state change</small>';
+            case 'not-first-attempt': return '<br><small style="color:var(--text-muted);">Already answered this session — pile unchanged</small>';
+            case 'play': return '<br><small style="color:#d8b4fe;">🎮 Play mode — progress not recorded</small>';
+            default: return '';
         }
+    }
+
+    function resultLeavesPinned(result) {
+        if (!result) return false;
+        return ['still-pinned','still-pinned-wrong','auto-pinned','fresh-to-pinned','known-to-pinned'].indexOf(result.mode) !== -1;
+    }
+
+    function buildInlineUnpinHtml() {
+        return ' <span id="inline-unpin-btn" onclick="inlineUnpinFromCard();" style="cursor:pointer; color:#ef4444; font-size:0.85rem; text-decoration:underline; margin-left:0.5rem;" title="Remove from Pinned">📌 Unpin?</span>';
+    }
+
+    function inlineUnpinFromCard() {
+        if (!currentClockObj) return;
+        var key = cardKey(currentClockObj);
+        var entry = findLogEntry(key);
+        if (entry && entry.status === "pinned") {
+            removeLogEntry(key);
+            saveState();
+            updateLogBadges();
+            updateScoreboard();
+        }
+        var el = document.getElementById('inline-unpin-btn');
+        if (el) {
+            el.textContent = "✅ Unpinned!";
+            el.style.color = "#4ade80";
+            el.style.textDecoration = "none";
+            el.style.cursor = "default";
+            el.onclick = null;
+        }
+    }
+
+    function copyPinnedToClipboard() {
+        var pinned = mistakeLog.filter(function(e) { return e.status === "pinned"; });
+        if (pinned.length === 0) return;
+        var lines = ["Prompt\tCorrect\tLast wrong\tFails"];
+        for (var i = 0; i < pinned.length; i++) {
+            var e = pinned[i];
+            var fails = e.failCount > 1 ? "×" + e.failCount : "";
+            lines.push([e.prompt || "", e.correct || "", e.yours || "", fails].join("\t"));
+        }
+        var text = lines.join("\n");
+        var done = function() {
+            var btn = document.getElementById('copy-pinned-btn');
+            if (!btn) return;
+            var orig = btn.textContent;
+            btn.textContent = "📋 Copied!";
+            setTimeout(function() { btn.textContent = orig; }, 1500);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(done).catch(function() { fallbackCopy(text, done); });
+        } else {
+            fallbackCopy(text, done);
+        }
+    }
+
+    function fallbackCopy(text, done) {
+        try {
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = "fixed";
+            ta.style.left = "-9999px";
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            done();
+        } catch (e) {}
     }
 
     function computeCounts() {
@@ -1380,7 +1156,6 @@
         var tenses = ['pres', 'pret', 'impf', 'pp', 'fut', 'cond'];
         var isolateSel = document.getElementById('verb-isolate-selector');
         var isolatedVerb = isolateSel ? isolateSel.value : "all";
-
         for (var i = 0; i < masterVerbDictionary.length; i++) {
             var item = masterVerbDictionary[i];
             if (isolatedVerb !== "all" && isolatedVerb !== item.verb) continue;
@@ -1393,13 +1168,8 @@
                     var key = (item.verb + "|" + tenses[t] + "|" + subjectPronounsArray[p]).toLowerCase();
                     if (knownCards[key]) { counts.known++; continue; }
                     var entry = findLogEntry(key);
-                    if (entry) {
-                        if (entry.status === "pinned") counts.pinned++;
-                        else if (entry.status === "pending") counts.pending++;
-                        else counts.active++;
-                    } else {
-                        counts.active++;
-                    }
+                    if (entry) { if (entry.status === "pinned") counts.pinned++; else if (entry.status === "pending") counts.pending++; else counts.active++; }
+                    else { counts.active++; }
                 }
             }
         }
@@ -1407,11 +1177,9 @@
     }
 
     function getFilteredKnownKeys() {
-        var keys = [];
-        var tenses = ['pres', 'pret', 'impf', 'pp', 'fut', 'cond'];
+        var keys = []; var tenses = ['pres', 'pret', 'impf', 'pp', 'fut', 'cond'];
         var isolateSel = document.getElementById('verb-isolate-selector');
         var isolatedVerb = isolateSel ? isolateSel.value : "all";
-
         for (var i = 0; i < masterVerbDictionary.length; i++) {
             var item = masterVerbDictionary[i];
             if (isolatedVerb !== "all" && isolatedVerb !== item.verb) continue;
@@ -1435,13 +1203,8 @@
         document.getElementById('count-active').innerText = counts.active;
         document.getElementById('count-pending').innerText = counts.pending;
         document.getElementById('count-pinned').innerText = counts.pinned;
-
         var dall = document.getElementById('drill-all-btn');
-        if (dall) {
-            var drillable = counts.pending + counts.pinned;
-            dall.innerText = "🎯 Drill All Reviews (Pending & Pinned) (" + drillable + ")";
-            dall.disabled = drillable === 0;
-        }
+        if (dall) { var drillable = counts.pending + counts.pinned; dall.innerText = "🎯 Drill All Reviews (Pending & Pinned) (" + drillable + ")"; dall.disabled = drillable === 0; }
     }
 
     function updatePlayModePill() {
@@ -1449,28 +1212,43 @@
         if (pill) pill.style.display = playMode ? "inline-block" : "none";
     }
 
-    // ============================================================
-    // STATE SAVE / LOAD
-    // ============================================================
+    function updateFilterStatusLine() {
+        var counts = computeCounts();
+        var el = document.getElementById('filter-status-line');
+        if (el) {
+            var remaining = counts.active + counts.pending;
+            var suffix = "";
+            if (!pinnedInRotation && counts.pinned > 0) {
+                suffix = " · " + counts.pinned + " pinned (excluded)";
+            } else {
+                remaining += counts.pinned;
+            }
+            el.innerText = counts.total + " cards under current filters · " + counts.known + " mastered · " + remaining + " remaining" + suffix;
+        }
+    }
+
+    function updateAutoPinHint() {
+        var el = document.getElementById('auto-pin-hint');
+        if (!el) return;
+        if (!pinnedInRotation && autoPinThreshold > 0) {
+            el.style.display = "block";
+        } else {
+            el.style.display = "none";
+        }
+    }
+
     function saveState() {
         try {
             var sizeSel = document.getElementById('deck-size-selector');
             var isolateSel = document.getElementById('verb-isolate-selector');
             var state = {
-                filters: selectedIntervals,
-                direction: currentQuizDirection,
-                productionMethod: productionMethod,
-                accentMode: accentMode,
-                autoSpeakInfinitive: autoSpeakInfinitiveSetting,
-                showSpanishOnCard: showSpanishOnCard,
-                hintLevel: hintLevel,
-                knownMode: knownMode,
-                autoPinThreshold: autoPinThreshold,
-                playMode: playMode,
+                filters: selectedIntervals, direction: currentQuizDirection, productionMethod: productionMethod,
+                accentMode: accentMode, autoSpeakInfinitive: autoSpeakInfinitiveSetting, showSpanishOnCard: showSpanishOnCard,
+                pinnedInRotation: pinnedInRotation,
+                hintLevel: hintLevel, knownMode: knownMode, autoPinThreshold: autoPinThreshold, playMode: playMode,
                 verbIsolate: isolateSel ? isolateSel.value : "all",
                 deckSize: sizeSel ? sizeSel.value : "15",
-                reviewTab: reviewTab,
-                guideTab: guideTab,
+                reviewTab: reviewTab, guideTab: guideTab,
                 stats: { correct: totalCorrect, total: totalQuestions, streak: currentStreak },
                 knownCards: knownCards,
                 cardUniverseTotal: masterVerbDictionary.length * 6 * subjectPronounsArray.length,
@@ -1485,23 +1263,18 @@
             var raw = localStorage.getItem('spa_verbs_state');
             if (!raw) return;
             var state = JSON.parse(raw);
-
             if (state.filters) {
                 for (var k in state.filters) {
-                    if (state.filters.hasOwnProperty(k) && typeof selectedIntervals[k] !== 'undefined') {
-                        selectedIntervals[k] = state.filters[k];
-                    }
+                    if (state.filters.hasOwnProperty(k) && typeof selectedIntervals[k] !== 'undefined') selectedIntervals[k] = state.filters[k];
                 }
                 applyFilterCheckboxes();
             }
-
             if (state.direction) {
                 currentQuizDirection = state.direction;
                 document.getElementById('dir-r').classList.remove('active');
                 document.getElementById('dir-w').classList.remove('active');
                 document.getElementById('dir-' + (state.direction === 'read' ? 'r' : 'w')).classList.add('active');
             }
-
             if (state.productionMethod) {
                 productionMethod = state.productionMethod;
                 var methodType = document.getElementById('lbl-method-type');
@@ -1520,7 +1293,6 @@
                     if (chkHonour) chkHonour.checked = false;
                 }
             }
-
             if (state.accentMode === 'strict' || state.accentMode === 'lenient') {
                 accentMode = state.accentMode;
                 var lL = document.getElementById('lbl-accent-lenient');
@@ -1528,43 +1300,35 @@
                 var cL = document.getElementById('chk-accent-lenient');
                 var cS = document.getElementById('chk-accent-strict');
                 if (accentMode === 'strict') {
-                    if (lL) lL.classList.remove('selected');
-                    if (lS) lS.classList.add('selected');
-                    if (cL) cL.checked = false;
-                    if (cS) cS.checked = true;
+                    if (lL) lL.classList.remove('selected'); if (lS) lS.classList.add('selected');
+                    if (cL) cL.checked = false; if (cS) cS.checked = true;
                 } else {
-                    if (lL) lL.classList.add('selected');
-                    if (lS) lS.classList.remove('selected');
-                    if (cL) cL.checked = true;
-                    if (cS) cS.checked = false;
+                    if (lL) lL.classList.add('selected'); if (lS) lS.classList.remove('selected');
+                    if (cL) cL.checked = true; if (cS) cS.checked = false;
                 }
             }
-
             if (typeof state.autoSpeakInfinitive !== 'undefined') {
                 autoSpeakInfinitiveSetting = state.autoSpeakInfinitive;
                 var chkAuto = document.getElementById('chk-opt-auto-speak-inf');
                 var lblAuto = document.getElementById('lbl-opt-auto-speak-inf');
                 if (chkAuto) chkAuto.checked = autoSpeakInfinitiveSetting;
-                if (lblAuto) {
-                    if (autoSpeakInfinitiveSetting) lblAuto.classList.add('selected');
-                    else lblAuto.classList.remove('selected');
-                }
+                if (lblAuto) { if (autoSpeakInfinitiveSetting) lblAuto.classList.add('selected'); else lblAuto.classList.remove('selected'); }
             }
-
             if (typeof state.showSpanishOnCard !== 'undefined') {
                 showSpanishOnCard = state.showSpanishOnCard;
                 var chkShow = document.getElementById('chk-opt-show-spanish');
                 var lblShow = document.getElementById('lbl-opt-show-spanish');
                 if (chkShow) chkShow.checked = showSpanishOnCard;
-                if (lblShow) {
-                    if (showSpanishOnCard) lblShow.classList.add('selected');
-                    else lblShow.classList.remove('selected');
-                }
+                if (lblShow) { if (showSpanishOnCard) lblShow.classList.add('selected'); else lblShow.classList.remove('selected'); }
             }
-
-            if (typeof state.hintLevel === 'string' && ['none','basic','detailed'].indexOf(state.hintLevel) !== -1) {
-                hintLevel = state.hintLevel;
+            if (typeof state.pinnedInRotation !== 'undefined') {
+                pinnedInRotation = state.pinnedInRotation;
+                var chkPin = document.getElementById('chk-opt-pinned-in-rotation');
+                var lblPin = document.getElementById('lbl-opt-pinned-in-rotation');
+                if (chkPin) chkPin.checked = pinnedInRotation;
+                if (lblPin) { if (pinnedInRotation) lblPin.classList.add('selected'); else lblPin.classList.remove('selected'); }
             }
+            if (typeof state.hintLevel === 'string' && ['none','basic','detailed'].indexOf(state.hintLevel) !== -1) hintLevel = state.hintLevel;
             var chkN = document.getElementById('chk-hint-none');
             var chkB = document.getElementById('chk-hint-basic');
             var chkD = document.getElementById('chk-hint-detailed');
@@ -1574,7 +1338,6 @@
             document.getElementById('lbl-hint-none').classList.toggle('selected', hintLevel === 'none');
             document.getElementById('lbl-hint-basic').classList.toggle('selected', hintLevel === 'basic');
             document.getElementById('lbl-hint-detailed').classList.toggle('selected', hintLevel === 'detailed');
-
             if (state.knownMode === "sweep" || state.knownMode === "adaptive") {
                 knownMode = state.knownMode;
                 document.getElementById('lbl-known-adaptive').classList.remove('selected');
@@ -1584,69 +1347,36 @@
                 document.getElementById('lbl-known-' + knownMode).classList.add('selected');
                 document.getElementById('chk-known-' + knownMode).checked = true;
             }
-
             if (typeof state.autoPinThreshold === "number") {
                 autoPinThreshold = state.autoPinThreshold;
                 var aps = document.getElementById('auto-pin-selector');
                 if (aps) aps.value = String(autoPinThreshold);
             }
-
             if (typeof state.playMode !== 'undefined') {
                 playMode = state.playMode;
                 var chkPlay = document.getElementById('chk-opt-play-mode');
                 var lblPlay = document.getElementById('lbl-opt-play-mode');
                 if (chkPlay) chkPlay.checked = playMode;
-                if (lblPlay) {
-                    if (playMode) lblPlay.classList.add('selected');
-                    else lblPlay.classList.remove('selected');
-                }
+                if (lblPlay) { if (playMode) lblPlay.classList.add('selected'); else lblPlay.classList.remove('selected'); }
             }
-
-            if (state.knownCards && typeof state.knownCards === "object") {
-                knownCards = state.knownCards;
-            }
-
-            if (state.verbIsolate) {
-                var isolateSel = document.getElementById('verb-isolate-selector');
-                if (isolateSel) isolateSel.value = state.verbIsolate;
-            }
-
-            if (state.deckSize) {
-                var sizeSel = document.getElementById('deck-size-selector');
-                if (sizeSel) sizeSel.value = state.deckSize;
-            }
-
+            if (state.knownCards && typeof state.knownCards === "object") knownCards = state.knownCards;
+            if (state.verbIsolate) { var isolateSel = document.getElementById('verb-isolate-selector'); if (isolateSel) isolateSel.value = state.verbIsolate; }
+            if (state.deckSize) { var sizeSel = document.getElementById('deck-size-selector'); if (sizeSel) sizeSel.value = state.deckSize; }
             if (state.reviewTab && ["known", "active", "pending", "pinned"].indexOf(state.reviewTab) !== -1) {
                 reviewTab = state.reviewTab;
-                document.querySelectorAll('.review-tab').forEach(function(b) {
-                    b.classList.toggle('active', b.dataset.bucket === reviewTab);
-                });
+                document.querySelectorAll('.review-tab').forEach(function(b) { b.classList.toggle('active', b.dataset.bucket === reviewTab); });
             }
-
-            if (state.guideTab === "user" || state.guideTab === "conj") {
-                setGuideTab(state.guideTab);
-            }
-
+            if (state.guideTab === "user" || state.guideTab === "conj") setGuideTab(state.guideTab);
             if (state.stats) {
                 totalCorrect = state.stats.correct || 0;
                 totalQuestions = state.stats.total || 0;
                 currentStreak = state.stats.streak || 0;
             }
-
-            if (Array.isArray(state.mistakes)) {
-                mistakeLog = state.mistakes;
-                migrateLog();
-            }
-
-            updateScoreboard();
-            updateLogBadges();
-            updatePlayModePill();
+            if (Array.isArray(state.mistakes)) { mistakeLog = state.mistakes; migrateLog(); }
+            updateScoreboard(); updateLogBadges(); updatePlayModePill(); updateAutoPinHint();
         } catch (e) {}
     }
 
-    // ============================================================
-    // FILTERS / DRAWER
-    // ============================================================
     function applyFilterCheckboxes() {
         var keys = Object.keys(selectedIntervals);
         for (var i = 0; i < keys.length; i++) {
@@ -1654,10 +1384,7 @@
             var chk = document.getElementById('chk-opt-' + key);
             var lbl = document.getElementById('lbl-opt-' + key);
             if (chk) chk.checked = selectedIntervals[key];
-            if (lbl) {
-                if (selectedIntervals[key]) lbl.classList.add('selected');
-                else lbl.classList.remove('selected');
-            }
+            if (lbl) { if (selectedIntervals[key]) lbl.classList.add('selected'); else lbl.classList.remove('selected'); }
         }
     }
 
@@ -1666,8 +1393,7 @@
         document.getElementById('lbl-known-adaptive').classList.remove('selected');
         document.getElementById('lbl-known-sweep').classList.remove('selected');
         document.getElementById('lbl-known-' + mode).classList.add('selected');
-        saveState();
-        initSessionDeck();
+        saveState(); initSessionDeck();
     }
 
     function updatePlayMode() {
@@ -1675,17 +1401,13 @@
         var lbl = document.getElementById('lbl-opt-play-mode');
         if (!chk) return;
         playMode = chk.checked;
-        if (lbl) {
-            if (playMode) lbl.classList.add('selected');
-            else lbl.classList.remove('selected');
-        }
-        updatePlayModePill();
-        saveState();
+        if (lbl) { if (playMode) lbl.classList.add('selected'); else lbl.classList.remove('selected'); }
+        updatePlayModePill(); saveState();
     }
 
     function setAutoPinThreshold(val) {
         autoPinThreshold = parseInt(val, 10) || 0;
-        saveState();
+        saveState(); updateAutoPinHint();
     }
 
     function updateAccentMode(mode) {
@@ -1697,61 +1419,54 @@
         saveState();
     }
 
+    function updatePinnedInRotation() {
+        var chk = document.getElementById('chk-opt-pinned-in-rotation');
+        var lbl = document.getElementById('lbl-opt-pinned-in-rotation');
+        if (!chk) return;
+        pinnedInRotation = chk.checked;
+        if (lbl) { if (pinnedInRotation) lbl.classList.add('selected'); else lbl.classList.remove('selected'); }
+        saveState(); updateAutoPinHint(); initSessionDeck();
+    }
+
     function resetAllProgress() {
         if (!confirm("Clear all progress, scores, review log, and known cards?")) return;
         try { localStorage.removeItem('spa_verbs_state'); } catch (e) {}
-
-        totalCorrect = 0;
-        totalQuestions = 0;
-        currentStreak = 0;
-        mistakeLog = [];
-        knownCards = {};
-        reviewTab = "pending";
-        guideTab = "user";
-        knownMode = "adaptive";
-        playMode = false;
-        autoPinThreshold = 3;
-        accentMode = "lenient";
-
+        totalCorrect = 0; totalQuestions = 0; currentStreak = 0;
+        mistakeLog = []; knownCards = {};
+        reviewTab = "pending"; guideTab = "user";
+        knownMode = "adaptive"; playMode = false; autoPinThreshold = 3; accentMode = "lenient";
+        pinnedInRotation = true;
         var defaults = { ar: true, er: true, ir: true, stemchange: true, go: true, irreg: true,
                          pres: true, pret: true, impf: true, pp: true, fut: true, cond: true,
                          yo: true, tu: true, el: true, nosotros: true, vosotros: true, ellos: true };
-        for (var k in defaults) {
-            if (defaults.hasOwnProperty(k)) selectedIntervals[k] = defaults[k];
-        }
+        for (var k in defaults) { if (defaults.hasOwnProperty(k)) selectedIntervals[k] = defaults[k]; }
         applyFilterCheckboxes();
-
         var isolateSel = document.getElementById('verb-isolate-selector');
         if (isolateSel) isolateSel.value = "all";
-
         productionMethod = "type";
         document.getElementById('lbl-method-type').classList.add('selected');
         document.getElementById('lbl-method-honour').classList.remove('selected');
         document.getElementById('chk-method-type').checked = true;
         document.getElementById('chk-method-honour').checked = false;
-
         document.getElementById('lbl-accent-lenient').classList.add('selected');
         document.getElementById('lbl-accent-strict').classList.remove('selected');
         document.getElementById('chk-accent-lenient').checked = true;
         document.getElementById('chk-accent-strict').checked = false;
-
         document.getElementById('lbl-known-adaptive').classList.add('selected');
         document.getElementById('lbl-known-sweep').classList.remove('selected');
         document.getElementById('chk-known-adaptive').checked = true;
         document.getElementById('chk-known-sweep').checked = false;
-
         document.getElementById('chk-opt-play-mode').checked = false;
         document.getElementById('lbl-opt-play-mode').classList.remove('selected');
         document.getElementById('auto-pin-selector').value = "3";
-
         autoSpeakInfinitiveSetting = true;
         document.getElementById('chk-opt-auto-speak-inf').checked = true;
         document.getElementById('lbl-opt-auto-speak-inf').classList.add('selected');
-
         showSpanishOnCard = true;
         document.getElementById('chk-opt-show-spanish').checked = true;
         document.getElementById('lbl-opt-show-spanish').classList.add('selected');
-
+        document.getElementById('chk-opt-pinned-in-rotation').checked = true;
+        document.getElementById('lbl-opt-pinned-in-rotation').classList.add('selected');
         hintLevel = "basic";
         document.getElementById('chk-hint-none').checked = false;
         document.getElementById('chk-hint-basic').checked = true;
@@ -1759,42 +1474,29 @@
         document.getElementById('lbl-hint-none').classList.remove('selected');
         document.getElementById('lbl-hint-basic').classList.add('selected');
         document.getElementById('lbl-hint-detailed').classList.remove('selected');
-
         document.getElementById('deck-size-selector').value = "15";
-
-        document.querySelectorAll('.review-tab').forEach(function(b) {
-            b.classList.toggle('active', b.dataset.bucket === "pending");
-        });
+        document.querySelectorAll('.review-tab').forEach(function(b) { b.classList.toggle('active', b.dataset.bucket === "pending"); });
         setGuideTab("user");
-
         var drawer = document.getElementById('settings-drawer');
         var btn = document.getElementById('drawer-toggle-btn');
         if (drawer) drawer.style.display = "none";
         if (btn) btn.innerText = "Customise Drill Settings ▾";
-
-        updateScoreboard();
-        updateLogBadges();
-        updatePlayModePill();
-        initSessionDeck();
+        updateScoreboard(); updateLogBadges(); updatePlayModePill(); updateAutoPinHint(); initSessionDeck();
     }
 
     function switchView(target) {
         document.getElementById('view-quiz').style.display = target === 'quiz' ? 'block' : 'none';
         document.getElementById('view-guide').style.display = target === 'guide' ? 'block' : 'none';
         document.getElementById('view-review').style.display = target === 'review' ? 'block' : 'none';
-
         var btns = document.getElementsByClassName('nav-btn');
         for (var i = 0; i < btns.length; i++) { btns[i].classList.remove('active'); }
         document.getElementById('tab-' + target).classList.add('active');
-
         var drawer = document.getElementById('settings-drawer');
         var btn = document.getElementById('drawer-toggle-btn');
         if (drawer) drawer.style.display = "none";
         if (btn) btn.innerText = "Customise Drill Settings ▾";
-
         var shutter = document.getElementById('shutter-header-area');
         if (shutter) shutter.classList.remove('collapsed');
-
         if (target === 'review') renderReviewList();
     }
 
@@ -1812,15 +1514,9 @@
     function applyPanelVisibility() {
         var readPanel = document.getElementById('panel-read-mode');
         var writePanel = document.getElementById('panel-write-mode');
-        var useHonourPanel = (currentQuizDirection === 'write') ||
-                             (currentQuizDirection === 'read' && productionMethod === 'honour');
-        if (useHonourPanel) {
-            if (readPanel) readPanel.style.display = 'none';
-            if (writePanel) writePanel.style.display = 'block';
-        } else {
-            if (readPanel) readPanel.style.display = 'block';
-            if (writePanel) writePanel.style.display = 'none';
-        }
+        var useHonourPanel = (currentQuizDirection === 'write') || (currentQuizDirection === 'read' && productionMethod === 'honour');
+        if (useHonourPanel) { if (readPanel) readPanel.style.display = 'none'; if (writePanel) writePanel.style.display = 'block'; }
+        else { if (readPanel) readPanel.style.display = 'block'; if (writePanel) writePanel.style.display = 'none'; }
     }
 
     function populateVerbSelector() {
@@ -1837,9 +1533,7 @@
             sel.appendChild(opt);
         }
         var stillValid = false;
-        for (var j = 0; j < sel.options.length; j++) {
-            if (sel.options[j].value === currentValue) { stillValid = true; break; }
-        }
+        for (var j = 0; j < sel.options.length; j++) { if (sel.options[j].value === currentValue) { stillValid = true; break; } }
         sel.value = stillValid ? currentValue : "all";
     }
 
@@ -1848,8 +1542,7 @@
         document.getElementById('dir-r').classList.remove('active');
         document.getElementById('dir-w').classList.remove('active');
         document.getElementById('dir-' + (dir === 'read' ? 'r' : 'w')).classList.add('active');
-        applyPanelVisibility();
-        initSessionDeck();
+        applyPanelVisibility(); initSessionDeck();
     }
 
     function updateProductionMethod(method) {
@@ -1857,9 +1550,7 @@
         document.getElementById('lbl-method-type').classList.remove('selected');
         document.getElementById('lbl-method-honour').classList.remove('selected');
         document.getElementById('lbl-method-' + method).classList.add('selected');
-        applyPanelVisibility();
-        saveState();
-        initSessionDeck();
+        applyPanelVisibility(); saveState(); initSessionDeck();
     }
 
     function updateAutoSpeakInfinitive() {
@@ -1867,10 +1558,7 @@
         var lbl = document.getElementById('lbl-opt-auto-speak-inf');
         if (!chk) return;
         autoSpeakInfinitiveSetting = chk.checked;
-        if (lbl) {
-            if (chk.checked) lbl.classList.add('selected');
-            else lbl.classList.remove('selected');
-        }
+        if (lbl) { if (chk.checked) lbl.classList.add('selected'); else lbl.classList.remove('selected'); }
         saveState();
     }
 
@@ -1879,10 +1567,7 @@
         var lbl = document.getElementById('lbl-opt-show-spanish');
         if (!chk) return;
         showSpanishOnCard = chk.checked;
-        if (lbl) {
-            if (showSpanishOnCard) lbl.classList.add('selected');
-            else lbl.classList.remove('selected');
-        }
+        if (lbl) { if (showSpanishOnCard) lbl.classList.add('selected'); else lbl.classList.remove('selected'); }
         saveState();
     }
 
@@ -1895,18 +1580,32 @@
         if (currentClockObj && sessionStarted) generateQuestion();
     }
 
-    // ============================================================
-    // SESSION LIFECYCLE
-    // ============================================================
+    function updateFilterSelection(optKey) {
+        var chk = document.getElementById('chk-opt-' + optKey);
+        var lbl = document.getElementById('lbl-opt-' + optKey);
+        if (chk) {
+            selectedIntervals[optKey] = chk.checked;
+            if (chk.checked) lbl.classList.add('selected'); else lbl.classList.remove('selected');
+        }
+        verifyAndReloadFilters();
+    }
+
+    function verifyAndReloadFilters() {
+        var paradigmKeys = ['ar', 'er', 'ir', 'stemchange', 'go', 'irreg'];
+        var tenseKeys = ['pres', 'pret', 'impf', 'pp', 'fut', 'cond'];
+        var pronounKeys = ['yo', 'tu', 'el', 'nosotros', 'vosotros', 'ellos'];
+        var paradigmChecked = paradigmKeys.some(k => selectedIntervals[k]);
+        var tenseChecked = tenseKeys.some(k => selectedIntervals[k]);
+        var pronounChecked = pronounKeys.some(k => selectedIntervals[k]);
+        if (!paradigmChecked) { selectedIntervals.ar = true; document.getElementById('chk-opt-ar').checked = true; document.getElementById('lbl-opt-ar').classList.add('selected'); }
+        if (!tenseChecked) { selectedIntervals.pres = true; document.getElementById('chk-opt-pres').checked = true; document.getElementById('lbl-opt-pres').classList.add('selected'); }
+        if (!pronounChecked) { selectedIntervals.yo = true; document.getElementById('chk-opt-yo').checked = true; document.getElementById('lbl-opt-yo').classList.add('selected'); }
+        initSessionDeck();
+    }
+
     function resetSessionCounters() {
-        sessionFirstAttempts = {};
-        sessionCorrect = 0;
-        sessionTotal = 0;
-        sessionCurrentStreak = 0;
-        sessionBestStreak = 0;
-        sessionRecoveredCount = 0;
-        sessionKnownCount = 0;
-        sessionComplete = false;
+        sessionFirstAttempts = {}; sessionCorrect = 0; sessionTotal = 0; sessionCurrentStreak = 0;
+        sessionBestStreak = 0; sessionRecoveredCount = 0; sessionKnownCount = 0; sessionComplete = false;
     }
 
     function updateDrillPill() {
@@ -1915,50 +1614,38 @@
         if (sessionMode === "drill" && sessionStarted) {
             pill.style.display = "inline-block";
             document.getElementById('drill-count').innerText = currentSessionDeck.length - activeCardIndex;
-        } else {
-            pill.style.display = "none";
-        }
+        } else { pill.style.display = "none"; }
     }
 
     function showStartScreen() {
-        sessionStarted = false;
-        sessionComplete = false;
-
+        sessionStarted = false; sessionComplete = false;
         var promptDisplay = document.getElementById('verb-prompt-display');
         var subDisplay = document.getElementById('verb-sub-display');
         subDisplay.style.display = "block";
-
         var subLabel = document.getElementById('verb-subject-display');
         if (subLabel) subLabel.style.display = "none";
-        var speakBtn = document.getElementById('speak-btn');
-        if (speakBtn) speakBtn.style.display = "none";
-        var infinitiveBtn = document.getElementById('infinitive-btn');
-        if (infinitiveBtn) infinitiveBtn.style.display = "none";
-        var warningBadge = document.getElementById('verb-stem-warning-badge');
-        if (warningBadge) warningBadge.style.display = "none";
-
+        var speakBtn = document.getElementById('speak-btn'); if (speakBtn) speakBtn.style.display = "none";
+        var infinitiveBtn = document.getElementById('infinitive-btn'); if (infinitiveBtn) infinitiveBtn.style.display = "none";
+        var warningBadge = document.getElementById('verb-stem-warning-badge'); if (warningBadge) warningBadge.style.display = "none";
         document.getElementById('verb-track-badge').innerText = "";
         document.getElementById('panel-read-mode').style.display = "none";
         document.getElementById('panel-write-mode').style.display = "none";
         document.getElementById('feedback-container').style.display = "none";
         document.getElementById('deck-progress').innerText = "0";
-
-        // MOBILE SCROLL FIX: Restore input panels
         var restoreIds = ['panel-read-mode', 'panel-write-mode', 'honour-system-controls', 'btn-reveal-container'];
-        restoreIds.forEach(function(id) {
-            var el = document.getElementById(id);
-            if (el) el.classList.remove('hidden-during-feedback');
-        });
-
+        restoreIds.forEach(function(id) { var el = document.getElementById(id); if (el) el.classList.remove('hidden-during-feedback'); });
         if (currentSessionDeck.length === 0) {
             document.getElementById('start-btn-container').style.display = "none";
             promptDisplay.style.fontSize = "1.6rem";
             promptDisplay.style.color = "var(--accent)";
-
             if (emptyReason === "all-known") {
                 promptDisplay.innerHTML = "🌟 All Known!";
                 promptDisplay.style.color = "var(--success)";
                 subDisplay.innerHTML = "All " + totalFilteredCount + " cards under these filters are known.<br><small>Switch to <strong>Full Sweep</strong> mode in Options to review them, or expand your filters.</small>";
+            } else if (emptyReason === "all-deferred") {
+                promptDisplay.innerHTML = "📌 Pinned Deferred";
+                promptDisplay.style.color = "var(--warning)";
+                subDisplay.innerHTML = "All remaining cards are Pinned and pinned rotation is off.<br><small>Re-enable <strong>Pinned cards in rotation</strong> in Options, or drill them from Reviews.</small>";
             } else if (emptyReason === "no-match") {
                 promptDisplay.innerHTML = "No Cards";
                 promptDisplay.style.color = "var(--accent)";
@@ -1968,24 +1655,16 @@
                 promptDisplay.style.color = "var(--accent)";
                 subDisplay.innerText = "No cards available.";
             }
-
-            updateDrillPill();
-            return;
+            updateDrillPill(); return;
         }
-
         promptDisplay.innerText = "Ready?";
         promptDisplay.style.fontSize = "2rem";
         promptDisplay.style.color = "var(--accent)";
         subDisplay.innerText = "Click Start to begin";
         document.getElementById('start-btn-container').style.display = "block";
-
         var startBtn = document.getElementById('start-btn');
-        if (sessionMode === "drill") {
-            startBtn.innerText = "▶ Start Drill (" + currentSessionDeck.length + " cards) →";
-        } else {
-            startBtn.innerText = "▶ Start Session →";
-        }
-
+        if (sessionMode === "drill") startBtn.innerText = "▶ Start Drill (" + currentSessionDeck.length + " cards) →";
+        else startBtn.innerText = "▶ Start Session →";
         updateDrillPill();
     }
 
@@ -1994,183 +1673,97 @@
         if (currentSessionDeck.length === 0) return;
         sessionStarted = true;
         document.getElementById('start-btn-container').style.display = "none";
-        applyPanelVisibility();
-        updateDrillPill();
-        generateQuestion();
+        applyPanelVisibility(); updateDrillPill(); generateQuestion();
     }
 
     function openOptionsPanel() {
-        var inp = document.getElementById('user-input');
-        if (inp) inp.blur();
-        var shutter = document.getElementById('shutter-header-area');
-        if (shutter) shutter.classList.remove('collapsed');
+        var inp = document.getElementById('user-input'); if (inp) inp.blur();
+        var shutter = document.getElementById('shutter-header-area'); if (shutter) shutter.classList.remove('collapsed');
         var drawer = document.getElementById('settings-drawer');
         var btn = document.getElementById('drawer-toggle-btn');
         if (drawer) drawer.style.display = 'block';
         if (btn) btn.innerText = "Close Options ▴";
-
-        // Scroll to the drawer
-        setTimeout(function() {
-            var drawer = document.getElementById('settings-drawer');
-            if (drawer) {
-                drawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-        }, 100);
+        setTimeout(function() { var d = document.getElementById('settings-drawer'); if (d) d.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 100);
     }
 
     function toggleSettingsDrawer() {
         var drawer = document.getElementById('settings-drawer');
         var btn = document.getElementById('drawer-toggle-btn');
-        if (drawer.style.display === "block") {
-            drawer.style.display = "none";
-            btn.innerText = "Customise Drill Settings ▾";
-        } else {
-            drawer.style.display = "block";
-            btn.innerText = "Close Options ▴";
-        }
-    }
-
-    function updateFilterSelection(optKey) {
-        var chk = document.getElementById('chk-opt-' + optKey);
-        var lbl = document.getElementById('lbl-opt-' + optKey);
-        if (chk) {
-            selectedIntervals[optKey] = chk.checked;
-            if (chk.checked) lbl.classList.add('selected');
-            else lbl.classList.remove('selected');
-        }
-        verifyAndReloadFilters();
-    }
-
-    function verifyAndReloadFilters() {
-        var paradigmKeys = ['ar', 'er', 'ir', 'stemchange', 'go', 'irreg'];
-        var tenseKeys = ['pres', 'pret', 'impf', 'pp', 'fut', 'cond'];
-        var pronounKeys = ['yo', 'tu', 'el', 'nosotros', 'vosotros', 'ellos'];
-
-        var paradigmChecked = paradigmKeys.some(k => selectedIntervals[k]);
-        var tenseChecked = tenseKeys.some(k => selectedIntervals[k]);
-        var pronounChecked = pronounKeys.some(k => selectedIntervals[k]);
-
-        if (!paradigmChecked) { selectedIntervals.ar = true; document.getElementById('chk-opt-ar').checked = true; document.getElementById('lbl-opt-ar').classList.add('selected'); }
-        if (!tenseChecked) { selectedIntervals.pres = true; document.getElementById('chk-opt-pres').checked = true; document.getElementById('lbl-opt-pres').classList.add('selected'); }
-        if (!pronounChecked) { selectedIntervals.yo = true; document.getElementById('chk-opt-yo').checked = true; document.getElementById('lbl-opt-yo').classList.add('selected'); }
-
-        initSessionDeck();
+        if (drawer.style.display === "block") { drawer.style.display = "none"; btn.innerText = "Customise Drill Settings ▾"; }
+        else { drawer.style.display = "block"; btn.innerText = "Close Options ▴"; }
     }
 
     function initSessionDeck() {
-        currentSessionDeck = [];
-        activeCardIndex = 0;
-        userActionHistory = [];
-        sessionMode = "normal";
-        emptyReason = null;
-        totalFilteredCount = 0;
-        resetSessionCounters();
-
+        currentSessionDeck = []; activeCardIndex = 0; userActionHistory = []; sessionMode = "normal";
+        emptyReason = null; totalFilteredCount = 0; resetSessionCounters();
         var tenses = ['pres', 'pret', 'impf', 'pp', 'fut', 'cond'];
-
         populateVerbSelector();
         var isolateSel = document.getElementById('verb-isolate-selector');
         var isolatedVerb = isolateSel ? isolateSel.value : "all";
-
         for (var i = 0; i < masterVerbDictionary.length; i++) {
             var item = masterVerbDictionary[i];
             if (isolatedVerb !== "all" && isolatedVerb !== item.verb) continue;
             if (!verbMatchesFilter(item)) continue;
-
             for (var t = 0; t < tenses.length; t++) {
                 var tenseKey = tenses[t];
                 if (!selectedIntervals[tenseKey]) continue;
-
                 for (var p = 0; p < subjectPronounsArray.length; p++) {
                     var pronoun = subjectPronounsArray[p];
                     if (!selectedIntervals[pronoun]) continue;
-
                     var targetEnding = item.paradigms[tenseKey][pronoun];
-                    var card = {
-                        verb: item.verb,
-                        types: item.types,
-                        stem: item.stem,
-                        stressedStem: item.stressedStem,
-                        irregularTenses: item.irregularTenses,
-                        participle: item.participle,
-                        tenseHints: item.tenseHints,
-                        tenseDetails: item.tenseDetails,
-                        meaning: item.meaning,
-                        tense: tenseKey,
-                        pronoun: pronoun,
-                        ending: targetEnding
-                    };
-
+                    var card = { verb: item.verb, types: item.types, stem: item.stem, stressedStem: item.stressedStem,
+                        irregularTenses: item.irregularTenses, participle: item.participle, tenseHints: item.tenseHints,
+                        tenseDetails: item.tenseDetails, meaning: item.meaning, tense: tenseKey, pronoun: pronoun, ending: targetEnding };
                     totalFilteredCount++;
                     var cKey = cardKey(card);
                     var isKnown = !!knownCards[cKey];
-
-                    if (knownMode === "adaptive" && isKnown) continue;
-                    // sweep: no skip
-
+                    // Adaptive: skip known; skip pinned if toggle is off. Sweep: no skip.
+                    if (knownMode === "adaptive") {
+                        if (isKnown) continue;
+                        if (!pinnedInRotation) {
+                            var pEntry = findLogEntry(cKey);
+                            if (pEntry && pEntry.status === "pinned") continue;
+                        }
+                    }
                     currentSessionDeck.push(card);
                 }
             }
         }
-
         if (currentSessionDeck.length === 0) {
             if (totalFilteredCount === 0) emptyReason = "no-match";
-            else if (knownMode === "adaptive") emptyReason = "all-known";
-            else emptyReason = "unknown";
+            else if (knownMode === "adaptive") {
+                var _counts = computeCounts();
+                if (_counts.pinned > 0 && !pinnedInRotation) emptyReason = "all-deferred";
+                else emptyReason = "all-known";
+            }
         }
-
         for (var i = currentSessionDeck.length - 1; i > 0; i--) {
             var j = Math.floor(Math.random() * (i + 1));
-            var temp = currentSessionDeck[i];
-            currentSessionDeck[i] = currentSessionDeck[j];
-            currentSessionDeck[j] = temp;
+            var temp = currentSessionDeck[i]; currentSessionDeck[i] = currentSessionDeck[j]; currentSessionDeck[j] = temp;
         }
-
         var sizeSel = document.getElementById('deck-size-selector');
         var maxDeckSize = sizeSel ? parseInt(sizeSel.value, 10) : 15;
         if (currentSessionDeck.length > maxDeckSize) currentSessionDeck = currentSessionDeck.slice(0, maxDeckSize);
         coreDeckOriginalCount = currentSessionDeck.length;
         document.getElementById('deck-total').innerText = coreDeckOriginalCount;
-
         var fullOpt = document.getElementById('deck-size-full-option');
-        if (fullOpt) {
-            fullOpt.textContent = "All selected cards (" + totalFilteredCount + ")";
-        }
-
+        if (fullOpt) fullOpt.textContent = "All selected cards (" + totalFilteredCount + ")";
         var pBox = document.getElementById('progress-box');
         if (pBox) pBox.className = "score-item";
         document.getElementById('review-status-label').innerText = "";
-
         var shutter = document.getElementById('shutter-header-area');
         if (shutter) shutter.classList.remove('collapsed');
-
-        saveState();
-        showStartScreen();
-        updateDrillPill();
-        updateFilterStatusLine();
+        saveState(); showStartScreen(); updateDrillPill(); updateFilterStatusLine();
     }
 
-    // ============================================================
-    // DRILL FROM LOG
-    // ============================================================
     function buildCardFromEntry(entry) {
         for (var i = 0; i < masterVerbDictionary.length; i++) {
             if (masterVerbDictionary[i].verb === entry.verb) {
                 var item = masterVerbDictionary[i];
-                return {
-                    verb: item.verb,
-                    types: item.types,
-                    stem: item.stem,
-                    stressedStem: item.stressedStem,
-                    irregularTenses: item.irregularTenses,
-                    participle: item.participle,
-                    tenseHints: item.tenseHints,
-                    tenseDetails: item.tenseDetails,
-                    meaning: item.meaning,
-                    tense: entry.tense,
-                    pronoun: entry.pronoun,
-                    ending: item.paradigms[entry.tense][entry.pronoun]
-                };
+                return { verb: item.verb, types: item.types, stem: item.stem, stressedStem: item.stressedStem,
+                    irregularTenses: item.irregularTenses, participle: item.participle, tenseHints: item.tenseHints,
+                    tenseDetails: item.tenseDetails, meaning: item.meaning, tense: entry.tense, pronoun: entry.pronoun,
+                    ending: item.paradigms[entry.tense][entry.pronoun] };
             }
         }
         return null;
@@ -2183,72 +1776,42 @@
         if (!card) return;
         var fullWord = computeFullWord(card, card.ending);
         var utterance = new SpeechSynthesisUtterance(fullWord);
-        utterance.lang = "es-ES";
-        utterance.rate = 0.8;
+        utterance.lang = "es-ES"; utterance.rate = 0.8;
         window.speechSynthesis.speak(utterance);
     }
 
     function drillFromLog(bucket) {
         var pool;
-        if (bucket === "pinned") {
-            pool = mistakeLog.filter(function(e) { return e.status === "pinned"; });
-        } else if (bucket === "pending") {
-            pool = mistakeLog.filter(function(e) { return e.status === "pending"; });
-        } else if (bucket === "all") {
-            pool = mistakeLog.filter(function(e) { return e.status === "pending" || e.status === "pinned"; });
-        } else {
-            return;
-        }
+        if (bucket === "pinned") pool = mistakeLog.filter(function(e) { return e.status === "pinned"; });
+        else if (bucket === "pending") pool = mistakeLog.filter(function(e) { return e.status === "pending"; });
+        else if (bucket === "all") pool = mistakeLog.filter(function(e) { return e.status === "pending" || e.status === "pinned"; });
+        else return;
         if (pool.length === 0) return;
-
         currentSessionDeck = [];
-        for (var i = 0; i < pool.length; i++) {
-            var card = buildCardFromEntry(pool[i]);
-            if (card) currentSessionDeck.push(card);
-        }
+        for (var i = 0; i < pool.length; i++) { var card = buildCardFromEntry(pool[i]); if (card) currentSessionDeck.push(card); }
         if (currentSessionDeck.length === 0) return;
-
         for (var i = currentSessionDeck.length - 1; i > 0; i--) {
             var j = Math.floor(Math.random() * (i + 1));
-            var temp = currentSessionDeck[i];
-            currentSessionDeck[i] = currentSessionDeck[j];
-            currentSessionDeck[j] = temp;
+            var temp = currentSessionDeck[i]; currentSessionDeck[i] = currentSessionDeck[j]; currentSessionDeck[j] = temp;
         }
-
-        activeCardIndex = 0;
-        userActionHistory = [];
-        sessionMode = "drill";
-        resetSessionCounters();
-        emptyReason = null;
+        activeCardIndex = 0; userActionHistory = []; sessionMode = "drill";
+        resetSessionCounters(); emptyReason = null;
         coreDeckOriginalCount = currentSessionDeck.length;
         document.getElementById('deck-total').innerText = coreDeckOriginalCount;
-
         var pBox = document.getElementById('progress-box');
         if (pBox) pBox.className = "score-item";
         document.getElementById('review-status-label').innerText = "";
-
         var shutter = document.getElementById('shutter-header-area');
         if (shutter) shutter.classList.remove('collapsed');
-
-        saveState();
-        switchView('quiz');
-        showStartScreen();
-        updateDrillPill();
+        saveState(); switchView('quiz'); showStartScreen(); updateDrillPill();
     }
 
     function drillActiveBucket() {
-        if (reviewTab === "pending" || reviewTab === "pinned") {
-            drillFromLog(reviewTab);
-        }
+        if (reviewTab === "pending" || reviewTab === "pinned") drillFromLog(reviewTab);
     }
 
-    function exitDrillToReview() {
-        switchView('review');
-    }
+    function exitDrillToReview() { switchView('review'); }
 
-    // ============================================================
-    // QUESTION GENERATION
-    // ============================================================
     function generateQuestion() {
         document.getElementById('user-input').value = "";
         document.getElementById('user-input').disabled = false;
@@ -2258,14 +1821,8 @@
         document.getElementById('honour-system-controls').style.display = "none";
         document.getElementById('deck-progress').innerText = activeCardIndex;
         updateDrillPill();
-
-        // MOBILE SCROLL FIX: Restore input panels for the next card
         var restoreIds = ['panel-read-mode', 'panel-write-mode', 'honour-system-controls', 'btn-reveal-container'];
-        restoreIds.forEach(function(id) {
-            var el = document.getElementById(id);
-            if (el) el.classList.remove('hidden-during-feedback');
-        });
-
+        restoreIds.forEach(function(id) { var el = document.getElementById(id); if (el) el.classList.remove('hidden-during-feedback'); });
         var pBox = document.getElementById('progress-box');
         if (activeCardIndex >= coreDeckOriginalCount && activeCardIndex < currentSessionDeck.length) {
             if (pBox) pBox.className = "score-item review-phase-text";
@@ -2274,49 +1831,29 @@
             if (pBox) pBox.className = "score-item";
             document.getElementById('review-status-label').innerText = "";
         }
-
         if (activeCardIndex >= currentSessionDeck.length) {
             var shutter = document.getElementById('shutter-header-area');
             if (shutter) shutter.classList.add('collapsed');
-            triggerCompletionState();
-            return;
+            triggerCompletionState(); return;
         }
-
         currentClockObj = currentSessionDeck[activeCardIndex];
-
         var subLabel = document.getElementById('verb-subject-display');
-        if (currentQuizDirection === 'read') {
-            subLabel.innerText = subjectLabelsFullMap[currentClockObj.pronoun];
-            subLabel.style.display = "block";
-        } else {
-            subLabel.style.display = "none";
-        }
-
+        if (currentQuizDirection === 'read') { subLabel.innerText = subjectLabelsFullMap[currentClockObj.pronoun]; subLabel.style.display = "block"; }
+        else { subLabel.style.display = "none"; }
         var warningBadge = document.getElementById('verb-stem-warning-badge');
-        if (hintLevel === 'none') {
-            warningBadge.style.display = "none";
-        } else {
+        if (hintLevel === 'none') { warningBadge.style.display = "none"; }
+        else {
             var hint = currentClockObj.tenseHints && currentClockObj.tenseHints[currentClockObj.tense];
-            if (hint && hintLevel === 'detailed' && currentClockObj.tenseDetails && currentClockObj.tenseDetails[currentClockObj.tense]) {
-                hint = hint + " — " + currentClockObj.tenseDetails[currentClockObj.tense];
-            }
-            if (hint && currentQuizDirection === 'read') {
-                warningBadge.innerText = "⚠️ " + hint;
-                warningBadge.style.display = "block";
-            } else {
-                warningBadge.style.display = "none";
-            }
+            if (hint && hintLevel === 'detailed' && currentClockObj.tenseDetails && currentClockObj.tenseDetails[currentClockObj.tense]) hint = hint + " — " + currentClockObj.tenseDetails[currentClockObj.tense];
+            if (hint && currentQuizDirection === 'read') { warningBadge.innerText = "⚠️ " + hint; warningBadge.style.display = "block"; }
+            else { warningBadge.style.display = "none"; }
         }
-
         var promptDisplay = document.getElementById('verb-prompt-display');
         var subDisplay = document.getElementById('verb-sub-display');
         var trackBadge = document.getElementById('verb-track-badge');
-
         if (currentQuizDirection === 'read') {
-            var speakBtn = document.getElementById('speak-btn');
-            speakBtn.style.display = "none";
+            var speakBtn = document.getElementById('speak-btn'); speakBtn.style.display = "none";
             document.getElementById('infinitive-btn').style.display = "inline-block";
-
             promptDisplay.innerText = buildEnglishGloss(currentClockObj);
             promptDisplay.style.fontSize = "2.2rem";
             promptDisplay.style.color = "var(--text-main)";
@@ -2324,76 +1861,51 @@
                 subDisplay.innerText = currentClockObj.verb + " • " + tenseNamesFullMap[currentClockObj.tense] + " • " + currentClockObj.meaning;
                 subDisplay.style.color = "var(--accent)";
                 subDisplay.style.display = "block";
-            } else {
-                subDisplay.style.display = "none";
-            }
-            if (productionMethod === 'honour') {
-                trackBadge.innerText = "Say the answer aloud, then tap Reveal";
-            } else if (currentClockObj.tense === 'pp') {
-                trackBadge.innerText = "Compound form — type haber + participle in full";
-            } else if (currentClockObj.ending.indexOf('-') !== -1) {
-                trackBadge.innerText = "Stem change — type the full form";
-            } else if (isCardIrregular(currentClockObj)) {
-                trackBadge.innerText = "Irregular form — type the full form";
-            } else {
-                trackBadge.innerText = "Type the ending or the full form";
-            }
-
+            } else { subDisplay.style.display = "none"; }
+            if (productionMethod === 'honour') trackBadge.innerText = "Say the answer aloud, then tap Reveal";
+            else if (currentClockObj.tense === 'pp') trackBadge.innerText = "Compound form — type haber + participle in full";
+            else if (currentClockObj.ending.indexOf('-') !== -1) trackBadge.innerText = "Stem change — type the full form";
+            else if (isCardIrregular(currentClockObj)) trackBadge.innerText = "Irregular form — type the full form";
+            else trackBadge.innerText = "Type the ending or the full form";
             cancelPendingInfinitive();
             if (autoSpeakInfinitiveSetting) {
                 pendingInfinitiveTimer = setTimeout(function() {
                     pendingInfinitiveTimer = null;
                     var utterance = new SpeechSynthesisUtterance(currentClockObj.verb);
-                    utterance.lang = "es-ES";
-                    utterance.rate = 0.85;
+                    utterance.lang = "es-ES"; utterance.rate = 0.85;
                     window.speechSynthesis.speak(utterance);
                 }, 300);
             }
-            } else {
-                var speakBtn = document.getElementById('speak-btn');
-                speakBtn.style.display = "block";
-                document.getElementById('infinitive-btn').style.display = "none";
-
-                promptDisplay.innerText = "🔊 Listening...";
-                subDisplay.innerText = "Which person AND tense is this?";
-                subDisplay.style.display = "block";
-                promptDisplay.style.fontSize = "2.2rem";
-                promptDisplay.style.color = "var(--accent)";
-                trackBadge.innerText = "";
-
-                setTimeout(speakSpanishPrompt, 300);
-            }
-
-            // Auto-scroll to the active input/reveal area so the user doesn't have to hunt for it
-            setTimeout(function() {
-                if (currentQuizDirection === 'read' && productionMethod === 'type') {
-                    var inputField = document.getElementById('user-input');
-                    if (inputField) {
-                        inputField.focus();
-                        inputField.select();
-                    }
-                } else {
-                    // In Honour mode or Listening mode, scroll the action button into view
-                    var actionBtn = document.getElementById('btn-reveal-container');
-                    if (actionBtn && actionBtn.style.display !== 'none') {
-                        actionBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-                }
-            }, 50);
+        } else {
+            var speakBtn = document.getElementById('speak-btn'); speakBtn.style.display = "block";
+            document.getElementById('infinitive-btn').style.display = "none";
+            promptDisplay.innerText = "🔊 Listening...";
+            subDisplay.innerText = "Which person AND tense is this?";
+            subDisplay.style.display = "block";
+            promptDisplay.style.fontSize = "2.2rem";
+            promptDisplay.style.color = "var(--accent)";
+            trackBadge.innerText = "";
+            setTimeout(speakSpanishPrompt, 300);
         }
+        setTimeout(function() {
+            if (currentQuizDirection === 'read' && productionMethod === 'type') {
+                var inputField = document.getElementById('user-input');
+                if (inputField) { inputField.focus(); inputField.select(); }
+            } else {
+                var actionBtn = document.getElementById('btn-reveal-container');
+                if (actionBtn && actionBtn.style.display !== 'none') actionBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }, 50);
+    }
 
     function buildEnglishGloss(card) {
         var entry = null;
-        for (var i = 0; i < masterVerbDictionary.length; i++) {
-            if (masterVerbDictionary[i].verb === card.verb) { entry = masterVerbDictionary[i]; break; }
-        }
+        for (var i = 0; i < masterVerbDictionary.length; i++) { if (masterVerbDictionary[i].verb === card.verb) { entry = masterVerbDictionary[i]; break; } }
         if (!entry || !entry.english) return "";
-
         var e = entry.english;
         var pronMap = { yo: "I", tu: "you", el: "he/she", nosotros: "we", vosotros: "you all", ellos: "they" };
         var pron = pronMap[card.pronoun];
         var isThirdSg = (card.pronoun === 'el');
-
         if (card.tense === 'pres') {
             if (e.presOverride && e.presOverride[card.pronoun]) return pron + " " + e.presOverride[card.pronoun];
             var presWord = isThirdSg ? e.third : e.base;
@@ -2401,13 +1913,16 @@
             return pron + " " + presWord + presTag;
         }
         if (card.tense === 'pret') {
-            var pretWord = (e.pastOverride && e.pastOverride[card.pronoun]) ? e.pastOverride[card.pronoun] : e.past;
+            var pretWord;
+            if (e.pretBase) pretWord = e.pretBase;
+            else if (e.pastOverride && e.pastOverride[card.pronoun]) pretWord = e.pastOverride[card.pronoun];
+            else pretWord = e.past;
             var pretTag = (pretWord === e.base) ? " (past)" : "";
             return pron + " " + pretWord + pretTag;
         }
         if (card.tense === 'impf') return pron + " used to " + (e.impfBase || e.base);
-        if (card.tense === 'pp')   return pron + " " + (isThirdSg ? "has" : "have") + " " + (e.enPP || e.past);
-        if (card.tense === 'fut')  return pron + " will " + (e.futBase || e.base);
+        if (card.tense === 'pp') return pron + " " + (isThirdSg ? "has" : "have") + " " + (e.enPP || e.past);
+        if (card.tense === 'fut') return pron + " will " + (e.futBase || e.base);
         if (card.tense === 'cond') return pron + " would " + (e.condBase || e.base);
         return "";
     }
@@ -2416,16 +1931,14 @@
         if (tenseKey === 'pres') return "now / habitual";
         if (tenseKey === 'pret') return "completed — one-off event";
         if (tenseKey === 'impf') return "ongoing or habitual in the past";
-        if (tenseKey === 'pp')   return "have/has + participle — recent past";
-        if (tenseKey === 'fut')  return "future";
+        if (tenseKey === 'pp') return "have/has + participle — recent past";
+        if (tenseKey === 'fut') return "future";
         if (tenseKey === 'cond') return "hypothetical / polite";
         return "";
     }
 
     function computeFullWord(card, ending) {
-        if (card.tense === 'pp') {
-            return ending + " " + card.participle;
-        }
+        if (card.tense === 'pp') return ending + " " + card.participle;
         var stripped = ending.replace("ie-", "").replace("ue-", "").replace("i-", "");
         if (card.irregularTenses && card.irregularTenses.indexOf(card.tense) !== -1) return stripped;
         if (card.tense === 'fut' || card.tense === 'cond') return card.verb.toLowerCase() + stripped;
@@ -2438,34 +1951,16 @@
         var target = computeFullWord(currentCard, currentCard.ending);
         var matches = [];
         var tenses = ['pres', 'pret', 'impf', 'pp', 'fut', 'cond'];
-
         for (var i = 0; i < masterVerbDictionary.length; i++) {
             var entry = masterVerbDictionary[i];
             for (var t = 0; t < tenses.length; t++) {
                 var tenseKey = tenses[t];
                 for (var p = 0; p < subjectPronounsArray.length; p++) {
                     var pronounKey = subjectPronounsArray[p];
-                    if (entry.verb === currentCard.verb &&
-                        tenseKey === currentCard.tense &&
-                        pronounKey === currentCard.pronoun) continue;
-
+                    if (entry.verb === currentCard.verb && tenseKey === currentCard.tense && pronounKey === currentCard.pronoun) continue;
                     var ending = entry.paradigms[tenseKey][pronounKey];
-                    var word = computeFullWord({
-                        stem: entry.stem,
-                        stressedStem: entry.stressedStem,
-                        verb: entry.verb,
-                        tense: tenseKey,
-                        irregularTenses: entry.irregularTenses,
-                        participle: entry.participle
-                    }, ending);
-                    if (word === target) {
-                        matches.push({
-                            verb: entry.verb,
-                            meaning: entry.meaning,
-                            tense: tenseKey,
-                            pronoun: pronounKey
-                        });
-                    }
+                    var word = computeFullWord({ stem: entry.stem, stressedStem: entry.stressedStem, verb: entry.verb, tense: tenseKey, irregularTenses: entry.irregularTenses, participle: entry.participle }, ending);
+                    if (word === target) matches.push({ verb: entry.verb, meaning: entry.meaning, tense: tenseKey, pronoun: pronounKey });
                 }
             }
         }
@@ -2495,133 +1990,79 @@
         if (!currentClockObj) return;
         var fullWord = computeFullWord(currentClockObj, currentClockObj.ending);
         var utterance = new SpeechSynthesisUtterance(fullWord);
-        utterance.lang = "es-ES";
-        utterance.rate = 0.8;
-        
-        // Force the use of a Google Spanish voice if available
+        utterance.lang = "es-ES"; utterance.rate = 0.8;
         var voices = window.speechSynthesis.getVoices();
-        var googleSpanish = voices.find(function(v) { 
-            return v.name.toLowerCase().includes('google') && v.lang.toLowerCase().startsWith('es'); 
-        });
-        if (googleSpanish) {
-            utterance.voice = googleSpanish;
-        }
-
+        var googleSpanish = voices.find(function(v) { return v.name.toLowerCase().includes('google') && v.lang.toLowerCase().startsWith('es'); });
+        if (googleSpanish) utterance.voice = googleSpanish;
         window.speechSynthesis.speak(utterance);
     }
 
     function speakInfinitive() {
         if (!currentClockObj) return;
         var utterance = new SpeechSynthesisUtterance(currentClockObj.verb);
-        utterance.lang = "es-ES";
-        utterance.rate = 0.85;
+        utterance.lang = "es-ES"; utterance.rate = 0.85;
         window.speechSynthesis.speak(utterance);
     }
 
     function buildAnswerLine(card, displayEnding) {
         var fullFormShown = computeFullWord(card, card.ending);
-        var line = requiresFullWord(card)
-            ? "Full form: <strong>" + fullFormShown + "</strong>"
-            : "Ending: <strong>-" + displayEnding + "</strong> • Full form: <strong>" + fullFormShown + "</strong>";
-        if (card.tense === 'pp') {
-            line += "<br><small style='color:var(--text-muted);'>haber + past participle (" + card.participle + ")</small>";
-        }
+        var line = requiresFullWord(card) ? "Full form: <strong>" + fullFormShown + "</strong>" : "Ending: <strong>-" + displayEnding + "</strong> • Full form: <strong>" + fullFormShown + "</strong>";
+        if (card.tense === 'pp') line += "<br><small style='color:var(--text-muted);'>haber + past participle (" + card.participle + ")</small>";
         return line;
     }
 
-    // ============================================================
-    // ANSWER CHECKING
-    // ============================================================
     function checkAnswer() {
         if (currentQuizDirection !== 'read') return;
         cancelPendingInfinitive();
         var inputField = document.getElementById('user-input');
         var userInput = inputField.value.trim().toLowerCase();
         if (userInput === "") return;
-
         collapseHeaderShutter();
         var feedbackContainer = document.getElementById('feedback-container');
         var feedbackMessage = document.getElementById('feedback-message');
-
         document.getElementById('submit-btn').disabled = true;
         inputField.disabled = true;
-
-        totalQuestions++;
-        sessionTotal++;
-
+        totalQuestions++; sessionTotal++;
         var strippedEnding = currentClockObj.ending.replace("ie-", "").replace("ue-", "").replace("i-", "");
         var fullForm = computeFullWord(currentClockObj, currentClockObj.ending);
-
         var cleanEnding = cleanString(strippedEnding);
         var cleanFull = cleanString(fullForm);
         var cleanInput = cleanString(userInput);
-
-        var isCorrect = requiresFullWord(currentClockObj)
-            ? (cleanInput === cleanFull)
-            : (cleanInput === cleanEnding || cleanInput === cleanFull);
-
-        userActionHistory.push({
-            streakBefore: currentStreak, correctBefore: totalCorrect, questionsBefore: totalQuestions - 1,
-            activeCardIndexBefore: activeCardIndex, wasMistakeLogged: !isCorrect,
-            wasCardPushed: !isCorrect, cardObjectSnapshot: Object.assign({}, currentClockObj)
-        });
-
+        var isCorrect = requiresFullWord(currentClockObj) ? (cleanInput === cleanFull) : (cleanInput === cleanEnding || cleanInput === cleanFull);
+        userActionHistory.push({ streakBefore: currentStreak, correctBefore: totalCorrect, questionsBefore: totalQuestions - 1, activeCardIndexBefore: activeCardIndex, wasMistakeLogged: !isCorrect, wasCardPushed: !isCorrect, cardObjectSnapshot: Object.assign({}, currentClockObj) });
         if (isCorrect) {
-            totalCorrect++; currentStreak++;
-            sessionCorrect++;
-            sessionCurrentStreak++;
+            totalCorrect++; currentStreak++; sessionCorrect++; sessionCurrentStreak++;
             if (sessionCurrentStreak > sessionBestStreak) sessionBestStreak = sessionCurrentStreak;
-        } else {
-            currentStreak = 0;
-            sessionCurrentStreak = 0;
-        }
-
+        } else { currentStreak = 0; sessionCurrentStreak = 0; }
         var logResult = handleLogUpdate(currentClockObj, isCorrect, userInput);
-
         var displayEnding = currentClockObj.ending.replace("ie-", "").replace("ue-", "").replace("i-", "");
         var speakIcon = ' <span style="cursor:pointer; opacity:0.8;" onclick="speakSpanishPrompt();" title="Hear the answer">🔊</span>';
-
+        var unpinHtml = resultLeavesPinned(logResult) ? buildInlineUnpinHtml() : "";
         if (isCorrect) {
             feedbackMessage.className = "feedback correct-box";
-            feedbackMessage.innerHTML = "<strong>Correct!</strong> 🎉<br>" + speakIcon + " " + buildAnswerLine(currentClockObj, displayEnding) + "<br><small>" + currentClockObj.verb + " = " + currentClockObj.meaning + "</small>" + logUpdateMessage(logResult);
+            feedbackMessage.innerHTML = "<strong>Correct!</strong> 🎉<br>" + speakIcon + " " + buildAnswerLine(currentClockObj, displayEnding) + "<br><small>" + currentClockObj.verb + " = " + currentClockObj.meaning + "</small>" + logUpdateMessage(logResult) + unpinHtml;
             setTimeout(speakSpanishPrompt, 200);
         } else {
             feedbackMessage.className = "feedback incorrect-box";
-            feedbackMessage.innerHTML = "<strong>Incorrect.</strong><br>" + speakIcon + " " + buildAnswerLine(currentClockObj, displayEnding) + "<br><small>" + currentClockObj.verb + " • " + tenseNamesFullMap[currentClockObj.tense] + "</small>" + logUpdateMessage(logResult);
+            feedbackMessage.innerHTML = "<strong>Incorrect.</strong><br>" + speakIcon + " " + buildAnswerLine(currentClockObj, displayEnding) + "<br><small>" + currentClockObj.verb + " • " + tenseNamesFullMap[currentClockObj.tense] + "</small>" + logUpdateMessage(logResult) + unpinHtml;
             currentSessionDeck.push(Object.assign({}, currentClockObj));
             document.getElementById('deck-total').innerText = currentSessionDeck.length;
             setTimeout(speakSpanishPrompt, 200);
         }
-
         document.getElementById('speak-btn').style.display = "block";
         activeCardIndex++;
         document.getElementById('deck-progress').innerText = activeCardIndex;
         updateScoreboard();
         feedbackContainer.style.display = "block";
-
-        // MOBILE SCROLL FIX: Hide input areas to save vertical space
         var hideIds = ['panel-read-mode', 'panel-write-mode', 'honour-system-controls', 'btn-reveal-container'];
-        hideIds.forEach(function(id) {
-            var el = document.getElementById(id);
-            if (el) el.classList.add('hidden-during-feedback');
-        });
-
-        setTimeout(function() {
-            var nextBtn = document.getElementById('next-btn');
-            if (nextBtn) {
-                nextBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-        }, 100);
-
-        updateDrillPill();
-        saveState();
+        hideIds.forEach(function(id) { var el = document.getElementById(id); if (el) el.classList.add('hidden-during-feedback'); });
+        setTimeout(function() { var nextBtn = document.getElementById('next-btn'); if (nextBtn) nextBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 100);
+        updateDrillPill(); saveState();
     }
 
     function collapseHeaderShutter() {
         var shutter = document.getElementById('shutter-header-area');
-        if (shutter && !shutter.classList.contains('collapsed')) {
-            shutter.classList.add('collapsed');
-        }
+        if (shutter && !shutter.classList.contains('collapsed')) shutter.classList.add('collapsed');
     }
 
     function revealVerbAnswer() {
@@ -2629,139 +2070,88 @@
         collapseHeaderShutter();
         document.getElementById('btn-reveal-container').style.display = "none";
         document.getElementById('honour-system-controls').style.display = "flex";
-
         var promptDisplay = document.getElementById('verb-prompt-display');
         var subDisplay = document.getElementById('verb-sub-display');
         subDisplay.style.display = "block";
-
         var fullWord = computeFullWord(currentClockObj, currentClockObj.ending);
-
         promptDisplay.innerText = fullWord;
         promptDisplay.style.fontSize = "3rem";
         promptDisplay.style.color = "var(--text-main)";
-
         var gloss = buildEnglishGloss(currentClockObj);
         var aspect = tenseAspectNote(currentClockObj.tense);
-
-        var html = subjectLabelsFullMap[currentClockObj.pronoun] + " • " +
-            tenseNamesFullMap[currentClockObj.tense] + " • " +
-            currentClockObj.verb + " (" + currentClockObj.meaning + ")";
-
-        if (gloss) {
-            html += "<br><span style='color:var(--text-main); font-style:italic;'>\"" + gloss + "\"</span> " +
-                "<span style='color:var(--text-muted); font-size:0.85rem;'>— " + aspect + "</span>";
-        }
-
-        if (currentClockObj.tense === 'pp') {
-            html += "<br><span style='color:var(--text-muted); font-size:0.8rem;'>haber + past participle (" + currentClockObj.participle + ")</span>";
-        }
-
+        var html = subjectLabelsFullMap[currentClockObj.pronoun] + " • " + tenseNamesFullMap[currentClockObj.tense] + " • " + currentClockObj.verb + " (" + currentClockObj.meaning + ")";
+        if (gloss) html += "<br><span style='color:var(--text-main); font-style:italic;'>\"" + gloss + "\"</span> <span style='color:var(--text-muted); font-size:0.85rem;'>— " + aspect + "</span>";
+        if (currentClockObj.tense === 'pp') html += "<br><span style='color:var(--text-muted); font-size:0.8rem;'>haber + past participle (" + currentClockObj.participle + ")</span>";
         var others = findVerbHomographs(currentClockObj);
         if (others.length > 0) {
             var parts = [];
-            for (var i = 0; i < others.length; i++) {
-                parts.push(others[i].verb + " " + tenseNamesFullMap[others[i].tense] + " " + subjectLabelsFullMap[others[i].pronoun]);
-            }
+            for (var i = 0; i < others.length; i++) parts.push(others[i].verb + " " + tenseNamesFullMap[others[i].tense] + " " + subjectLabelsFullMap[others[i].pronoun]);
             html += "<br><span style='color:var(--warning); font-size:0.85rem;'>⚠️ Same form also: " + parts.join(' • ') + "</span>";
         }
-
         subDisplay.innerHTML = html;
         document.getElementById('speak-btn').style.display = "block";
         setTimeout(speakSpanishPrompt, 150);
     }
 
     function assessHonour(isCorrect) {
-        totalQuestions++;
-        sessionTotal++;
-
+        totalQuestions++; sessionTotal++;
         var feedbackContainer = document.getElementById('feedback-container');
         var feedbackMessage = document.getElementById('feedback-message');
         document.getElementById('honour-system-controls').style.display = "none";
-
-        userActionHistory.push({
-            streakBefore: currentStreak, correctBefore: totalCorrect, questionsBefore: totalQuestions - 1,
-            activeCardIndexBefore: activeCardIndex, wasMistakeLogged: !isCorrect, wasCardPushed: !isCorrect,
-            cardObjectSnapshot: Object.assign({}, currentClockObj)
-        });
-
+        userActionHistory.push({ streakBefore: currentStreak, correctBefore: totalCorrect, questionsBefore: totalQuestions - 1, activeCardIndexBefore: activeCardIndex, wasMistakeLogged: !isCorrect, wasCardPushed: !isCorrect, cardObjectSnapshot: Object.assign({}, currentClockObj) });
         if (isCorrect) {
-            totalCorrect++; currentStreak++;
-            sessionCorrect++;
-            sessionCurrentStreak++;
+            totalCorrect++; currentStreak++; sessionCorrect++; sessionCurrentStreak++;
             if (sessionCurrentStreak > sessionBestStreak) sessionBestStreak = sessionCurrentStreak;
-        } else {
-            currentStreak = 0;
-            sessionCurrentStreak = 0;
-        }
-
+        } else { currentStreak = 0; sessionCurrentStreak = 0; }
         var yoursLabel = currentQuizDirection === 'read' ? "[Honour System Miss]" : "[Acoustic Self-Assessed Miss]";
         var logResult = handleLogUpdate(currentClockObj, isCorrect, isCorrect ? "" : yoursLabel);
-
         var fullWord = computeFullWord(currentClockObj, currentClockObj.ending);
         var tenseLabel = tenseNamesFullMap[currentClockObj.tense];
-
         var others = findVerbHomographs(currentClockObj);
         var warnHtml = "";
         if (others.length > 0) {
             var parts = [];
-            for (var i = 0; i < others.length; i++) {
-                parts.push(others[i].verb + " " + tenseNamesFullMap[others[i].tense] + " " + subjectLabelsFullMap[others[i].pronoun]);
-            }
+            for (var i = 0; i < others.length; i++) parts.push(others[i].verb + " " + tenseNamesFullMap[others[i].tense] + " " + subjectLabelsFullMap[others[i].pronoun]);
             warnHtml = "<br><span style='color:var(--warning); font-size:0.85rem;'>⚠️ Same form also: " + parts.join(' • ') + "</span>";
         }
-
         var auxHtml = "";
-        if (currentClockObj.tense === 'pp') {
-            auxHtml = "<br><span style='color:var(--text-muted); font-size:0.8rem;'>haber + past participle (" + currentClockObj.participle + ")</span>";
-        }
-
+        if (currentClockObj.tense === 'pp') auxHtml = "<br><span style='color:var(--text-muted); font-size:0.8rem;'>haber + past participle (" + currentClockObj.participle + ")</span>";
         var speakIconH = ' <span style="cursor:pointer; opacity:0.8;" onclick="speakSpanishPrompt();" title="Hear the answer">🔊</span>';
-
+        var unpinHtml = resultLeavesPinned(logResult) ? buildInlineUnpinHtml() : "";
         if (isCorrect) {
             feedbackMessage.className = "feedback correct-box";
             var gloss = buildEnglishGloss(currentClockObj);
             var aspect = tenseAspectNote(currentClockObj.tense);
             var glossHtml = gloss ? "<br><em>\"" + gloss + "\"</em> <span style='color:var(--text-muted); font-size:0.85rem;'>— " + aspect + "</span>" : "";
-            feedbackMessage.innerHTML = "<strong>Marked Correct!</strong> 👍" + speakIconH + "<br>Decoded form: <strong>" + fullWord + "</strong> (" + tenseLabel + ")." + glossHtml + auxHtml + warnHtml + logUpdateMessage(logResult);
+            feedbackMessage.innerHTML = "<strong>Marked Correct!</strong> 👍" + speakIconH + "<br>Decoded form: <strong>" + fullWord + "</strong> (" + tenseLabel + ")." + glossHtml + auxHtml + warnHtml + logUpdateMessage(logResult) + unpinHtml;
         } else {
             feedbackMessage.className = "feedback incorrect-box";
             var gloss = buildEnglishGloss(currentClockObj);
             var aspect = tenseAspectNote(currentClockObj.tense);
             var glossHtml = gloss ? "<br><em>\"" + gloss + "\"</em> <span style='color:var(--text-muted); font-size:0.85rem;'>— " + aspect + "</span>" : "";
-            feedbackMessage.innerHTML = "<strong>Marked Incorrect.</strong> 📚" + speakIconH + "<br>Inflection target was <strong>" + fullWord + "</strong> (" + tenseLabel + ")." + glossHtml + auxHtml + warnHtml + logUpdateMessage(logResult);
+            feedbackMessage.innerHTML = "<strong>Marked Incorrect.</strong> 📚" + speakIconH + "<br>Inflection target was <strong>" + fullWord + "</strong> (" + tenseLabel + ")." + glossHtml + auxHtml + warnHtml + logUpdateMessage(logResult) + unpinHtml;
             currentSessionDeck.push(Object.assign({}, currentClockObj));
             document.getElementById('deck-total').innerText = currentSessionDeck.length;
         }
-
         activeCardIndex++;
         document.getElementById('deck-progress').innerText = activeCardIndex;
         updateScoreboard();
         feedbackContainer.style.display = "block";
-
-        // MOBILE SCROLL FIX: Hide input areas to save vertical space
         var hideIds = ['panel-read-mode', 'panel-write-mode', 'honour-system-controls', 'btn-reveal-container'];
-        hideIds.forEach(function(id) {
-            var el = document.getElementById(id);
-            if (el) el.classList.add('hidden-during-feedback');
-        });
-
-        setTimeout(function() {
-            var nextBtn = document.getElementById('next-btn');
-            if (nextBtn) {
-                nextBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-        }, 100);
-
-        updateDrillPill();
-        saveState();
+        hideIds.forEach(function(id) { var el = document.getElementById(id); if (el) el.classList.add('hidden-during-feedback'); });
+        setTimeout(function() { var nextBtn = document.getElementById('next-btn'); if (nextBtn) nextBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 100);
+        updateDrillPill(); saveState();
     }
 
     function updateFilterStatusLine() {
         var counts = computeCounts();
         var el = document.getElementById('filter-status-line');
         if (el) {
-            var remaining = counts.active + counts.pending + counts.pinned;
-            el.innerText = counts.total + " cards under current filters · " + counts.known + " mastered · " + remaining + " remaining";
+            var remaining = counts.active + counts.pending;
+            var suffix = "";
+            if (!pinnedInRotation && counts.pinned > 0) suffix = " · " + counts.pinned + " pinned (excluded)";
+            else remaining += counts.pinned;
+            el.innerText = counts.total + " cards under current filters · " + counts.known + " mastered · " + remaining + " remaining" + suffix;
         }
     }
 
@@ -2778,63 +2168,41 @@
     }
 
     function executeUndoAction() {
-    if (userActionHistory.length === 0) return;
-
-    // If we're on the completion screen, tear it down first
-    if (sessionComplete) {
-        sessionComplete = false;
-        sessionStarted = true;
-        var fbEl = document.getElementById('feedback-container');
-        var bar = fbEl ? fbEl.querySelector('.completion-actions') : null;
-        if (bar) bar.remove();
-        var nextBtnEl = document.getElementById('next-btn');
-        if (nextBtnEl) nextBtnEl.style.display = "";
-        var shutterEl = document.getElementById('shutter-header-area');
-        if (shutterEl) shutterEl.classList.remove('collapsed');
+        if (userActionHistory.length === 0) return;
+        if (sessionComplete) {
+            sessionComplete = false; sessionStarted = true;
+            var fbEl = document.getElementById('feedback-container');
+            var bar = fbEl ? fbEl.querySelector('.completion-actions') : null;
+            if (bar) bar.remove();
+            var nextBtnEl = document.getElementById('next-btn');
+            if (nextBtnEl) nextBtnEl.style.display = "";
+            var shutterEl = document.getElementById('shutter-header-area');
+            if (shutterEl) shutterEl.classList.remove('collapsed');
+        }
+        var previousState = userActionHistory.pop();
+        currentStreak = previousState.streakBefore;
+        totalCorrect = previousState.correctBefore;
+        totalQuestions = previousState.questionsBefore;
+        activeCardIndex = previousState.activeCardIndexBefore;
+        if (previousState.wasCardPushed) { currentSessionDeck.pop(); document.getElementById('deck-total').innerText = currentSessionDeck.length; }
+        updateScoreboard(); generateQuestion(); saveState();
     }
 
-    var previousState = userActionHistory.pop();
-    currentStreak = previousState.streakBefore;
-    totalCorrect = previousState.correctBefore;
-    totalQuestions = previousState.questionsBefore;
-    activeCardIndex = previousState.activeCardIndexBefore;
-    if (previousState.wasCardPushed) {
-        currentSessionDeck.pop();
-        document.getElementById('deck-total').innerText = currentSessionDeck.length;
-    }
-    updateScoreboard();
-    generateQuestion();
-    saveState();
-}
-
-    // ============================================================
-    // COMPLETION SCREEN
-    // ============================================================
     function triggerCompletionState() {
-        sessionComplete = true;
-        sessionStarted = false;
-
+        sessionComplete = true; sessionStarted = false;
         var accuracy = sessionTotal > 0 ? Math.round(sessionCorrect / sessionTotal * 100) : 0;
         var remainingPending = mistakeLog.filter(function(e) { return e.status === "pending"; }).length;
+        var universeTotal = masterVerbDictionary.length * 6 * subjectPronounsArray.length;
+        var knownCount = Object.keys(knownCards).length;
+        var isPerfect = (knownCount === universeTotal) && mistakeLog.length === 0;
 
         var promptDisplay = document.getElementById('verb-prompt-display');
         var subDisplay = document.getElementById('verb-sub-display');
-        promptDisplay.innerHTML = "🎉 ¡Enhorabuena!";
-        promptDisplay.style.color = "var(--success)";
-        promptDisplay.style.fontSize = "2.2rem";
-        subDisplay.innerText = "";
-        subDisplay.style.display = "block";
-
-        var subLabel = document.getElementById('verb-subject-display');
-        if (subLabel) subLabel.style.display = "none";
-        var speakBtn = document.getElementById('speak-btn');
-        if (speakBtn) speakBtn.style.display = "none";
-        var infinitiveBtn = document.getElementById('infinitive-btn');
-        if (infinitiveBtn) infinitiveBtn.style.display = "none";
-        var warningBadge = document.getElementById('verb-stem-warning-badge');
-        if (warningBadge) warningBadge.style.display = "none";
+        var subLabel = document.getElementById('verb-subject-display'); if (subLabel) subLabel.style.display = "none";
+        var speakBtn = document.getElementById('speak-btn'); if (speakBtn) speakBtn.style.display = "none";
+        var infinitiveBtn = document.getElementById('infinitive-btn'); if (infinitiveBtn) infinitiveBtn.style.display = "none";
+        var warningBadge = document.getElementById('verb-stem-warning-badge'); if (warningBadge) warningBadge.style.display = "none";
         document.getElementById('verb-track-badge').innerText = "";
-
         document.getElementById('btn-reveal-container').style.display = "none";
         document.getElementById('honour-system-controls').style.display = "none";
 
@@ -2842,48 +2210,71 @@
         var feedbackMessage = document.getElementById('feedback-message');
         feedbackMessage.className = "feedback correct-box";
 
-        var counts = computeCounts();
-        var knownStat = sessionKnownCount > 0
-            ? '<div><span class="completion-stat-label">Newly Known</span><span class="completion-stat-value" style="color:#4ade80;">+' + sessionKnownCount + '</span></div>'
-            : '';
-        var recoveredStat = sessionRecoveredCount > 0
-            ? '<div><span class="completion-stat-label">Recovered</span><span class="completion-stat-value" style="color:#fbbf24;">' + sessionRecoveredCount + '</span></div>'
-            : '';
+        if (isPerfect) {
+            promptDisplay.innerHTML = "👑 ¡MAESTRÍA TOTAL! 💪";
+            promptDisplay.style.color = "var(--success)";
+            promptDisplay.style.fontSize = "1.6rem";
+            subDisplay.innerText = "";
+            subDisplay.style.display = "block";
+            feedbackMessage.innerHTML =
+                '<div style="text-align:center;">' +
+                    '<div style="font-size:2.5rem; margin:0.5rem 0;">🥋👑💪</div>' +
+                    '<div style="font-size:1rem; color:var(--text-main); margin:0.75rem 0;">Every card is Known. Nothing pending, nothing pinned, nothing left to drill.</div>' +
+                    '<div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.5rem;">All ' + universeTotal + ' cards mastered.</div>' +
+                    '<div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.5rem;">Consider a fresh challenge — the hub has more trainers in the series.</div>' +
+                    '<div class="completion-stats">' +
+                        '<div><span class="completion-stat-label">Accuracy</span><span class="completion-stat-value">' + accuracy + '%</span></div>' +
+                        '<div><span class="completion-stat-label">Best Streak</span><span class="completion-stat-value">🔥 ' + sessionBestStreak + '</span></div>' +
+                    '</div>' +
+                '</div>';
+            var nextBtn = document.getElementById('next-btn');
+            if (nextBtn) nextBtn.style.display = "none";
+            var actionsHtml = '<div class="completion-actions">';
+            actionsHtml += '<button class="completion-btn" onclick="resetAllProgress()">🔄 Reset progress</button>';
+            actionsHtml += '<button class="completion-btn primary" onclick="window.location.href=\'index.html\'">🌐 Return to Hub</button>';
+            actionsHtml += '</div>';
+            var existingBar = feedbackContainer.querySelector('.completion-actions');
+            if (existingBar) existingBar.remove();
+            feedbackContainer.insertAdjacentHTML('beforeend', actionsHtml);
+            feedbackContainer.style.display = "block";
+            updateDrillPill();
+            setTimeout(function() { if (feedbackContainer) feedbackContainer.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 450);
+            return;
+        }
 
+        promptDisplay.innerHTML = "🎉 ¡Enhorabuena!";
+        promptDisplay.style.color = "var(--success)";
+        promptDisplay.style.fontSize = "2.2rem";
+        subDisplay.innerText = "";
+        subDisplay.style.display = "block";
+
+        var counts = computeCounts();
+        var knownStat = sessionKnownCount > 0 ? '<div><span class="completion-stat-label">Newly Known</span><span class="completion-stat-value" style="color:#4ade80;">+' + sessionKnownCount + '</span></div>' : '';
+        var recoveredStat = sessionRecoveredCount > 0 ? '<div><span class="completion-stat-label">Recovered</span><span class="completion-stat-value" style="color:#fbbf24;">' + sessionRecoveredCount + '</span></div>' : '';
         feedbackMessage.innerHTML =
             '<div style="text-align:center;">' +
                 '<div class="completion-stats">' +
                     '<div><span class="completion-stat-label">Accuracy</span><span class="completion-stat-value">' + accuracy + '%</span></div>' +
                     '<div><span class="completion-stat-label">Best Streak</span><span class="completion-stat-value">🔥 ' + sessionBestStreak + '</span></div>' +
-                    recoveredStat +
-                    knownStat +
+                    recoveredStat + knownStat +
                 '</div>' +
                 '<div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.25rem;">' + sessionCorrect + ' / ' + sessionTotal + ' correct this run</div>' +
                 '<div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.5rem;">' + counts.known + ' / ' + counts.total + ' known under current filters</div>' +
                 (playMode ? '<div style="font-size:0.75rem; color:#d8b4fe; margin-bottom:0.5rem;">🎮 Play mode active — progress not recorded</div>' : '') +
             '</div>';
-
-        var nextBtn = document.getElementById('next-btn');
-        if (nextBtn) nextBtn.style.display = "none";
-
-        var actionsHtml = '<div class="completion-actions">';
-        actionsHtml += '<button class="completion-btn primary" onclick="startNewSessionFromComplete()">🔄 New Session</button>';
-        actionsHtml += '<button class="completion-btn" onclick="exitDrillToReview()">📝 Reviews</button>';
-        if (sessionMode === "drill" && remainingPending > 0) {
-            actionsHtml += '<button class="completion-btn" style="background-color:var(--warning); color:#0d0c10;" onclick="drillFromLog(\'pending\')">🎯 Drill ' + remainingPending + ' Pending</button>';
-        }
-        actionsHtml += '</div>';
-
-        var existingBar = feedbackContainer.querySelector('.completion-actions');
-        if (existingBar) existingBar.remove();
-        feedbackContainer.insertAdjacentHTML('beforeend', actionsHtml);
-
+        var nextBtn2 = document.getElementById('next-btn');
+        if (nextBtn2) nextBtn2.style.display = "none";
+        var actionsHtml2 = '<div class="completion-actions">';
+        actionsHtml2 += '<button class="completion-btn primary" onclick="startNewSessionFromComplete()">🔄 New Session</button>';
+        actionsHtml2 += '<button class="completion-btn" onclick="exitDrillToReview()">📝 Reviews</button>';
+        if (sessionMode === "drill" && remainingPending > 0) actionsHtml2 += '<button class="completion-btn" style="background-color:var(--warning); color:#0d0c10;" onclick="drillFromLog(\'pending\')">🎯 Drill ' + remainingPending + ' Pending</button>';
+        actionsHtml2 += '</div>';
+        var existingBar2 = feedbackContainer.querySelector('.completion-actions');
+        if (existingBar2) existingBar2.remove();
+        feedbackContainer.insertAdjacentHTML('beforeend', actionsHtml2);
         feedbackContainer.style.display = "block";
         updateDrillPill();
-
-        setTimeout(function() {
-            if (feedbackContainer) feedbackContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 450);
+        setTimeout(function() { if (feedbackContainer) feedbackContainer.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 450);
     }
 
     function startNewSessionFromComplete() {
@@ -2892,14 +2283,11 @@
         if (bar) bar.remove();
         var nb = document.getElementById('next-btn');
         if (nb) nb.style.display = "";
-
         sessionComplete = false;
         initSessionDeck();
     }
 
-        function handleNextWorkflow() {
-            generateQuestion();
-        }
+    function handleNextWorkflow() { generateQuestion(); }
 
     function updateStreakEmoji() {
         var emojiSpan = document.getElementById('streak-emoji');
@@ -2912,101 +2300,52 @@
         }
     }
 
-    // ============================================================
-    // REVIEW VIEW
-    // ============================================================
     function setReviewTab(bucket) {
         reviewTab = bucket;
-        document.querySelectorAll('.review-tab').forEach(function(b) {
-            b.classList.toggle('active', b.dataset.bucket === bucket);
-        });
-        saveState();
-        renderReviewList();
+        document.querySelectorAll('.review-tab').forEach(function(b) { b.classList.toggle('active', b.dataset.bucket === bucket); });
+        saveState(); renderReviewList();
     }
 
     function renderReviewList() {
         var container = document.getElementById('review-list-container');
         var headerEl = document.getElementById('review-header');
         updateLogBadges();
-
         var counts = computeCounts();
-
-        // === KNOWN TAB ===
         if (reviewTab === "known") {
-            if (counts.known === 0) {
-                headerEl.className = "review-empty";
-                headerEl.innerHTML = "💚 <strong>No known cards yet.</strong><br>Answer cards correctly to graduate them here. They won't reappear in Adaptive sessions.";
-                container.innerHTML = "";
-                updateReviewActions(0);
-                return;
-            }
+            if (counts.known === 0) { headerEl.className = "review-empty"; headerEl.innerHTML = "💚 <strong>No known cards yet.</strong><br>Answer cards correctly to graduate them here. They won't reappear in Adaptive sessions."; container.innerHTML = ""; updateReviewActions(0); return; }
             headerEl.className = "review-header";
             headerEl.innerHTML = "💚 <strong>" + counts.known + " of " + counts.total + " cards mastered</strong> under current filters.<br>These are skipped in Adaptive mode. Use <em>Forget Filtered Known</em> below to reset them to active — they'll resurface in future sessions. To forget <em>every</em> known card regardless of filter, clear the filters first.";
-            container.innerHTML = "";
-            updateReviewActions(counts.known);
-            return;
+            container.innerHTML = ""; updateReviewActions(counts.known); return;
         }
-
-        // === ACTIVE TAB ===
         if (reviewTab === "active") {
-            if (counts.active === 0) {
-                headerEl.className = "review-empty";
-                headerEl.innerHTML = "⚪ <strong>No active cards under current filters.</strong><br>Every card is either known, pending, or pinned.";
-                container.innerHTML = "";
-                updateReviewActions(0);
-                return;
-            }
+            if (counts.active === 0) { headerEl.className = "review-empty"; headerEl.innerHTML = "⚪ <strong>No active cards under current filters.</strong><br>Every card is either known, pending, or pinned."; container.innerHTML = ""; updateReviewActions(0); return; }
             var pct = counts.total > 0 ? Math.round((counts.known / counts.total) * 100) : 0;
             headerEl.className = "review-header";
             headerEl.innerHTML = "⚪ <strong>" + counts.active + " cards still learning</strong> under current filters.<br>These appear in your general rotation. Pass one on first attempt to graduate it to Known.";
-            container.innerHTML =
-                '<div class="big-stat">' + counts.active + '</div>' +
-                '<div style="text-align:center; color:var(--text-muted); font-size:0.75rem;">' + counts.known + ' / ' + counts.total + ' mastered (' + pct + '%)</div>' +
-                '<div class="progress-bar-container"><div class="progress-bar-fill" style="width:' + pct + '%;"></div></div>';
-            updateReviewActions(counts.active);
-            return;
+            container.innerHTML = '<div class="big-stat">' + counts.active + '</div><div style="text-align:center; color:var(--text-muted); font-size:0.75rem;">' + counts.known + ' / ' + counts.total + ' mastered (' + pct + '%)</div><div class="progress-bar-container"><div class="progress-bar-fill" style="width:' + pct + '%;"></div></div>';
+            updateReviewActions(counts.active); return;
         }
-
-        // === PENDING TAB ===
         if (reviewTab === "pending") {
             var pendingEntries = mistakeLog.filter(function(e) { return e.status === "pending"; });
-            if (pendingEntries.length === 0) {
-                headerEl.className = "review-empty";
-                headerEl.innerHTML = "🟡 <strong>Nothing pending.</strong><br>Every mistake has been corrected.";
-                container.innerHTML = "";
-                updateReviewActions(0);
-                return;
-            }
+            if (pendingEntries.length === 0) { headerEl.className = "review-empty"; headerEl.innerHTML = "🟡 <strong>Nothing pending.</strong><br>Every mistake has been corrected."; container.innerHTML = ""; updateReviewActions(0); return; }
             headerEl.className = "review-header";
             headerEl.innerHTML = "🟡 <strong>" + pendingEntries.length + " cards you've recently missed.</strong><br>Correct one on first attempt to return it to Active. Miss the same card " + (autoPinThreshold > 0 ? autoPinThreshold + " times" : "(never auto-pin)") + " and it auto-pins.<br><em>⚠️ Pending cards appear only occasionally in the general rotation — use <strong>Drill Pending</strong> below to focus on them.</em>";
             renderLogTable(container, pendingEntries, 'pending');
-            updateReviewActions(pendingEntries.length);
-            return;
+            updateReviewActions(pendingEntries.length); return;
         }
-
-        // === PINNED TAB ===
         if (reviewTab === "pinned") {
             var pinnedEntries = mistakeLog.filter(function(e) { return e.status === "pinned"; });
-            if (pinnedEntries.length === 0) {
-                headerEl.className = "review-empty";
-                headerEl.innerHTML = "🔴 <strong>Nothing pinned.</strong><br>Miss a card " + (autoPinThreshold > 0 ? autoPinThreshold + " times" : "(off)") + ", or click 📍 on any row, to add it to your watchlist.";
-                container.innerHTML = "";
-                updateReviewActions(0);
-                return;
-            }
+            if (pinnedEntries.length === 0) { headerEl.className = "review-empty"; headerEl.innerHTML = "🔴 <strong>Nothing pinned.</strong><br>Miss a card " + (autoPinThreshold > 0 ? autoPinThreshold + " times" : "(off)") + ", or click 📍 on any row, to add it to your watchlist."; container.innerHTML = ""; updateReviewActions(0); return; }
             headerEl.className = "review-header";
-            headerEl.innerHTML = "🔴 <strong>" + pinnedEntries.length + " cards in your watchlist.</strong><br>These stay in rotation indefinitely. Retire them one by one with <strong>📤</strong> (→ Active) or <strong>✅</strong> (→ Known), or use the bulk buttons below.<br><em>⚠️ Use <strong>Drill Pinned</strong> below to focus on them.</em>";
+            headerEl.innerHTML = "🔴 <strong>" + pinnedEntries.length + " cards in your watchlist.</strong><br>These stay in rotation indefinitely. Retire them one by one with <strong>📤</strong> (→ Active) or <strong>✅</strong> (→ Known), or use the bulk buttons below.<br><em>⚠️ Use <strong>Drill Pinned</strong> below to focus on them. <strong>📋 Copy</strong> dumps the list to your clipboard for offline study.</em>";
             renderLogTable(container, pinnedEntries, 'pinned');
-            updateReviewActions(pinnedEntries.length);
-            return;
+            updateReviewActions(pinnedEntries.length); return;
         }
     }
 
     function renderLogTable(container, entries, bucket) {
         var actionHeader = "";
-        if (bucket === 'pending' && entries.length > 1) {
-            actionHeader = "<button class='pin-all-btn' title='Move all pending to Pinned' onclick='pinAllPending()'>📌 All</button>";
-        }
+        if (bucket === 'pending' && entries.length > 1) actionHeader = "<button class='pin-all-btn' title='Move all pending to Pinned' onclick='pinAllPending()'>📌 All</button>";
         var html = "<table class='ref-table review-table'><tr><th>Prompt</th><th>Correct</th><th>Last wrong</th><th>Fails</th><th>" + actionHeader + "</th></tr>";
         for (var i = 0; i < entries.length; i++) {
             var item = entries[i];
@@ -3026,8 +2365,7 @@
                 html += "<button onclick='togglePin(" + entryIndex + ")' title='Pin (permanent drill)'>📍</button>";
                 html += "<button onclick='deleteEntry(" + entryIndex + ")' title='Clear (→ Active)'>✖</button>";
             }
-            html += "</td>";
-            html += "</tr>";
+            html += "</td></tr>";
         }
         html += "</table>";
         container.innerHTML = html;
@@ -3037,79 +2375,45 @@
         var drillBtn = document.getElementById('drill-bucket-btn');
         var clearBtn = document.getElementById('clear-bucket-btn');
         var knownClearBtn = document.getElementById('clear-bucket-known-btn');
-
-        // Bulk "clear → known" only appears on the Pinned tab
-        if (knownClearBtn) {
-            knownClearBtn.style.display = (reviewTab === "pinned") ? "inline-block" : "none";
+        var copyBtn = document.getElementById('copy-pinned-btn');
+        if (knownClearBtn) knownClearBtn.style.display = (reviewTab === "pinned") ? "inline-block" : "none";
+        if (copyBtn) {
+            copyBtn.style.display = (reviewTab === "pinned") ? "inline-block" : "none";
+            if (reviewTab === "pinned") { copyBtn.innerText = "📋 Copy (" + count + ")"; copyBtn.disabled = count === 0; }
         }
-
-        if (reviewTab === "active") {
-            if (drillBtn) { drillBtn.innerText = "🎯 Drill"; drillBtn.disabled = true; }
-            if (clearBtn) { clearBtn.innerText = "🗑️ Clear"; clearBtn.disabled = true; }
-            return;
-        }
-
-        if (reviewTab === "known") {
-            if (drillBtn) { drillBtn.innerText = "🎯 Drill"; drillBtn.disabled = true; }
-            if (clearBtn) { clearBtn.innerText = "🗑️ Forget Filtered Known (" + count + ")"; clearBtn.disabled = count === 0; }
-            return;
-        }
-
+        if (reviewTab === "active") { if (drillBtn) { drillBtn.innerText = "🎯 Drill"; drillBtn.disabled = true; } if (clearBtn) { clearBtn.innerText = "🗑️ Clear"; clearBtn.disabled = true; } return; }
+        if (reviewTab === "known") { if (drillBtn) { drillBtn.innerText = "🎯 Drill"; drillBtn.disabled = true; } if (clearBtn) { clearBtn.innerText = "🗑️ Forget Filtered Known (" + count + ")"; clearBtn.disabled = count === 0; } return; }
         var bucketLabels = { pending: "Pending", pinned: "Pinned" };
-        if (drillBtn) {
-            drillBtn.innerText = "🎯 Drill " + bucketLabels[reviewTab] + " (" + count + ")";
-            drillBtn.disabled = count === 0;
-        }
+        if (drillBtn) { drillBtn.innerText = "🎯 Drill " + bucketLabels[reviewTab] + " (" + count + ")"; drillBtn.disabled = count === 0; }
         if (clearBtn) {
-            if (reviewTab === "pinned") {
-                clearBtn.innerText = "📤 Clear → Active (" + count + ")";
-            } else {
-                clearBtn.innerText = "🗑️ Clear " + bucketLabels[reviewTab] + " (" + count + ")";
-            }
+            if (reviewTab === "pinned") clearBtn.innerText = "📤 Clear → Active (" + count + ")";
+            else clearBtn.innerText = "🗑️ Clear " + bucketLabels[reviewTab] + " (" + count + ")";
             clearBtn.disabled = count === 0;
         }
-        if (knownClearBtn && reviewTab === "pinned") {
-            knownClearBtn.innerText = "✅ Clear → Known (" + count + ")";
-            knownClearBtn.disabled = count === 0;
-        }
+        if (knownClearBtn && reviewTab === "pinned") { knownClearBtn.innerText = "✅ Clear → Known (" + count + ")"; knownClearBtn.disabled = count === 0; }
     }
+
     function pinAllPending() {
         var pendingEntries = mistakeLog.filter(function(e) { return e.status === "pending"; });
         if (pendingEntries.length === 0) return;
         if (!confirm("Move all " + pendingEntries.length + " pending cards to Pinned? You can unpin them individually from the Pinned tab.")) return;
-        for (var i = 0; i < pendingEntries.length; i++) {
-            pendingEntries[i].status = "pinned";
-        }
-        saveState();
-        updateLogBadges();
-        updateScoreboard();
-        renderReviewList();
+        for (var i = 0; i < pendingEntries.length; i++) pendingEntries[i].status = "pinned";
+        saveState(); updateLogBadges(); updateScoreboard(); renderReviewList();
     }
 
     function togglePin(entryIndex) {
         var e = mistakeLog[entryIndex];
         if (!e) return;
-        if (e.status === "pinned") {
-            // Unpin → Active (remove from log entirely)
-            mistakeLog.splice(entryIndex, 1);
-        } else {
-            // Pin
-            e.status = "pinned";
-        }
-        saveState();
-        updateLogBadges();
-        updateScoreboard();
-        renderReviewList();
+        if (e.status === "pinned") mistakeLog.splice(entryIndex, 1);
+        else e.status = "pinned";
+        saveState(); updateLogBadges(); updateScoreboard(); renderReviewList();
     }
 
     function unpinToActive(entryIndex) {
         var e = mistakeLog[entryIndex];
         if (!e || e.status !== "pinned") return;
         mistakeLog.splice(entryIndex, 1);
-        saveState();
-        updateLogBadges();
-        updateScoreboard();
-        renderReviewList();
+        saveState(); updateLogBadges(); updateScoreboard(); renderReviewList();
     }
 
     function unpinToKnown(entryIndex) {
@@ -3117,10 +2421,7 @@
         if (!e || e.status !== "pinned") return;
         graduateToKnown(entryKey(e));
         mistakeLog.splice(entryIndex, 1);
-        saveState();
-        updateLogBadges();
-        updateScoreboard();
-        renderReviewList();
+        saveState(); updateLogBadges(); updateScoreboard(); renderReviewList();
     }
 
     function clearPinnedToKnown() {
@@ -3133,20 +2434,13 @@
             var idx = mistakeLog.indexOf(e);
             if (idx >= 0) mistakeLog.splice(idx, 1);
         }
-        saveState();
-        updateLogBadges();
-        updateScoreboard();
-        renderReviewList();
+        saveState(); updateLogBadges(); updateScoreboard(); renderReviewList();
     }
 
     function deleteEntry(entryIndex) {
         if (entryIndex < 0 || entryIndex >= mistakeLog.length) return;
-        // Delete → card becomes Active (removed from log)
         mistakeLog.splice(entryIndex, 1);
-        saveState();
-        updateLogBadges();
-        updateScoreboard();
-        renderReviewList();
+        saveState(); updateLogBadges(); updateScoreboard(); renderReviewList();
     }
 
     function clearActiveBucket() {
@@ -3154,13 +2448,8 @@
             var filteredKeys = getFilteredKnownKeys();
             if (filteredKeys.length === 0) return;
             if (!confirm("Forget " + filteredKeys.length + " known cards under current filters? They'll return to Active and resurface in future sessions.")) return;
-            for (var i = 0; i < filteredKeys.length; i++) {
-                delete knownCards[filteredKeys[i]];
-            }
-            saveState();
-            updateScoreboard();
-            updateLogBadges();
-            renderReviewList();
+            for (var i = 0; i < filteredKeys.length; i++) delete knownCards[filteredKeys[i]];
+            saveState(); updateScoreboard(); updateLogBadges(); renderReviewList();
             return;
         }
         if (reviewTab === "active") return;
@@ -3168,147 +2457,74 @@
         if (filtered.length === 0) return;
         var label = reviewTab.charAt(0).toUpperCase() + reviewTab.slice(1);
         if (!confirm("Clear all " + filtered.length + " " + label + " entries? They'll return to Active and resurface in future sessions.")) return;
-        for (var i = 0; i < filtered.length; i++) {
-            var idx = mistakeLog.indexOf(filtered[i]);
-            if (idx >= 0) mistakeLog.splice(idx, 1);
-        }
-        saveState();
-        updateLogBadges();
-        updateScoreboard();
-        renderReviewList();
+        for (var i = 0; i < filtered.length; i++) { var idx = mistakeLog.indexOf(filtered[i]); if (idx >= 0) mistakeLog.splice(idx, 1); }
+        saveState(); updateLogBadges(); updateScoreboard(); renderReviewList();
     }
 
-    // ============================================================
-    // KEYBOARD
-    // ============================================================
     document.addEventListener('keydown', function(event) {
         var isFeedbackOpen = document.getElementById('feedback-container').style.display === 'block';
         var isHonourOpen = document.getElementById('honour-system-controls').style.display === 'flex';
         var isTyping = (document.activeElement && document.activeElement.tagName === "INPUT");
         var isQuizView = document.getElementById('view-quiz').style.display !== 'none';
-
-        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') {
-            event.preventDefault();
-            executeUndoAction();
-            return;
-        }
-
+        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') { event.preventDefault(); executeUndoAction(); return; }
         if (!isQuizView) return;
-
         if (!sessionStarted && !sessionComplete) {
-            if (event.key === ' ' || event.code === 'Space' || event.key === 'Enter') {
-                event.preventDefault();
-                startSession();
-            }
+            if (event.key === ' ' || event.code === 'Space' || event.key === 'Enter') { event.preventDefault(); startSession(); }
             return;
         }
-
         if (sessionComplete) {
-            if (event.key === ' ' || event.code === 'Space' || event.key === 'Enter') {
-                event.preventDefault();
-                startNewSessionFromComplete();
-            }
+            if (event.key === ' ' || event.code === 'Space' || event.key === 'Enter') { event.preventDefault(); startNewSessionFromComplete(); }
             return;
         }
-
         if (event.key === ' ' || event.code === 'Space' || event.key === 'Enter') {
-            if (isTyping && !isFeedbackOpen && currentQuizDirection === 'read' && productionMethod === 'type') {
-                return;
-            }
+            if (isTyping && !isFeedbackOpen && currentQuizDirection === 'read' && productionMethod === 'type') return;
             event.preventDefault();
-            if (isFeedbackOpen) {
-                handleNextWorkflow();
-                return;
-            }
+            if (isFeedbackOpen) { handleNextWorkflow(); return; }
             if (currentQuizDirection === 'read' && productionMethod === 'type') { checkAnswer(); return; }
             if (!isHonourOpen) { revealVerbAnswer(); return; }
             if (isHonourOpen) { assessHonour(true); return; }
         }
-
         if (isHonourOpen) {
             if (event.key === '1' || event.key.toLowerCase() === 'x') { event.preventDefault(); assessHonour(false); }
             if (event.key === '2') { event.preventDefault(); assessHonour(true); }
         }
     });
 
-    // --- SWIPE GESTURE SUPPORT ---
-    var touchStartX = 0;
-    var touchStartY = 0;
-
-    document.addEventListener('touchstart', function(e) {
-        touchStartX = e.changedTouches[0].screenX;
-        touchStartY = e.changedTouches[0].screenY;
-    }, { passive: true });
-
+    var touchStartX = 0; var touchStartY = 0;
+    document.addEventListener('touchstart', function(e) { touchStartX = e.changedTouches[0].screenX; touchStartY = e.changedTouches[0].screenY; }, { passive: true });
     document.addEventListener('touchend', function(e) {
         var touchEndX = e.changedTouches[0].screenX;
         var touchEndY = e.changedTouches[0].screenY;
-        
-        // Calculate distance (positive = swiped right, negative = swiped left)
         var xDiff = touchEndX - touchStartX;
         var yDiff = touchEndY - touchStartY;
-
-        // Ensure it's a horizontal swipe (not a vertical scroll)
         if (Math.abs(xDiff) > 70 && Math.abs(xDiff) > Math.abs(yDiff)) {
-            
             var isFeedbackOpen = document.getElementById('feedback-container').style.display === 'block';
             var isHonourOpen = document.getElementById('honour-system-controls').style.display === 'flex';
             var isTyping = (document.activeElement && document.activeElement.tagName === "INPUT");
-
-            // SWIPE RIGHT (Forward action)
             if (xDiff > 0) {
-                if (!sessionStarted && !sessionComplete) {
-                    startSession(); // Start the session with a swipe!
-                    return;
-                }
-                if (sessionComplete) {
-                    var compBtn = document.querySelector('.completion-btn.primary');
-                    if (compBtn) compBtn.click();
-                    return;
-                }
-                if (isTyping && !isFeedbackOpen) return; // Don't skip typing
-
-                if (isFeedbackOpen) {
-                    handleNextWorkflow(); // Next card
-                } else if (currentQuizDirection === 'read' && productionMethod === 'type') {
-                    checkAnswer(); // Submit answer
-                } else if (!isHonourOpen) {
-                    revealVerbAnswer(); // Reveal
-                } else if (isHonourOpen) {
-                    assessHonour(true); // Mark correct
-                }
-            } 
-            // SWIPE LEFT (Backward action)
-            else {
+                if (!sessionStarted && !sessionComplete) { startSession(); return; }
+                if (sessionComplete) { var compBtn = document.querySelector('.completion-btn.primary'); if (compBtn) compBtn.click(); return; }
+                if (isTyping && !isFeedbackOpen) return;
+                if (isFeedbackOpen) handleNextWorkflow();
+                else if (currentQuizDirection === 'read' && productionMethod === 'type') checkAnswer();
+                else if (!isHonourOpen) revealVerbAnswer();
+                else if (isHonourOpen) assessHonour(true);
+            } else {
                 if (!sessionStarted || sessionComplete) return;
-                
-                if (isTyping && !isFeedbackOpen) {
-                    // Swipe left to clear input
-                    document.getElementById('user-input').value = "";
-                    return;
-                }
-                
-                if (isFeedbackOpen) {
-                    executeUndoAction(); // Undo the last action
-                } else if (isHonourOpen) {
-                    assessHonour(false); // Mark incorrect
-                }
+                if (isTyping && !isFeedbackOpen) { document.getElementById('user-input').value = ""; return; }
+                if (isFeedbackOpen) executeUndoAction();
+                else if (isHonourOpen) assessHonour(false);
             }
         }
     }, { passive: true });
 
     window.onload = function() {
-        populateVerbSelector();
-        loadState();
-        initSessionDeck();
-        updateLogBadges();
-        updateScoreboard();
-        updatePlayModePill();
+        populateVerbSelector(); loadState(); initSessionDeck();
+        updateLogBadges(); updateScoreboard(); updatePlayModePill(); updateAutoPinHint();
     };
 </script>
 <!-- polyglot-copyright -->
-<footer style="text-align:center; margin:1rem auto 0 auto; padding:1rem 20px 0 20px;
-               font-size:0.7rem; color:#64748b; letter-spacing:0.3px; line-height:1.5;">
+<footer style="text-align:center; margin:1rem auto 0 auto; padding:1rem 20px 0 20px; font-size:0.7rem; color:#64748b; letter-spacing:0.3px; line-height:1.5;">
     Copyright The Polyglot Gym 2026 · Simon Reynolds · All rights reserved.
 </footer>
 <!-- /polyglot-copyright -->
